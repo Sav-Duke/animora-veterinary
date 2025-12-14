@@ -170,7 +170,15 @@
   <script src="js/contact.js"></script>
   <script src="js/main.js"></script>
   <script src="js/floating-blog.js"></script>
-  <script src="js/admin-floating-btn.js"></script>
+  
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    });
+  </script>
   
   <script>
     // Fallback handler for contact info loading errors

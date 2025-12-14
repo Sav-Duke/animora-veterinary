@@ -164,7 +164,16 @@
   </script>
   <!-- AI now integrated via iframe - no separate js/ai.js needed -->
   <script src="js/floating-blog.js"></script>
-  <script src="js/admin-floating-btn.js"></script>
+  
+  <!-- Secret Admin Access: Press Ctrl+Shift+A -->
+  <script>
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    });
+  </script>
 </body>
 </html>
 
