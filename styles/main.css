@@ -1,0 +1,65 @@
+/* ===== Header & Navigation ===== */
+header {
+  background: linear-gradient(90deg, #0d1b2a, #1b263b, #415a77);
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+header .sub {
+  font-weight: normal;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s, border-bottom 0.3s;
+  padding-bottom: 4px;
+}
+
+.nav-links li a:hover {
+  color: #ffcc70;
+  border-bottom: 2px solid #ffcc70;
+}
+
+.nav-links li a.active {
+  color: #ffcc70;
+  border-bottom: 2px solid #ffcc70;
+}
+
+/* ===== Footer ===== */
+footer {
+  background: #0d1b2a;
+  color: #ddd;
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+  border-top: 2px solid #1b263b;
+}
+
+footer p {
+  margin: 0;
+  opacity: 0.8;
+}

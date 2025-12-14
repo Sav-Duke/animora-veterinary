@@ -1,0 +1,38 @@
+{
+  "diseases": [
+    {
+      "name": "Mastitis Intramammary (Local) Antibiotics",
+      "treatment": [
+        {
+          "modality": "Intramammary (Local) Antibiotics",
+          "details": [
+            "Used for local infection to achieve high drug concentration directly at the site of infection within the mammary gland.",
+            "Administration is via infusion directly into the teat canal of the affected quarter."
+          ],
+          "target_pathogens": [
+            "Contagious pathogens (e.g., **Streptococcus agalactiae**, *Staphylococcus aureus*)",
+            "Environmental pathogens (e.g., **E. coli**, **Klebsiella spp.**, environmental *Streptococcus*)"
+          ],
+          "antibiotics": [
+            "**Cloxacillin** (effective against many Gram-positive bacteria)",
+            "**Cephapirin** (a cephalosporin, broad spectrum)",
+            "**Pirlimycin** (a lincosamide, effective against many Gram-positive bacteria, often for *Staph. aureus*)",
+            "**Penicillin** (effective against Gram-positive bacteria like *Streptococcus*)"
+          ],
+          "preparation_and_administration": [
+            "1. **Milk out the affected quarter** completely before infusion.",
+            "2. **Clean the teat end** thoroughly with an alcohol swab or medicated wipe provided with the tube. This is the **most critical step** to prevent introducing environmental bacteria deeper into the udder.",
+            "3. **Infuse the antibiotic tube** into the teat canal, using the **partial insertion technique** (inserting only the tip of the cannula) to minimize damage to the keratin plug.",
+            "4. **Gently massage the antibiotic** up into the cistern and gland, starting from the teat end and moving upwards.",
+            "5. **Dip the teat** immediately after infusion with a post-milking teat dip to seal the teat end."
+          ],
+          "considerations": [
+            "**Withdrawal Period:** Always observe the milk and meat withdrawal times printed on the product label to prevent illegal antibiotic residues in the food supply.",
+            "**Duration:** Treatment usually lasts for 3 to 8 consecutive infusions, depending on the product and the pathogen.",
+            "**Type:** Use products labeled for **Lactation** for treating cows currently producing milk, and products labeled for the **Dry Period** (long-acting) when the cow is non-lactating."
+          ]
+        }
+      ]
+    }
+  ]
+}

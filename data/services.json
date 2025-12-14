@@ -1,0 +1,88 @@
+{
+  "petCare": [
+    {
+      "id": "wellness",
+      "title": "Wellness & Preventative Care",
+      "shortDesc": "Routine checkups, vaccinations, and nutritional guidance to keep animals healthy.",
+      "fullDesc": "We provide physical exams, vaccinations, parasite control, and tailored nutrition plans to keep pets healthy. Regular visits help us detect conditions early and improve quality of life."
+    },
+    {
+      "id": "dental",
+      "title": "Dental Care",
+      "shortDesc": "Comprehensive cleanings, extractions, and oral health education.",
+      "fullDesc": "Our dental services include scaling, polishing, extractions, and guidance on maintaining oral hygiene. Good dental care prevents infections and ensures overall wellbeing."
+    },
+    {
+      "id": "surgery",
+      "title": "Surgery & Emergency Care",
+      "shortDesc": "State-of-the-art surgical facilities and compassionate 24/7 emergency services.",
+      "fullDesc": "We handle routine surgeries as well as emergency cases. Our clinic has modern facilities and provides anesthesia monitoring, pain management, and compassionate recovery support."
+    }
+  ],
+  "livestock": [
+    {
+      "id": "field",
+      "title": "Field Treatment",
+      "shortDesc": "Door-to-door veterinary services for cattle, goats, sheep, and poultry.",
+      "fullDesc": "We provide door-to-door veterinary services for livestock, ensuring prompt treatment for injuries, illnesses, and health emergencies at your farm."
+    },
+    {
+      "id": "ai",
+      "title": "Artificial Insemination",
+      "shortDesc": "Boost herd reproduction with advanced AI techniques.",
+      "fullDesc": "Our advanced reproductive techniques help improve genetics and reproduction rates in livestock herds, ensuring higher productivity and healthier offspring."
+    },
+    {
+      "id": "breed",
+      "title": "Breed Selection",
+      "shortDesc": "Expert guidance to improve productivity and adaptability.",
+      "fullDesc": "We offer expert advice to help farmers choose the right breeds that match their environment, market goals, and productivity needs."
+    },
+    {
+      "id": "lv-vaccine",
+      "title": "Vaccination Programs",
+      "shortDesc": "Comprehensive livestock vaccination schedules for disease prevention.",
+      "fullDesc": "Protecting herds from diseases through scheduled vaccination programs designed to reduce outbreaks and ensure long-term herd health."
+    }
+  ],
+  "laboratory": [
+    {
+      "id": "lab",
+      "title": "Lab Tests",
+      "shortDesc": "Blood, urine, and fecal analysis for accurate diagnosis.",
+      "fullDesc": "Our diagnostic lab provides blood, urine, and fecal tests to ensure accurate diagnosis and targeted treatments for pets and livestock."
+    },
+    {
+      "id": "screening",
+      "title": "Disease Screening",
+      "shortDesc": "Identify and control diseases before they spread.",
+      "fullDesc": "We identify and control potential diseases early through comprehensive screening, preventing them from spreading among pets or livestock."
+    },
+    {
+      "id": "repro",
+      "title": "Reproductive Health",
+      "shortDesc": "Fertility testing and pregnancy diagnosis for pets and livestock.",
+      "fullDesc": "Our reproductive services include fertility testing, pregnancy diagnosis, and monitoring, helping animals reproduce safely and efficiently."
+    }
+  ],
+  "consultation": [
+    {
+      "id": "nutrition",
+      "title": "Nutrition Guidance",
+      "shortDesc": "Custom feeding plans tailored to animals' specific needs.",
+      "fullDesc": "We create personalized feeding plans to meet the specific needs of pets and livestock, ensuring balanced nutrition for growth, health, and productivity."
+    },
+    {
+      "id": "farm",
+      "title": "Farm Management",
+      "shortDesc": "Training and support for sustainable and productive farming.",
+      "fullDesc": "We provide hands-on training and advisory services in sustainable farming practices, animal husbandry, and efficient resource management."
+    },
+    {
+      "id": "prevention",
+      "title": "Disease Prevention",
+      "shortDesc": "Practical strategies to keep both pets and herds healthy.",
+      "fullDesc": "Our preventive strategies include vaccination, deworming, hygiene programs, and monitoring to reduce risks of disease outbreaks in pets and herds."
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Backup & Restore | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f3f4f6; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { color: #16A34A; display: flex; align-items: center; gap: 12px; }
+    .back-btn { background: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; }
+    .section { background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .section h2 { color: #374151; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .backup-btn { background: linear-gradient(135deg, #16A34A 0%, #15803d 100%); color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; width: 100%; margin-bottom: 10px; }
+    .backup-list { margin-top: 20px; }
+    .backup-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9fafb; border-radius: 8px; margin-bottom: 10px; }
+    .backup-info h4 { color: #374151; margin-bottom: 5px; }
+    .backup-info p { color: #6b7280; font-size: 0.9rem; }
+    .restore-btn { background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px; }
+    .delete-btn { background: #dc2626; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; }
+    .info-box { background: #dbeafe; padding: 20px; border-radius: 10px; border: 2px solid #3b82f6; }
+    .info-box h3 { color: #1e40af; margin-bottom: 10px; }
+    .info-box p { color: #1e40af; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>💾</span>Backup & Restore</h1>
+      <a href="index.html" class="back-btn">← Back</a>
+    </div>
+
+    <div class="section">
+      <h2><span>💾</span>Create Backup</h2>
+      <p style="color: #6b7280; margin-bottom: 20px;">Create a complete backup of all website data including staff, services, contact info, settings, and uploaded images.</p>
+      <button class="backup-btn" onclick="createBackup()">📦 Create Full Backup Now</button>
+      <button class="backup-btn" style="background: #3b82f6;" onclick="scheduleBackup()">⏰ Schedule Automatic Backups</button>
+    </div>
+
+    <div class="section">
+      <h2><span>📋</span>Available Backups</h2>
+      <div class="backup-list" id="backupList">
+        <p style="color: #6b7280; text-align: center; padding: 20px;">No backups created yet. Click "Create Full Backup Now" to get started.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="info-box">
+        <h3>💡 Backup Information</h3>
+        <p><strong>What's included in backups:</strong></p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li>All staff/team member data</li>
+          <li>Services and offerings</li>
+          <li>Contact information</li>
+          <li>About page content</li>
+          <li>Appointments data</li>
+          <li>Settings and configurations</li>
+          <li>LocalStorage data</li>
+        </ul>
+        <p style="margin-top: 15px;"><strong>Note:</strong> For production, implement server-side backups that include uploaded images and database files.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let backups = JSON.parse(localStorage.getItem('animoraBackups') || '[]');
+
+    function createBackup() {
+      const backup = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        data: {
+          staff: localStorage.getItem('animoraStaff'),
+          services: localStorage.getItem('animoraServices'),
+          contact: localStorage.getItem('animoraContactInfo'),
+          about: localStorage.getItem('animoraAboutContent'),
+          settings: localStorage.getItem('animoraBusinessInfo'),
+          seo: localStorage.getItem('animoraSEOSettings'),
+          appointments: localStorage.getItem('animoraAppointments'),
+          floatingBlog: localStorage.getItem('animoraFloatingBlog'),
+          adminBtn: localStorage.getItem('animoraAdminFloatingBtn')
+        }
+      };
+
+      backups.unshift(backup);
+      localStorage.setItem('animoraBackups', JSON.stringify(backups));
+      
+      alert('✅ Backup created successfully!');
+      displayBackups();
+    }
+
+    function restoreBackup(id) {
+      if (!confirm('Are you sure you want to restore this backup? Current data will be replaced.')) return;
+
+      const backup = backups.find(b => b.id === id);
+      if (!backup) return;
+
+      Object.keys(backup.data).forEach(key => {
+        if (backup.data[key]) {
+          const storageKey = key === 'staff' ? 'animoraStaff' :
+                            key === 'services' ? 'animoraServices' :
+                            key === 'contact' ? 'animoraContactInfo' :
+                            key === 'about' ? 'animoraAboutContent' :
+                            key === 'settings' ? 'animoraBusinessInfo' :
+                            key === 'seo' ? 'animoraSEOSettings' :
+                            key === 'appointments' ? 'animoraAppointments' :
+                            key === 'floatingBlog' ? 'animoraFloatingBlog' : 'animoraAdminFloatingBtn';
+          localStorage.setItem(storageKey, backup.data[key]);
+        }
+      });
+
+      alert('✅ Backup restored successfully! Refresh pages to see restored data.');
+    }
+
+    function deleteBackup(id) {
+      if (!confirm('Delete this backup?')) return;
+      backups = backups.filter(b => b.id !== id);
+      localStorage.setItem('animoraBackups', JSON.stringify(backups));
+      displayBackups();
+    }
+
+    function scheduleBackup() {
+      alert('⏰ Automatic Backup Schedule\n\nFor production:\n1. Use server-side cron jobs for automated backups\n2. Set up daily backups at off-peak hours\n3. Store backups in cloud storage (AWS S3, Google Cloud)\n4. Implement backup rotation (keep last 30 days)\n5. Test restore procedures regularly');
+    }
+
+    function displayBackups() {
+      const container = document.getElementById('backupList');
+      if (backups.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No backups created yet. Click "Create Full Backup Now" to get started.</p>';
+        return;
+      }
+
+      container.innerHTML = backups.map(backup => {
+        const date = new Date(backup.timestamp);
+        return `
+          <div class="backup-item">
+            <div class="backup-info">
+              <h4>📦 Full Backup - ${date.toLocaleDateString()}</h4>
+              <p>${date.toLocaleTimeString()} • All data included</p>
+            </div>
+            <div>
+              <button class="restore-btn" onclick="restoreBackup(${backup.id})">↩️ Restore</button>
+              <button class="delete-btn" onclick="deleteBackup(${backup.id})">🗑️ Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    displayBackups();
+  </script>
+</body>
+</html>

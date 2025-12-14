@@ -1,0 +1,8 @@
+node_modules/
+animora-ai/frontend/node_modules/
+animora-ai/backend/node_modules/
+.env
+*.log
+.DS_Store
+Thumbs.db
+.cache/

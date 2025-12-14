@@ -1,0 +1,22 @@
+# Animora Veterinary Clinic - Robots.txt
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin and backend directories
+Disallow: /admin/
+Disallow: /animora-ai/backend/
+Disallow: /api/
+Disallow: /data/
+
+# Allow CSS and JS files
+Allow: /styles/
+Allow: /js/
+Allow: /images/
+
+# Sitemap location
+Sitemap: http://localhost:8080/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

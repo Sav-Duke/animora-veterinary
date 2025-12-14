@@ -1,0 +1,100 @@
+/* AI Widget Styles */
+#ai-widget {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f9fafb, #eef3f7); /* soft clinic-like background */
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  font-family: "Segoe UI", sans-serif;
+  border: 1px solid #d6e0eb;
+}
+
+#ai-widget h3 {
+  text-align: center;
+  color: #415a77; /* theme blue */
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+}
+
+/* Chat box */
+#aiChat {
+  height: 260px;
+  overflow-y: auto;
+  border: 1px solid #cfd8e3;
+  padding: 0.75rem;
+  margin-bottom: 0.8rem;
+  background: #ffffff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* User & AI messages */
+#aiChat .user {
+  text-align: right;
+  background: #ffecd1;
+  color: #5a4634;
+  padding: 6px 10px;
+  border-radius: 10px 10px 0 10px;
+  margin: 6px 0;
+  display: inline-block;
+  max-width: 80%;
+}
+
+#aiChat .ai {
+  text-align: left;
+  background: #e6f0fa;
+  color: #2e3d4f;
+  padding: 6px 10px;
+  border-radius: 10px 10px 10px 0;
+  margin: 6px 0;
+  display: inline-block;
+  max-width: 80%;
+}
+
+/* Input area */
+.ai-input {
+  display: flex;
+  gap: 0.6rem;
+}
+
+#aiInput {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cfd8e3;
+  background: #fdfdfd;
+  font-size: 0.95rem;
+  transition: border 0.2s;
+}
+
+#aiInput:focus {
+  outline: none;
+  border-color: #415a77;
+  box-shadow: 0 0 0 2px rgba(65, 90, 119, 0.15);
+}
+
+/* Button */
+.ai-input button {
+  padding: 0.6rem 1.2rem;
+  background: #ffb347; /* orange highlight */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.ai-input button:hover {
+  background: #ff9800;
+  transform: translateY(-1px);
+}
+
+.ai-input button:active {
+  transform: translateY(0);
+}
+

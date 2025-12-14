@@ -1,0 +1,85 @@
+/* -----------------------------
+   Hamburger Menu Styles
+-------------------------------*/
+
+/* Hamburger icon (hidden by default) */
+.hamburger {
+  display: none;              
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 18px;
+  cursor: pointer;
+  z-index: 1000;              /* keep it above menu */
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  background: #fff;           /* ✅ white, since header/nav is dark */
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* -----------------------------
+   Mobile Dropdown Navigation
+-------------------------------*/
+@media (max-width: 615px) {
+  .hamburger {
+    display: flex;
+  }
+
+  /* Dropdown menu (hidden by default) */
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #1b263b;       /* ✅ navy theme */
+    position: absolute;
+    top: 60px;                 /* adjust based on header height */
+    right: 10px;
+    width: 220px;
+    padding: 12px 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    animation: dropdownFade 0.3s ease;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  /* Individual links */
+  .nav-links li {
+    margin: 6px 0;
+    text-align: center;
+  }
+
+  .nav-links li a {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    display: block;
+    color: #fff;               /* ✅ white text */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+  }
+
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    background: #ffb347;       /* ✅ orange hover */
+    color: #1b263b;            /* dark text contrast */
+  }
+
+  /* Small fade-in animation */
+  @keyframes dropdownFade {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+

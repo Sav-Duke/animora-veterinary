@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel | Animora Veterinary Clinic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .admin-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 40px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .admin-header h1 {
+      color: #16A34A;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+
+    .admin-header p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .admin-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .admin-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+    }
+
+    .admin-card p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .admin-card.ai {
+      background: linear-gradient(135deg, #16A34A 0%, #15803d 100%);
+    }
+
+    .admin-card.database {
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    .admin-card.website {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .admin-card.analytics {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    .icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .status-bar {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .status-bar h4 {
+      margin: 0 0 10px 0;
+      color: #374151;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .status-indicator.online {
+      background: #10b981;
+    }
+
+    .status-indicator.offline {
+      background: #ef4444;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>🏥 Animora Admin Panel</h1>
+      <p>Manage your veterinary clinic's AI system and website</p>
+    </div>
+
+    <div class="admin-grid">
+      <a href="../animora-ai/chat.html" target="_blank" class="admin-card ai">
+        <div class="icon">🤖</div>
+        <h3>Animora AI</h3>
+        <p>Access the complete AI chat system</p>
+      </a>
+
+      <a href="http://localhost:4001" target="_blank" class="admin-card database">
+        <div class="icon">💾</div>
+        <h3>API Backend</h3>
+        <p>View backend API status</p>
+      </a>
+
+      <a href="../index.html" class="admin-card website">
+        <div class="icon">🌐</div>
+        <h3>Main Website</h3>
+        <p>View public website</p>
+      </a>
+
+      <a href="diseases.html" class="admin-card analytics">
+        <div class="icon">🦠</div>
+        <h3>Disease Database</h3>
+        <p>Manage disease information</p>
+      </a>
+
+      <a href="vets.html" class="admin-card">
+        <div class="icon">👨‍⚕️</div>
+        <h3>Manage Vets</h3>
+        <p>Add and manage veterinarians</p>
+      </a>
+
+      <a href="staff-manager.html" class="admin-card website">
+        <div class="icon">👥</div>
+        <h3>Manage Team</h3>
+        <p>Edit staff/team members on website</p>
+      </a>
+
+      <a href="services-manager.html" class="admin-card ai">
+        <div class="icon">🏥</div>
+        <h3>Manage Services</h3>
+        <p>Edit services offered on website</p>
+      </a>
+
+      <a href="contact-manager.html" class="admin-card database">
+        <div class="icon">📞</div>
+        <h3>Contact Info</h3>
+        <p>Update contact details & hours</p>
+      </a>
+
+      <a href="about-manager.html" class="admin-card analytics">
+        <div class="icon">📝</div>
+        <h3>About Content</h3>
+        <p>Edit about page content</p>
+      </a>
+
+      <a href="settings.html" class="admin-card website">
+        <div class="icon">⚙️</div>
+        <h3>Settings</h3>
+        <p>Security & configuration</p>
+      </a>
+
+      <a href="appointments.html" class="admin-card ai">
+        <div class="icon">📅</div>
+        <h3>Appointments</h3>
+        <p>View & manage bookings</p>
+      </a>
+
+      <a href="testimonials.html" class="admin-card database">
+        <div class="icon">⭐</div>
+        <h3>Testimonials</h3>
+        <p>Manage client reviews</p>
+      </a>
+
+      <a href="gallery.html" class="admin-card analytics">
+        <div class="icon">📸</div>
+        <h3>Photo Gallery</h3>
+        <p>Upload & organize images</p>
+      </a>
+
+      <a href="quick-stats.html" class="admin-card">
+        <div class="icon">📊</div>
+        <h3>Quick Stats</h3>
+        <p>View website analytics</p>
+      </a>
+
+      <a href="notifications.html" class="admin-card website">
+        <div class="icon">🔔</div>
+        <h3>Notifications</h3>
+        <p>Recent activity & alerts</p>
+      </a>
+
+      <a href="file-manager.html" class="admin-card ai">
+        <div class="icon">📁</div>
+        <h3>File Manager</h3>
+        <p>Browse & manage files</p>
+      </a>
+
+      <a href="floating-blog.html" class="admin-card database">
+        <div class="icon">📝</div>
+        <h3>Floating Blog Button</h3>
+        <p>Configure blog link button</p>
+      </a>
+
+      <a href="site-health.html" class="admin-card ai">
+        <div class="icon">🏥</div>
+        <h3>Site Health Check</h3>
+        <p>Monitor site integrity & issues</p>
+      </a>
+
+      <a href="security-scanner.html" class="admin-card analytics">
+        <div class="icon">🔒</div>
+        <h3>Security Scanner</h3>
+        <p>Detect vulnerabilities & threats</p>
+      </a>
+
+      <a href="seo-optimizer.html" class="admin-card">
+        <div class="icon">🚀</div>
+        <h3>SEO Optimizer</h3>
+        <p>Improve Google ranking</p>
+      </a>
+
+      <a href="backup-restore.html" class="admin-card website">
+        <div class="icon">💾</div>
+        <h3>Backup & Restore</h3>
+        <p>Automated backups & recovery</p>
+      </a>
+
+      <a href="performance-monitor.html" class="admin-card database">
+        <div class="icon">⚡</div>
+        <h3>Performance Monitor</h3>
+        <p>Speed & optimization metrics</p>
+      </a>
+
+      <a href="code-validator.html" class="admin-card ai">
+        <div class="icon">✅</div>
+        <h3>Code Validator</h3>
+        <p>Check HTML/CSS/JS quality</p>
+      </a>
+    </div>
+
+    <div class="status-bar">
+      <h4>System Status</h4>
+      <div class="status-item">
+        <span><span class="status-indicator online"></span>Animora AI Frontend</span>
+        <span>Port 3000</span>
+      </div>
+      <div class="status-item">
+        <span><span class="status-indicator online"></span>Backend API</span>
+        <span>Port 4001</span>
+      </div>
+      <div class="status-item">
+        <span><span class="status-indicator online"></span>MongoDB Database</span>
+        <span>Cloud Connected</span>
+      </div>
+      <div class="status-item">
+        <span><span class="status-indicator online"></span>AI Provider</span>
+        <span id="aiProvider">Groq API</span>
+      </div>
+      <div class="status-item">
+        <span><span class="status-indicator online"></span>CMS System</span>
+        <span><a href="cms-test.html" style="color: #16A34A; text-decoration: none;">Test CMS →</a></span>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="window.location.href='../index.html'">Return to Main Site</button>
+  </div>
+
+  <script>
+    // Check service status
+    async function checkServices() {
+      const indicators = document.querySelectorAll('.status-indicator');
+      
+      // Check frontend
+      try {
+        await fetch('http://localhost:3000', { mode: 'no-cors' });
+      } catch (e) {
+        indicators[0].classList.remove('online');
+        indicators[0].classList.add('offline');
+      }
+
+      // Check backend
+      try {
+        const res = await fetch('http://localhost:4001');
+        if (!res.ok) throw new Error();
+      } catch (e) {
+        indicators[1].classList.remove('online');
+        indicators[1].classList.add('offline');
+      }
+    }
+
+    checkServices();
+    setInterval(checkServices, 30000); // Check every 30 seconds
+  </script>
+</body>
+</html>

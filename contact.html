@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Appointments | Animora Veterinary Clinic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/contact.css">
+  <link rel="stylesheet" href="styles/mediaqueries.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1 class="logo">Animora <span class="sub">Veterinary Clinic</span></h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="services.html">Care & Services</a></li>
+        <li><a href="staff.html">Our Team</a></li>
+        <li><a href="contact.html" class="active">Appointments</a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Appointment Form -->
+  <section class="contact-section">
+    <div class="form-container">
+      <h2>Book an Appointment</h2>
+      <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
+
+      <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
+        <!-- Owner Info -->
+        <label for="ownerName">Your Full Name</label>
+        <input type="text" id="ownerName" name="ownerName" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <!-- Animal Info -->
+        <label for="animalCategory">Animal Category</label>
+        <select id="animalCategory" name="animalCategory" required>
+          <option value="">-- Select Category --</option>
+          <option value="Pet">Pet</option>
+          <option value="Livestock">Livestock</option>
+          <option value="Equine">Equine</option>
+        </select>
+
+        <div id="animalTypeContainer" style="display:none;">
+          <label for="animal">Animal Type</label>
+          <select id="animal" name="animal"></select>
+        </div>
+
+        <label for="petName">Pet's Name (if applicable)</label>
+        <input type="text" id="petName" name="petName">
+
+        <!-- Pet Services -->
+        <div id="petServicesContainer" style="display:none;">
+          <label for="petService">Pet Service</label>
+          <select id="petService" name="petService">
+            <option value="">-- Select Pet Service --</option>
+            <option>Grooming</option>
+            <option>Vaccination</option>
+            <option>Deworming</option>
+            <option>Dental Care</option>
+          </select>
+        </div>
+
+        <!-- Services -->
+        <label for="service">Service Needed</label>
+        <select id="service" name="service" required>
+          <option value="">-- Select a Service --</option>
+          <option>General Check-up</option>
+          <option>Vaccination</option>
+          <option>Treatment</option>
+          <option>Artificial Insemination</option>
+          <option>Lab Test</option>
+          <option>Consultation</option>
+          <option>Breed Selection</option>
+          <option>Surgery Consultation</option>
+          <option>Dental Care</option>
+          <option>Emergency Services</option>
+          <option>Parasite Control</option>
+          <option>Deworming</option>
+          <option>Nutritional Planning</option>
+          <option>Reproductive Health Monitoring</option>
+          <option>Pregnancy Diagnosis</option>
+          <option>Ultrasound Imaging</option>
+          <option>X-ray Diagnostics</option>
+          <option>Herd Health Management</option>
+          <option>Farm Visits</option>
+          <option>Biosecurity Assessment</option>
+          <option>Housing and Hygiene Evaluation</option>
+          <option>Neonatal Care</option>
+          <option>Hoof Trimming</option>
+          <option>Castration</option>
+          <option>Dehorning</option>
+          <option>Wound Care</option>
+          <option>Chronic Disease Management</option>
+          <option>Milk Testing</option>
+          <option>Fecal Analysis</option>
+          <option>Blood Tests</option>
+          <option>Disease Screening</option>
+          <option>Postmortem Examination</option>
+          <option>Grooming</option>
+          <option>Microchipping</option>
+          <option>Spay and Neuter</option>
+          <option>Behavioral Consultation</option>
+          <option>Tele-Vet Consultation</option>
+          <option>Follow-up Care</option>
+        </select>
+
+        <!-- Breeds -->
+        <div id="breedContainer" style="display:none;">
+          <label for="breed">Preferred Breed</label>
+          <select id="breed" name="breed"></select>
+        </div>
+
+        <!-- Appointment Details -->
+        <label for="date">Preferred Date</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="time">Preferred Time</label>
+        <input type="time" id="time" name="time" required>
+
+        <!-- Location Search -->
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="Start typing your location...">
+        <ul id="suggestions" class="suggestions-dropdown"></ul>
+
+        <!-- Vet Notice -->
+        <div id="vetNotice" class="vet-notice"></div>
+
+        <!-- Hidden fields -->
+        <input type="hidden" id="county" name="county">
+        <input type="hidden" id="subcounty" name="subcounty">
+        <input type="hidden" id="ward" name="ward">
+        <input type="hidden" id="village" name="village">
+
+        <!-- Notes -->
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" name="notes"></textarea>
+
+        <input type="hidden" name="_subject" value="New Appointment Request">
+        <input type="text" name="_gotcha" style="display:none">
+
+        <button type="submit">Submit Appointment</button>
+      </form>
+
+      <p id="successMessage" style="display:none; color:green; margin-top:15px;">
+        Thank you! Your appointment request has been sent. 🐾
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Animora Veterinary Clinic | All Rights Reserved</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/contact.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/floating-blog.js"></script>
+  <script src="js/admin-floating-btn.js"></script>
+  
+  <script>
+    // Fallback handler for contact info loading errors
+    window.addEventListener('load', function() {
+      const checkContactInfo = setInterval(function() {
+        const contactSection = document.querySelector('.contact-info');
+        if (contactSection) {
+          const hasContent = contactSection.textContent.trim().length > 100;
+          if (!hasContent) {
+            clearInterval(checkContactInfo);
+            const infoGrid = contactSection.querySelector('.info-grid') || contactSection;
+            infoGrid.innerHTML = `
+              <div style="grid-column: 1/-1; padding: 30px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; border: 2px solid #16A34A;">
+                <h3 style="color: #16A34A; text-align: center; margin-bottom: 15px;">🌿 Animal Welfare Message</h3>
+                <p style="color: #374151; line-height: 1.7; text-align: center; margin-bottom: 15px;">
+                  While we're experiencing connection issues, remember: <em>"The greatness of a nation and its moral progress can be judged by the way its animals are treated."</em>
+                </p>
+                <p style="color: #374151; line-height: 1.7; text-align: justify; margin-bottom: 15px;">
+                  Animal welfare is protected by law and blessed by faith. We care for God's creatures with compassion and expertise.
+                </p>
+                <p style="text-align: center; color: #6b7280; font-size: 0.9rem; margin-top: 15px;">
+                  <strong>Emergency Contact:</strong> Please call our clinic directly for urgent appointments.
+                </p>
+              </div>
+            `;
+          }
+          clearInterval(checkContactInfo);
+        }
+      }, 2000);
+    });
+    
+    // Add form submission error handling with animal welfare message
+    document.querySelector('form')?.addEventListener('submit', function(e) {
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+      
+      // Re-enable after timeout with fallback message
+      setTimeout(function() {
+        if (submitBtn.disabled) {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          
+          const message = document.getElementById('successMessage');
+          if (message && message.style.display === 'none') {
+            message.style.display = 'block';
+            message.style.color = '#f59e0b';
+            message.innerHTML = '⚠️ Network issue detected. Your request may not have been sent. Please call us directly or try again. <br><small style="margin-top: 10px; display: block; color: #6b7280;">Remember: Every animal deserves compassionate care - we\'re here to help!</small>';
+          }
+        }
+      }, 10000);
+    });
+  </script>
+</body>
+</html>
+
+
