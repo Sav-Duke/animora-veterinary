@@ -253,7 +253,10 @@
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:4001/api';
+    // Use deployed backend API or fall back to localhost for development
+    const API_BASE = window.location.hostname === 'localhost' 
+      ? 'http://localhost:4001/api'
+      : 'https://animora-backend.onrender.com/api';
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const sendButton = document.getElementById('sendButton');
@@ -350,10 +353,7 @@
         addMessage('ai', data.reply);
       } catch (error) {
         hideTyping();
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = '❌ Sorry, there was an error connecting to the AI. Please make sure the backend server is running.';
-        chatMessages.appendChild(errorDiv);
+        addMessage('ai', '👋 **Welcome to Animora AI!**\n\nOur AI assistant is currently being set up. In the meantime, you can:\n\n- 📞 **Call us** for immediate assistance\n- 📧 **Email** your questions\n- 📅 **Book an appointment** online\n\nWe\'ll have AI chat working soon! Thank you for your patience. 🐾');
       } finally {
         isTyping = false;
         sendButton.disabled = false;
