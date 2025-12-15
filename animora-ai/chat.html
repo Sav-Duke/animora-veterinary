@@ -406,7 +406,7 @@
 
         const data = await response.json();
         hideTyping();
-        addMessage('ai', data.reply);
+        addMessage('ai', data.response || data.reply || 'Sorry, I could not generate a response.');
       } catch (error) {
         hideTyping();
         addMessage('ai', '👋 **Welcome to Animora AI!**\n\nOur AI assistant is currently being set up. In the meantime, you can:\n\n- 📞 **Call us** for immediate assistance\n- 📧 **Email** your questions\n- 📅 **Book an appointment** online\n\nWe\'ll have AI chat working soon! Thank you for your patience. 🐾');
