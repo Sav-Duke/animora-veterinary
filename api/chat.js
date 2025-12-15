@@ -1,5 +1,5 @@
-// Vercel Serverless Function - Chat API
-export default async function handler(req, res) {
+// Vercel Serverless Function - Chat API (CommonJS)
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -62,5 +62,6 @@ export default async function handler(req, res) {
       details: error.message 
     });
   }
-}
+};
+
 
