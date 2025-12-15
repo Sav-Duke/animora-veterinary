@@ -89,8 +89,8 @@
           additionalContent += `
             <h3>Our Core Values</h3>
             <ul style="list-style: none; padding-left: 0;">
-              ${aboutData.values.map(value => `<li style="margin: 8px 0; padding-left: 25px; position: relative;">
-                <span style="position: absolute; left: 0; color: #16A34A;">✓</span> ${value}
+              ${aboutData.values.map(value => `<li style="margin: 8px 0;">
+                ${value}
               </li>`).join('')}
             </ul>
           `;
