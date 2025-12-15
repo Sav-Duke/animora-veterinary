@@ -11,9 +11,5 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     }
-  ],
-  "env": {
-    "MONGO_URI": "@mongo-uri",
-    "GROQ_API_KEY": "@groq-api-key"
-  }
+  ]
 }
