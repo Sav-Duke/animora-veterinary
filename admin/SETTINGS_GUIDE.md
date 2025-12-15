@@ -1,7 +1,7 @@
 # Settings Panel Guide
 
 ## Overview
-The enhanced Settings panel provides comprehensive configuration options for your Animora Veterinary Clinic website. All settings are stored locally in your browser and can be easily updated.
+The enhanced Settings panel provides comprehensive configuration options for your Animora Farm Health website. All settings are stored locally in your browser and can be easily updated.
 
 ## Features
 

@@ -266,7 +266,7 @@
       <form id="businessInfoForm" onsubmit="saveBusinessInfo(event)">
         <div class="form-group">
           <label for="clinicName">Clinic Name *</label>
-          <input type="text" id="clinicName" required placeholder="e.g., Animora Veterinary Clinic">
+          <input type="text" id="clinicName" required placeholder="e.g., Animora Farm Health">
         </div>
 
         <div class="form-group">
@@ -299,7 +299,7 @@
 
         <div class="form-group">
           <label for="metaKeywords">Meta Keywords</label>
-          <input type="text" id="metaKeywords" placeholder="e.g., veterinary clinic, animal hospital, pet care">
+          <input type="text" id="metaKeywords" placeholder="e.g., Farm Health, animal hospital, pet care">
         </div>
 
         <div class="form-group">
@@ -534,7 +534,7 @@
     function loadAllSettings() {
       // Business Information
       const businessInfo = JSON.parse(localStorage.getItem('animoraBusinessInfo') || '{}');
-      document.getElementById('clinicName').value = businessInfo.clinicName || 'Animora Veterinary Clinic';
+      document.getElementById('clinicName').value = businessInfo.clinicName || 'Animora Farm Health';
       document.getElementById('tagline').value = businessInfo.tagline || '';
       document.getElementById('copyrightName').value = businessInfo.copyrightName || 'Animora Veterinary Services';
 

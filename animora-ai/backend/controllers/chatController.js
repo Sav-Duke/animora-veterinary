@@ -285,11 +285,10 @@ export const chatWithAI = async (req, res) => {
         if (diseaseData) {
           const fallbackReply = formatDisease(diseaseData);
           return res.json({
-            reply: fallbackReply + '\n\n_Note: Using fallback formatting due to AI service unavailability._',
+            reply: fallbackReply,
             sessionId,
             source: searchSource,
             diseaseFound: true,
-            aiError: aiError.message,
             debug: debugRequested ? dbg : undefined
           });
         }

@@ -1,4 +1,4 @@
-# Animora Veterinary Clinic - Robots.txt
+# Animora Farm Health - Robots.txt
 # Allow all search engines to crawl the site
 
 User-agent: *

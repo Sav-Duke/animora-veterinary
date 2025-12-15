@@ -221,7 +221,7 @@ Frontend:
 ## 🗺️ **7. VET & AGROVET LOCATOR** (Ready to Enable)
 
 ### Features:
-- Find nearest veterinary clinics
+- Find nearest Farm Healths
 - Agrovet shops
 - Emergency 24/7 services
 - Contact information

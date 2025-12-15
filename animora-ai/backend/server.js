@@ -30,12 +30,20 @@ const PORT = process.env.PORT || 4001;
 // Start server only after MongoDB connection succeeds
 (async function start() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 10000
-    });
-    console.log("✅ Connected to MongoDB (animora)");
+    // Try to connect to MongoDB, but don't fail if it's not available
+    if (process.env.MONGO_URI) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000
+      });
+      console.log("✅ Connected to MongoDB (animora)");
+    } else {
+      console.log("⚠️ MONGO_URI not set - running without database");
+    }
 
-    const server = app.listen(PORT, () => console.log(`🚀 Animora AI backend running at http://localhost:${PORT}`));
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Animora AI backend running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 
     server.on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
@@ -46,7 +54,20 @@ const PORT = process.env.PORT || 4001;
     });
 
   } catch (err) {
-    console.error('❌ MongoDB connection failed:', err);
-    console.error('The server will not start until MongoDB connection succeeds.');
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.log("⚠️ Starting server anyway...");
+    
+    // Start server even if MongoDB fails
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Animora AI backend running on port ${PORT} (without database)`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} in use`);
+        process.exit(1);
+      }
+      console.error('Server error', err);
+    });
   }
 })();

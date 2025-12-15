@@ -1,7 +1,7 @@
 {
   "name": "animora-veterinary-website",
   "version": "1.0.0",
-  "description": "Animora Veterinary Clinic Website with AI Integration",
+  "description": "Animora Farm Health Website with AI Integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
