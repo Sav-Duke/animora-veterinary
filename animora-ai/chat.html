@@ -75,6 +75,7 @@
       padding: 12px 18px;
       border-radius: 18px;
       word-wrap: break-word;
+      line-height: 1.6;
     }
 
     .message.user .message-bubble {
@@ -88,11 +89,15 @@
       color: #374151;
     }
 
+    .message.ai .message-bubble p {
+      margin: 10px 0;
+    }
+
     .message.ai .message-bubble h1, 
     .message.ai .message-bubble h2,
     .message.ai .message-bubble h3 {
       color: #16A34A;
-      margin: 10px 0 5px 0;
+      margin: 15px 0 10px 0;
     }
 
     .message.ai .message-bubble h1 { font-size: 1.5rem; }
@@ -101,12 +106,13 @@
 
     .message.ai .message-bubble ul,
     .message.ai .message-bubble ol {
-      margin: 10px 0;
+      margin: 12px 0;
       padding-left: 20px;
     }
 
     .message.ai .message-bubble li {
-      margin: 5px 0;
+      margin: 8px 0;
+      line-height: 1.6;
     }
 
     .message.ai .message-bubble strong {
@@ -208,6 +214,37 @@
     }
 
     @media (max-width: 768px) {
+      .chat-messages {
+        padding: 15px;
+      }
+
+      .message-bubble {
+        max-width: 85%;
+        padding: 14px 16px;
+        line-height: 1.7;
+      }
+
+      .message.ai .message-bubble p {
+        margin: 12px 0;
+      }
+
+      .message.ai .message-bubble h1,
+      .message.ai .message-bubble h2,
+      .message.ai .message-bubble h3 {
+        margin: 18px 0 12px 0;
+      }
+
+      .message.ai .message-bubble ul,
+      .message.ai .message-bubble ol {
+        margin: 15px 0;
+        padding-left: 24px;
+      }
+
+      .message.ai .message-bubble li {
+        margin: 10px 0;
+        line-height: 1.7;
+      }
+
       .chat-input-container {
         padding: 10px;
       }
