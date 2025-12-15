@@ -426,8 +426,10 @@
       }
     });
 
-    // Focus input on load
-    chatInput.focus();
+    // Don't auto-focus on mobile to prevent auto-scroll
+    if (window.innerWidth > 768) {
+      chatInput.focus();
+    }
   </script>
 </body>
 </html>
