@@ -47,7 +47,7 @@
     // Load and display staff members dynamically
     async function loadStaff() {
       try {
-        const response = await fetch('/api/staff');
+        const response = await fetch('data/staff.json');
         const staffData = await response.json();
         const container = document.getElementById('staffCards');
         
