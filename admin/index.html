@@ -192,7 +192,7 @@
         <p>Access the complete AI chat system</p>
       </a>
 
-      <a href="http://localhost:4001" target="_blank" class="admin-card database">
+      <a href="/api/chat" target="_blank" class="admin-card database">
         <div class="icon">💾</div>
         <h3>API Backend</h3>
         <p>View backend API status</p>
@@ -365,9 +365,9 @@
         indicators[0].classList.add('offline');
       }
 
-      // Check backend
+      // Check backend (Vercel serverless)
       try {
-        const res = await fetch('http://localhost:4001');
+        const res = await fetch('/api/chat', { method: 'OPTIONS' });
         if (!res.ok) throw new Error();
       } catch (e) {
         indicators[1].classList.remove('online');

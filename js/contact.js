@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // LOAD VETS FROM BACKEND
   // -----------------------------
   async function loadVets() {
-    const url = "/api/fetch-vets.php"; // Local API endpoint
+    const url = "/api/fetch-vets"; // Vercel serverless function
 
     try {
       const res = await fetch(url, {
