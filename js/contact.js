@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // --- Central Form Update Logic ---
-  function updateForm() {
+  function updateForm(triggeredBy) {
     const category = categorySelect.value;
     const animal = animalSelect.value;
     const service = serviceSelect.value;
@@ -112,10 +112,16 @@ document.addEventListener("DOMContentLoaded", function () {
         animalSelect.appendChild(opt);
       });
       animalSelect.disabled = false;
+      animalSelect.style.display = "block";
+      // Reset animal if not valid for new category
+      if (!animals[category].includes(animal)) {
+        animalSelect.value = '';
+      }
     } else {
       animalTypeContainer.style.display = "none";
       animalSelect.innerHTML = "";
       animalSelect.disabled = true;
+      animalSelect.style.display = "none";
     }
 
     // 2. Pet fields
@@ -140,6 +146,10 @@ document.addEventListener("DOMContentLoaded", function () {
         serviceSelect.appendChild(opt);
       });
       serviceSelect.disabled = false;
+      // Reset service if not valid for new category
+      if (!serviceOptions[category].includes(service)) {
+        serviceSelect.value = '';
+      }
     } else {
       serviceSelect.style.display = "none";
       serviceLabel.style.display = "none";
@@ -158,19 +168,26 @@ document.addEventListener("DOMContentLoaded", function () {
         breedSelect.appendChild(opt);
       });
       breedSelect.disabled = false;
+      breedSelect.style.display = "block";
     } else {
       breedContainer.style.display = "none";
       breedSelect.innerHTML = "";
       breedSelect.disabled = true;
+      breedSelect.style.display = "none";
     }
 
-    // 5. Vet availability (exact match)
+    // 5. Ensure Preferred Date is always enabled
+    const dateInput = document.getElementById("date");
+    if (dateInput) dateInput.disabled = false;
+
+    // 6. Vet availability (exact match)
     updateVetNotice();
   }
 
-  categorySelect.addEventListener("change", updateForm);
-  animalSelect.addEventListener("change", updateForm);
-  serviceSelect.addEventListener("change", updateForm);
+  // Defensive: Reset dependent fields on change
+  categorySelect.addEventListener("change", function() { updateForm('category'); });
+  animalSelect.addEventListener("change", function() { updateForm('animal'); });
+  serviceSelect.addEventListener("change", function() { updateForm('service'); });
 
   // --- Accessibility: Keyboard Navigation for Suggestions ---
   let debounceTimer;
