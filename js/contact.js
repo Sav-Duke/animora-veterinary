@@ -1,44 +1,31 @@
-// contact.js — Final Stable (Text-based + Fuzzy Vet Match)
-console.log("✅ contact.js is running");
+// Animora Appointment Form — Enhanced, Modern, and Maintainable
+// Last updated: 2025-12-22
 
-document.addEventListener("DOMContentLoaded", async function () {
-    // PET LOGIC (Single source of truth)
-    const petsContainer = document.getElementById('petsContainer');
-    const petFields = document.getElementById('petFields');
-    const addPetBtn = document.getElementById('addPetBtn');
-    let petCount = 0;
+document.addEventListener("DOMContentLoaded", function () {
+  // --- DOM Elements ---
+  const form = document.getElementById("appointmentForm");
+  const successMessage = document.getElementById("successMessage");
+  const categorySelect = document.getElementById("animalCategory");
+  const animalSelect = document.getElementById("animal");
+  const animalTypeContainer = document.getElementById("animalTypeContainer");
+  const serviceSelect = document.getElementById("service");
+  const serviceLabel = document.getElementById("serviceLabel");
+  const breedContainer = document.getElementById("breedContainer");
+  const breedSelect = document.getElementById("breed");
+  const petsContainer = document.getElementById("petsContainer");
+  const petFields = document.getElementById("petFields");
+  const addPetBtn = document.getElementById("addPetBtn");
+  const locationInput = document.getElementById("location");
+  const suggestions = document.getElementById("suggestions");
+  const vetNotice = document.getElementById("vetNotice");
+  const submitBtn = document.getElementById("submitBtn");
 
-    function addPetField(name = '', type = '') {
-      petCount++;
-      const div = document.createElement('div');
-      div.className = 'pet-entry';
-      div.style.marginBottom = '8px';
-      div.innerHTML = `
-        <input type="text" name="petName${petCount}" placeholder="Pet Name" value="${name}" required style="margin-right:6px;max-width:120px;">
-        <input type="text" name="petType${petCount}" placeholder="Pet Type" value="${type}" required style="max-width:120px;">
-        <button type="button" class="removePetBtn" style="margin-left:6px;">Remove</button>
-      `;
-      petFields.appendChild(div);
-      div.querySelector('.removePetBtn').onclick = function() {
-        div.remove();
-      };
-    }
-
-    if (addPetBtn) {
-      addPetBtn.onclick = function() {
-        addPetField();
-      };
-    }
-
-    // Expose for dynamic logic
-    window.showPetsSection = function(show) {
-      petsContainer.style.display = show ? 'block' : 'none';
-      if (show) {
-        if (petFields.children.length === 0) {
-          // contact.js — Modern, robust, and reliable dynamic form logic
-          console.log("✅ contact.js loaded");
-
-
+  // --- Data ---
+  const animals = {
+    Pet: ["Dog", "Cat", "Rabbit"],
+    Livestock: ["Cattle", "Goat", "Sheep", "Pig"],
+    Equine: ["Horse", "Donkey", "Mule"]
+  };
   const breeds = {
     Dog: ["German Shepherd", "Labrador", "Bulldog", "Beagle"],
     Cat: ["Siamese", "Persian", "Maine Coon"],
@@ -51,20 +38,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     Donkey: ["Standard Donkey", "Miniature Donkey"],
     Mule: ["Draft Mule", "Riding Mule"]
   };
-
-  // -----------------------------
-  // STATE
-  // -----------------------------
-  let vets = [];
-  let currentPlace = null;
-  // Animal types by category
-  const animals = {
-    Pet: ["Dog", "Cat", "Rabbit"],
-    Livestock: ["Cattle", "Goat", "Sheep", "Pig"],
-    Equine: ["Horse", "Donkey", "Mule"]
-  };
-
-  // Service options by animal category/type
   const serviceOptions = {
     Pet: [
       "General Check-up", "Vaccination", "Deworming", "Dental Care", "Grooming", "Microchipping", "Spay and Neuter", "Behavioral Consultation", "Emergency Services", "Consultation", "Follow-up Care"
@@ -76,312 +49,271 @@ document.addEventListener("DOMContentLoaded", async function () {
       "General Check-up", "Vaccination", "Deworming", "Dental Care", "Emergency Services", "Consultation", "Hoof Trimming", "Surgery Consultation", "Ultrasound Imaging", "X-ray Diagnostics", "Wound Care", "Behavioral Consultation", "Follow-up Care"
     ]
   };
-
-  // -----------------------------
-  // HELPERS
-  // -----------------------------
-  function normalizeText(s) {
-    return s
-      ? s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").trim()
-      : "";
-  }
-
-  // Simple Levenshtein distance
-  function levenshtein(a, b) {
-    const m = [];
-    const alen = a.length;
-    const blen = b.length;
-
-    if (!alen) return blen;
-    if (!blen) return alen;
-
-    for (let i = 0; i <= blen; i++) m[i] = [i];
-    for (let j = 0; j <= alen; j++) m[0][j] = j;
-
-    for (let i = 1; i <= blen; i++) {
-      for (let j = 1; j <= alen; j++) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        m[i][j] = Math.min(
-          m[i - 1][j] + 1,
-          m[i][j - 1] + 1,
-          m[i - 1][j - 1] + cost
-        );
-      }
+  const vets = [
+    {
+      name: "Duke",
+      county: "Kakamega",
+      constituency: "Lurambi",
+      services: ["Consultation", "Breed Selection", "Artificial Insemination"]
+    },
+    {
+      name: "Mr Kolian",
+      county: "Kajiado",
+      constituency: "Oloitokitok",
+      services: ["Consultation", "Artificial Insemination"]
+    },
+    {
+      name: "Doc Jaybe",
+      county: "Kisumu",
+      constituency: "Kisumu Central",
+      services: ["Consultation", "Surgery", "Artificial Insemination"]
     }
-    return m[blen][alen];
+  ];
+
+  // --- Pet Fields Logic ---
+  let petCount = 0;
+  function addPetField(name = '', type = '') {
+    petCount++;
+    const div = document.createElement('div');
+    div.className = 'pet-entry';
+    div.innerHTML = `
+      <input type="text" name="petName${petCount}" placeholder="Pet Name" value="${name}" required style="margin-right:6px;max-width:120px;">
+      <input type="text" name="petType${petCount}" placeholder="Pet Type" value="${type}" required style="max-width:120px;">
+      <button type="button" class="removePetBtn" style="margin-left:6px;">Remove</button>
+    `;
+    petFields.appendChild(div);
+    div.querySelector('.removePetBtn').onclick = function() {
+      div.remove();
+      if (petFields.children.length === 0) {
+        addPetField(); // Always keep at least one pet field for Pet category
+      }
+    };
+  }
+  if (addPetBtn) {
+    addPetBtn.onclick = function() {
+      addPetField();
+    };
   }
 
-  function similarity(a, b) {
-    a = normalizeText(a);
-    b = normalizeText(b);
-    if (!a || !b) return 0;
-    const dist = levenshtein(a, b);
-    return 1 - dist / Math.max(a.length, b.length);
-  }
-
-  // -----------------------------
-  // LOAD VETS FROM BACKEND
-  // -----------------------------
-  async function loadVets() {
-    const url = "/api/fetch-vets"; // Vercel serverless function
-
-    try {
-      const res = await fetch(url, {
-        method: "GET",
-        headers: { Accept: "application/json" }
-      });
-
-      const text = await res.text();
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.error("⚠️ Invalid JSON from backend:", text);
-        vets = [];
-        updateVetNotice();
-        return;
-      }
-
-      if (!Array.isArray(data)) {
-        console.warn("⚠️ Invalid vet array structure:", data);
-        vets = [];
-        updateVetNotice();
-        return;
-      }
-
-      // Normalize vets
-      vets = data.map(v => ({
-        id: v.id || `vet_${Math.random().toString(36).slice(2, 9)}`,
-        name: v.name || "",
-        location: v.location || "",
-        services: Array.isArray(v.services)
-          ? v.services
-          : String(v.services || "")
-              .split(",")
-              .map(s => s.trim())
-              .filter(Boolean)
-      }));
-
-      console.log("✅ Vets loaded:", vets);
-      updateVetNotice();
-    } catch (err) {
-      console.error("❌ Error loading vets:", err);
-      vets = [];
-      updateVetNotice();
-    }
-  }
-
-  await loadVets();
-
-  // -----------------------------
-  // FORM SUBMISSION
-  // -----------------------------
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const data = new FormData(form);
-
-    try {
-      const res = await fetch(form.action, {
-        method: form.method,
-        body: data,
-        headers: { Accept: "application/json" }
-      });
-
-      if (res.ok) {
-        successMessage.style.display = "block";
-        setTimeout(() => (successMessage.style.display = "none"), 5000);
-        form.reset();
-        await loadVets();
-      } else {
-        alert("❌ There was a problem submitting your form.");
-      }
-    } catch {
-      alert("❌ Network error submitting your form.");
-    }
-  });
-
-  // -----------------------------
-  // DYNAMIC FORM LOGIC
-  // -----------------------------
+  // --- Central Form Update Logic ---
   function updateForm() {
     const category = categorySelect.value;
-    let animal = animalSelect.value;
-    // Step 1: Animal Category
+    const animal = animalSelect.value;
+    const service = serviceSelect.value;
 
-    if (category) {
+    // 1. Animal dropdown
+    if (animals[category]) {
       animalTypeContainer.style.display = "block";
-      // Only one placeholder, no duplicates
-      animalSelect.innerHTML = '';
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = '-- Select Animal --';
-      animalSelect.appendChild(placeholder);
+      animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
       animals[category].forEach(a => {
         const opt = document.createElement("option");
         opt.value = a;
         opt.textContent = a;
         animalSelect.appendChild(opt);
       });
-      // Show pets section for Pet category
-      if (window.showPetsSection) window.showPetsSection(category === "Pet");
+      animalSelect.disabled = false;
     } else {
       animalTypeContainer.style.display = "none";
       animalSelect.innerHTML = "";
-      if (window.showPetsSection) window.showPetsSection(false);
-      serviceSelect.style.display = "none";
-      serviceLabel.style.display = "none";
-      breedContainer.style.display = "none";
-      breedSelect.innerHTML = "";
-      updateVetNotice();
-      return;
+      animalSelect.disabled = true;
     }
 
-    // Step 2: Animal Type
-    if (animal) {
-      // Step 3: Service Needed (filtered)
+    // 2. Pet fields
+    if (category === "Pet") {
+      petsContainer.style.display = "block";
+      if (petFields.children.length === 0) addPetField();
+    } else {
+      petsContainer.style.display = "none";
+      petFields.innerHTML = "";
+      petCount = 0;
+    }
+
+    // 3. Service dropdown
+    if (category && serviceOptions[category]) {
+      serviceSelect.style.display = "block";
+      serviceLabel.style.display = "block";
       serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
-      (serviceOptions[category] || []).forEach(s => {
+      serviceOptions[category].forEach(s => {
         const opt = document.createElement("option");
         opt.value = s;
         opt.textContent = s;
         serviceSelect.appendChild(opt);
       });
-      serviceSelect.style.display = "block";
-      serviceLabel.style.display = "block";
+      serviceSelect.disabled = false;
     } else {
       serviceSelect.style.display = "none";
       serviceLabel.style.display = "none";
-      breedContainer.style.display = "none";
-      breedSelect.innerHTML = "";
-      updateVetNotice();
-      return;
+      serviceSelect.innerHTML = "";
+      serviceSelect.disabled = true;
     }
 
-    // Step 4: Breed (if needed)
-    const service = serviceSelect.value;
+    // 4. Breed dropdown (only for AI)
     if (service === "Artificial Insemination" && breeds[animal]) {
       breedContainer.style.display = "block";
-      breedSelect.innerHTML = "";
+      breedSelect.innerHTML = "<option value=''>-- Select Breed --</option>";
       breeds[animal].forEach(b => {
         const opt = document.createElement("option");
         opt.value = b;
         opt.textContent = b;
         breedSelect.appendChild(opt);
       });
+      breedSelect.disabled = false;
     } else {
       breedContainer.style.display = "none";
       breedSelect.innerHTML = "";
+      breedSelect.disabled = true;
     }
 
+    // 5. Vet availability (exact match)
     updateVetNotice();
   }
 
   categorySelect.addEventListener("change", updateForm);
   animalSelect.addEventListener("change", updateForm);
   serviceSelect.addEventListener("change", updateForm);
-  // Initial state
-  updateForm();
 
-  // -----------------------------
-  // LOCATION AUTOCOMPLETE
-  // -----------------------------
+  // --- Accessibility: Keyboard Navigation for Suggestions ---
   let debounceTimer;
   let selectedIndex = -1;
-
   locationInput.addEventListener("input", function () {
     const query = this.value.trim();
     clearTimeout(debounceTimer);
     selectedIndex = -1;
-    currentPlace = null;
-
     if (query.length < 3) {
       suggestions.innerHTML = "";
-      updateVetNotice();
       return;
     }
-
-    debounceTimer = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            query
-          )}&addressdetails=1&countrycodes=KE&limit=5`
-        );
-        const data = await res.json();
-        suggestions.innerHTML = "";
-        data.forEach(place => {
-          const li = document.createElement("li");
-          li.textContent = place.display_name;
-          li.addEventListener("click", () => selectSuggestion(place));
-          suggestions.appendChild(li);
+    debounceTimer = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=KE&limit=5`)
+        .then(res => res.json())
+        .then(data => {
+          suggestions.innerHTML = "";
+          data.forEach(place => {
+            const li = document.createElement("li");
+            li.textContent = place.display_name;
+            li.tabIndex = 0;
+            li.addEventListener("click", () => selectSuggestion(place));
+            li.addEventListener("keydown", e => {
+              if (e.key === "Enter" || e.key === " ") {
+                selectSuggestion(place);
+              }
+            });
+            suggestions.appendChild(li);
+          });
         });
-      } catch (err) {
-        console.error("❌ Nominatim error:", err);
-      }
     }, 400);
   });
-
+  locationInput.addEventListener("keydown", function (e) {
+    const items = suggestions.querySelectorAll("li");
+    if (!items.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      selectedIndex = (selectedIndex + 1) % items.length;
+      highlightSuggestion(items);
+      items[selectedIndex].focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+      highlightSuggestion(items);
+      items[selectedIndex].focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (selectedIndex >= 0) {
+        items[selectedIndex].click();
+      }
+    }
+  });
+  function highlightSuggestion(items) {
+    items.forEach((li, i) => {
+      li.style.background = i === selectedIndex ? "#f0f7ff" : "#fff";
+    });
+  }
   function selectSuggestion(place) {
     locationInput.value = place.display_name;
     suggestions.innerHTML = "";
-    currentPlace = place;
     updateForm();
   }
+  document.addEventListener("click", function (e) {
+    if (e.target !== locationInput) suggestions.innerHTML = "";
+  });
 
-  // -----------------------------
-  // VET AVAILABILITY (FUZZY MATCH)
-  // -----------------------------
+  // --- Vet Availability Notice (Exact, No Fuzzy) ---
   function updateVetNotice() {
     if (!vetNotice) return;
-
-    const locationText = locationInput.value.trim();
-    const location = normalizeText(locationText);
-    const service = serviceSelect.value.trim().toLowerCase();
-
     vetNotice.textContent = "";
     vetNotice.className = "vet-notice";
     vetNotice.style.display = "none";
-
-    if (!location) return;
-
-    let matchedVets = vets.filter(v => {
-      const vetLoc = normalizeText(v.location || "");
-      const sim = similarity(location, vetLoc);
-      return sim >= 0.4 || vetLoc.includes(location) || location.includes(vetLoc);
-    });
-
+    const locationText = locationInput.value.trim();
+    const service = serviceSelect.value.trim();
+    if (!locationText) return;
+    const matchedVets = vets.filter(v =>
+      locationText.includes(v.county) || locationText.includes(v.constituency)
+    );
     if (matchedVets.length) {
       if (!service) {
-        vetNotice.textContent = `✅ Vets are available near ${locationInput.value}. Select a service to confirm availability.`;
+        vetNotice.textContent = `✅ Vets are available in ${locationText}. Select a service to confirm availability.`;
         vetNotice.classList.add("success");
       } else {
-        const providers = matchedVets.filter(v =>
-          v.services.some(s => normalizeText(s).includes(normalizeText(service)))
-        );
-
+        const providers = matchedVets.filter(v => v.services.includes(service));
         if (providers.length) {
-          const list = providers
-            .map(v => `<li><strong>${v.name}</strong> — ${v.services.join(", ")}</li>`)
-            .join("");
-          vetNotice.innerHTML = `✅ The following vets provide <b>${service}</b> in ${locationInput.value}:<ul>${list}</ul>`;
+          const names = providers.map(v => v.name).join(", ");
+          vetNotice.textContent = `✅ ${names} provide ${service} in ${locationText}.`;
           vetNotice.classList.add("success");
         } else {
-          vetNotice.textContent = `❌ No vet provides ${service} in ${locationInput.value}.`;
+          vetNotice.textContent = `⚠️ None provides ${service} in ${locationText}.`;
           vetNotice.classList.add("error");
         }
       }
     } else {
-      vetNotice.textContent = `❌ No vet found near ${locationInput.value}.`;
+      vetNotice.textContent = "❌ No vet found for the selected location.";
       vetNotice.classList.add("error");
     }
-
     vetNotice.style.display = "block";
   }
 
-  document.addEventListener("click", e => {
-    if (e.target !== locationInput && suggestions) suggestions.innerHTML = "";
+  // --- Dynamic Validation & Feedback ---
+  form.addEventListener("input", function () {
+    let valid = form.checkValidity();
+    submitBtn.disabled = !valid;
   });
+
+  // --- Form Submission (Formspree) ---
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    const data = new FormData(form);
+    fetch(form.action, {
+      method: form.method,
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(response => {
+        if (response.ok) {
+          successMessage.style.display = "block";
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 5000);
+          form.reset();
+          petFields.innerHTML = "";
+          petCount = 0;
+          updateForm();
+        } else {
+          alert("Oops! There was a problem submitting your form.");
+        }
+      })
+      .catch(() => {
+        alert("Oops! There was a problem submitting your form.");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Appointment';
+      });
+  });
+
+  // --- Initial State ---
+  updateForm();
+  submitBtn.disabled = !form.checkValidity();
 });
 
 
