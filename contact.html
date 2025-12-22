@@ -61,7 +61,9 @@
         </select>
         <div id="animalTypeContainer" style="display:none;">
           <label for="animal">Animal Type</label>
-          <select id="animal" name="animal"></select>
+          <select id="animal" name="animal">
+            <option value="">-- Select Animal --</option>
+          </select>
         </div>
         <div id="petsContainer" style="display:none;">
           <label>Pet(s) Details</label>
@@ -69,10 +71,14 @@
           <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
         </div>
         <label for="service" id="serviceLabel" style="display:none;">Service Needed</label>
-        <select id="service" name="service" required style="display:none;"></select>
+        <select id="service" name="service" required style="display:none;">
+          <option value="">-- Select a Service --</option>
+        </select>
         <div id="breedContainer" style="display:none;">
           <label for="breed">Preferred Breed</label>
-          <select id="breed" name="breed"></select>
+          <select id="breed" name="breed">
+            <option value="">-- Select Breed --</option>
+          </select>
         </div>
         <label for="date">Preferred Date</label>
         <input type="date" id="date" name="date" required aria-label="Preferred Date">
@@ -99,6 +105,21 @@
 
   <!-- Scripts -->
   <script src="js/contact.js"></script>
+  <script>
+    // Fallback: If JS fails, show all fields so user can still submit
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        var jsOk = typeof window.showPetsSection === 'function';
+        if (!jsOk) {
+          document.getElementById('animalTypeContainer').style.display = 'block';
+          document.getElementById('service').style.display = 'block';
+          document.getElementById('serviceLabel').style.display = 'block';
+          document.getElementById('breedContainer').style.display = 'block';
+          document.getElementById('petsContainer').style.display = 'block';
+        }
+      }, 1000);
+    });
+  </script>
   <script src="js/main.js"></script>
   <script src="js/floating-blog.js"></script>
   
