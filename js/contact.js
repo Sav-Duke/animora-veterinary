@@ -331,6 +331,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Initial State ---
   updateForm();
   submitBtn.disabled = !form.checkValidity();
+
+  // --- Robust Fallback: Always show and enable all fields if JS runs ---
+  [animalTypeContainer, petsContainer, serviceSelect, serviceLabel, breedContainer, breedSelect].forEach(el => {
+    if (el) {
+      el.style.display = "block";
+      el.disabled = false;
+    }
+  });
+  const dateInput = document.getElementById("date");
+  if (dateInput) dateInput.disabled = false;
 });
 
 
