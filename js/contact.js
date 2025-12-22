@@ -196,6 +196,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const category = categorySelect.value;
     const animal = animalSelect.value;
     // Step 1: Animal Category
+
     if (category) {
       animalTypeContainer.style.display = "block";
       animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
@@ -205,11 +206,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         opt.textContent = a;
         animalSelect.appendChild(opt);
       });
+      // Show pets section for Pet category
+      if (window.showPetsSection) window.showPetsSection(category === "Pet");
     } else {
       animalTypeContainer.style.display = "none";
       animalSelect.innerHTML = "";
-      petName.style.display = "none";
-      petNameLabel.style.display = "none";
+      if (window.showPetsSection) window.showPetsSection(false);
       serviceSelect.style.display = "none";
       serviceLabel.style.display = "none";
       breedContainer.style.display = "none";
@@ -220,14 +222,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Step 2: Animal Type
     if (animal) {
-      // Show pet name for pets
-      if (category === "Pet") {
-        petName.style.display = "block";
-        petNameLabel.style.display = "block";
-      } else {
-        petName.style.display = "none";
-        petNameLabel.style.display = "none";
-      }
       // Step 3: Service Needed (filtered)
       serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
       (serviceOptions[category] || []).forEach(s => {
@@ -241,8 +235,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
       serviceSelect.style.display = "none";
       serviceLabel.style.display = "none";
-      petName.style.display = "none";
-      petNameLabel.style.display = "none";
       breedContainer.style.display = "none";
       breedSelect.innerHTML = "";
       updateVetNotice();
