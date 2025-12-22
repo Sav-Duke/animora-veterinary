@@ -47,13 +47,13 @@
       <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
       <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
         <label for="ownerName">Your Full Name</label>
-        <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name">
+        <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name" autocomplete="name">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" required aria-label="Email">
+        <input type="email" id="email" name="email" required aria-label="Email" autocomplete="email">
         <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" required aria-label="Phone">
+        <input type="tel" id="phone" name="phone" required aria-label="Phone" autocomplete="tel">
         <label for="animalCategory">Animal Category</label>
-        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category">
+        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category" autocomplete="off">
           <option value="">-- Select Category --</option>
           <option value="Pet">Pet</option>
           <option value="Livestock">Livestock</option>
@@ -61,7 +61,7 @@
         </select>
         <div id="animalTypeContainer">
           <label for="animal">Animal Type</label>
-          <select id="animal" name="animal">
+          <select id="animal" name="animal" autocomplete="off">
             <option value="">-- Select Animal --</option>
           </select>
         </div>
@@ -71,24 +71,24 @@
           <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
         </div>
         <label for="service" id="serviceLabel">Service Needed</label>
-        <select id="service" name="service" required>
+        <select id="service" name="service" required autocomplete="off">
           <option value="">-- Select a Service --</option>
         </select>
         <div id="breedContainer">
           <label for="breed">Preferred Breed</label>
-          <select id="breed" name="breed">
+          <select id="breed" name="breed" autocomplete="off">
             <option value="">-- Select Breed --</option>
           </select>
         </div>
         <label for="date">Preferred Date</label>
-        <input type="date" id="date" name="date" required aria-label="Preferred Date">
+        <input type="date" id="date" name="date" required aria-label="Preferred Date" autocomplete="bday">
         <label for="time">Preferred Time</label>
-        <input type="time" id="time" name="time" required aria-label="Preferred Time">
+        <input type="time" id="time" name="time" required aria-label="Preferred Time" autocomplete="off">
         <label for="location">Location</label>
-        <input type="text" id="location" name="location" placeholder="Start typing your location..." aria-label="Location">
+        <input type="text" id="location" name="location" placeholder="Start typing your location..." aria-label="Location" autocomplete="address-level2">
         <ul id="suggestions" class="suggestions-dropdown"></ul>
         <label for="notes">Additional Notes</label>
-        <textarea id="notes" name="notes" aria-label="Additional Notes"></textarea>
+        <textarea id="notes" name="notes" aria-label="Additional Notes" autocomplete="off"></textarea>
         <div id="vetNotice" class="vet-notice"></div>
         <button type="submit" id="submitBtn">Submit Appointment</button>
       </form>
