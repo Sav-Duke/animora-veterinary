@@ -99,50 +99,6 @@
 
   <!-- Scripts -->
   <script src="js/contact.js"></script>
-    <script>
-      // Add support for multiple pets in the form
-      document.addEventListener('DOMContentLoaded', function() {
-        const petsContainer = document.getElementById('petsContainer');
-        const petFields = document.getElementById('petFields');
-        const addPetBtn = document.getElementById('addPetBtn');
-        let petCount = 0;
-
-        function addPetField(name = '', type = '') {
-          petCount++;
-          const div = document.createElement('div');
-          div.className = 'pet-entry';
-          div.style.marginBottom = '8px';
-          div.innerHTML = `
-            <input type="text" name="petName${petCount}" placeholder="Pet Name" value="${name}" required style="margin-right:6px;max-width:120px;">
-            <input type="text" name="petType${petCount}" placeholder="Pet Type" value="${type}" required style="max-width:120px;">
-            <button type="button" class="removePetBtn" style="margin-left:6px;">Remove</button>
-          `;
-          petFields.appendChild(div);
-          div.querySelector('.removePetBtn').onclick = function() {
-            div.remove();
-          };
-        }
-
-        addPetBtn.onclick = function() {
-          addPetField();
-        };
-
-        // Expose for JS logic
-        window.showPetsSection = function(show) {
-          petsContainer.style.display = show ? 'block' : 'none';
-          if (show && petFields.children.length === 0) addPetField();
-          if (!show) petFields.innerHTML = '';
-        };
-        // Prevent form submit if Pet category and no pets
-        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
-          const category = document.getElementById('animalCategory').value;
-          if (category === 'Pet' && petFields.children.length === 0) {
-            alert('Please add at least one pet.');
-            e.preventDefault();
-          }
-        });
-      });
-    </script>
   <script src="js/main.js"></script>
   <script src="js/floating-blog.js"></script>
   
