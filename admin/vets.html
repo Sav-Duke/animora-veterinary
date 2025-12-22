@@ -713,7 +713,7 @@
       const container = document.getElementById('vetsContainer');
       
       try {
-        const response = await fetch(`${API_BASE}/api/fetch-vets.php`);
+          const response = await fetch(`${API_BASE}/api/fetch-vets`);
         const data = await response.json();
         vets = data;
         
@@ -842,7 +842,7 @@
 
       // Save to file
       try {
-        await fetch(`${API_BASE}/api/save-vet.php`, {
+          await fetch(`${API_BASE}/api/save-vet.php`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(vets)
@@ -870,7 +870,7 @@
       vets = vets.filter(v => v.id !== id);
 
       try {
-        await fetch(`${API_BASE}/api/save-vet.php`, {
+          await fetch(`${API_BASE}/api/save-vet.php`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(vets)
