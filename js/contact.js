@@ -199,12 +199,17 @@ document.addEventListener("DOMContentLoaded", async function () {
   // -----------------------------
   function updateForm() {
     const category = categorySelect.value;
-    const animal = animalSelect.value;
+    let animal = animalSelect.value;
     // Step 1: Animal Category
 
     if (category) {
       animalTypeContainer.style.display = "block";
-      animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
+      // Only one placeholder, no duplicates
+      animalSelect.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- Select Animal --';
+      animalSelect.appendChild(placeholder);
       animals[category].forEach(a => {
         const opt = document.createElement("option");
         opt.value = a;
