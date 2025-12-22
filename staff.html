@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="styles/mediaqueries.css">
 </head>
 <body>
+    <!-- Global Loading Spinner -->
+    <div id="globalLoading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;align-items:center;justify-content:center;">
+      <div style="border:6px solid #f3f3f3;border-top:6px solid #16A34A;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;"></div>
+      <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
+    </div>
   <header>
     <h1 class="logo">Animora <span class="sub">Farm Health</span></h1>
     <nav>
@@ -43,6 +48,15 @@
 
   <script src="js/main.js"></script>
   <script src="js/staff.js"></script>
+    <!-- Global Error Handler & Loading Spinner Logic -->
+    <script>
+      function showLoading() { document.getElementById('globalLoading').style.display = 'flex'; }
+      function hideLoading() { document.getElementById('globalLoading').style.display = 'none'; }
+      const origFetch = window.fetch;
+      window.fetch = function(...args) { showLoading(); return origFetch.apply(this, args).finally(hideLoading); };
+      window.addEventListener('error', function(e) { alert('An unexpected error occurred. Please try again or contact support.'); });
+      window.addEventListener('unhandledrejection', function(e) { alert('A network or script error occurred. Please check your connection or try again.'); });
+    </script>
   <script>
     // Load and display staff members dynamically
     async function loadStaff() {
