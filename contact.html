@@ -2,21 +2,34 @@
 <html lang="en">
 <head>
     <style>
-      /* Fix horizontal overflow on mobile */
+      /* Fix persistent horizontal line/overflow on all devices */
       html, body {
-        max-width: 100vw;
-        overflow-x: hidden;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        position: relative;
+      }
+      body {
+        background-attachment: fixed;
+      }
+      .contact-section {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        margin: 0;
+        padding: 0;
+        position: relative;
       }
       .form-container {
         box-sizing: border-box;
-        max-width: 100%;
+        max-width: 480px;
         width: 100%;
         margin: 0 auto;
         padding: 20px 10px;
-      }
-      .contact-section {
-        width: 100vw;
-        overflow-x: hidden;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+        border: none;
       }
       input, select, textarea {
         max-width: 100%;
@@ -24,6 +37,16 @@
       }
       /* Remove any accidental horizontal scrollbars */
       ::-webkit-scrollbar:horizontal { display: none; }
+      /* Remove any border or shadow that could cause a line */
+      .contact-section, .form-container {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      /* Prevent ghost lines from ::after or ::before */
+      .contact-section::after, .contact-section::before, .form-container::after, .form-container::before {
+        display: none !important;
+        content: none !important;
+      }
     </style>
   <meta charset="UTF-8">
   <title>Appointments | Animora Farm Health</title>
