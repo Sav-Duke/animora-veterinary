@@ -628,7 +628,8 @@
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:8080';
+    // Use current origin for API base (works for both local and production)
+    const API_BASE = window.location.origin;
     let vets = [];
 
     // Custom Alert/Confirm Functions
