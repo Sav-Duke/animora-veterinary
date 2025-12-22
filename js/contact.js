@@ -35,54 +35,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       petsContainer.style.display = show ? 'block' : 'none';
       if (show) {
         if (petFields.children.length === 0) {
-          petCount = 0;
-          addPetField();
-        }
-      } else {
-        petFields.innerHTML = '';
-        petCount = 0;
-      }
-    };
+          // contact.js — Modern, robust, and reliable dynamic form logic
+          console.log("✅ contact.js loaded");
 
-    // Prevent form submit if Pet category and no pets
-    form.addEventListener('submit', function(e) {
-      const category = categorySelect.value;
-      if (category === 'Pet' && petFields.children.length === 0) {
-        alert('Please add at least one pet.');
-        e.preventDefault();
-      }
-    });
-  // -----------------------------
-  // DOM ELEMENTS
-  // -----------------------------
-  const form = document.getElementById("appointmentForm");
-  const successMessage = document.getElementById("successMessage");
-  const categorySelect = document.getElementById("animalCategory");
-  const animalSelect = document.getElementById("animal");
-  const animalTypeContainer = document.getElementById("animalTypeContainer");
-  const serviceSelect = document.getElementById("service");
-  const breedContainer = document.getElementById("breedContainer");
-  const breedSelect = document.getElementById("breed");
-  const petName = document.getElementById("petName");
-  const petNameLabel = document.getElementById("petNameLabel");
-  const serviceLabel = document.getElementById("serviceLabel");
-  const locationInput = document.getElementById("location");
-  const suggestions = document.getElementById("suggestions");
-  const vetNotice = document.getElementById("vetNotice");
-
-  if (!form || !locationInput) {
-    console.error("❌ Required DOM elements missing — aborting contact.js init.");
-    return;
-  }
-
-  // -----------------------------
-  // STATIC ANIMAL CATEGORIES
-  // -----------------------------
-  const animals = {
-    Pet: ["Dog", "Cat", "Rabbit"],
-    Livestock: ["Cattle", "Goat", "Sheep", "Pig"],
-    Equine: ["Horse", "Donkey", "Mule"]
-  };
 
   const breeds = {
     Dog: ["German Shepherd", "Labrador", "Bulldog", "Beagle"],
