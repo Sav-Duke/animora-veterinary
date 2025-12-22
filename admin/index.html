@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+      .help-icon {
+        display: inline-block;
+        margin-left: 6px;
+        color: #16A34A;
+        font-size: 1.1rem;
+        cursor: pointer;
+        vertical-align: middle;
+        transition: color 0.2s;
+      }
+      .help-icon:hover {
+        color: #15803d;
+      }
+      .tooltip {
+        display: none;
+        position: absolute;
+        background: #fff;
+        color: #222;
+        border: 1px solid #16A34A;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 0.98rem;
+        z-index: 1000;
+        box-shadow: 0 2px 12px rgba(22,163,74,0.08);
+        max-width: 260px;
+        line-height: 1.5;
+      }
+    </style>
   <meta charset="UTF-8">
   <title>Admin Panel | Animora Farm Health</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -185,144 +213,117 @@
       <p>Manage your Farm Health's AI system and website</p>
     </div>
 
-    <div class="admin-grid">
-      <a href="../animora-ai/chat.html" target="_blank" class="admin-card ai">
-        <div class="icon">🤖</div>
-        <h3>Animora AI</h3>
-        <p>Access the complete AI chat system</p>
-      </a>
+    <div class="admin-grid" id="adminGrid">
+      <!-- Admin cards with help icons will be injected by JS for tooltips -->
+      <div id="tooltip" class="tooltip"></div>
+        // Help text for each admin feature
+        const adminHelp = [
+          { title: 'Animora AI', help: 'Access the conversational AI chat system for animal health queries and support.' },
+          { title: 'API Backend', help: 'Check the status and logs of the backend API powering the site and AI.' },
+          { title: 'Main Website', help: 'View the public-facing website as visitors see it.' },
+          { title: 'Disease Database', help: 'Add, edit, or remove disease information for the AI and website.' },
+          { title: 'Manage Vets', help: 'Add, update, or remove veterinarians displayed on the website.' },
+          { title: 'Manage Team', help: 'Edit staff/team members shown on the public site.' },
+          { title: 'Manage Services', help: 'Edit the list of veterinary services offered.' },
+          { title: 'Contact Info', help: 'Update clinic contact details, phone numbers, and hours.' },
+          { title: 'About Content', help: 'Edit the About page content and mission statement.' },
+          { title: 'Settings', help: 'Configure security, ports, and other admin settings.' },
+          { title: 'Appointments', help: 'View and manage appointment bookings.' },
+          { title: 'Testimonials', help: 'Manage client reviews and testimonials.' },
+          { title: 'Photo Gallery', help: 'Upload and organize images for the website gallery.' },
+          { title: 'Quick Stats', help: 'View analytics and quick statistics for the website.' },
+          { title: 'Notifications', help: 'See recent activity and alerts for the site.' },
+          { title: 'File Manager', help: 'Browse and manage uploaded files and documents.' },
+          { title: 'Floating Blog Button', help: 'Configure the floating blog link button on the public site.' },
+          { title: 'Site Health Check', help: 'Monitor site integrity, uptime, and issues.' },
+          { title: 'Security Scanner', help: 'Scan for vulnerabilities and security threats.' },
+          { title: 'SEO Optimizer', help: 'Optimize site content for better search engine ranking.' },
+          { title: 'Backup & Restore', help: 'Manage automated backups and restore site data.' },
+          { title: 'Performance Monitor', help: 'Check speed and optimization metrics.' },
+          { title: 'Code Validator', help: 'Validate HTML, CSS, and JS code quality.' }
+        ];
 
-      <a href="/api/chat" target="_blank" class="admin-card database">
-        <div class="icon">💾</div>
-        <h3>API Backend</h3>
-        <p>View backend API status</p>
-      </a>
+        // Card HTML for admin features with help icons
+        const adminCards = [
+          { href: '../animora-ai/chat.html', icon: '🤖', title: 'Animora AI', desc: 'Access the complete AI chat system', cls: 'ai', target: '_blank' },
+          { href: '/api/chat', icon: '💾', title: 'API Backend', desc: 'View backend API status', cls: 'database', target: '_blank' },
+          { href: '../index.html', icon: '🌐', title: 'Main Website', desc: 'View public website', cls: 'website' },
+          { href: '/admin/diseases.html', icon: '🦠', title: 'Disease Database', desc: 'Manage disease information', cls: 'analytics' },
+          { href: '/admin/vets.html', icon: '👨‍⚕️', title: 'Manage Vets', desc: 'Add and manage veterinarians' },
+          { href: '/admin/staff-manager.html', icon: '👥', title: 'Manage Team', desc: 'Edit staff/team members on website', cls: 'website' },
+          { href: '/admin/services-manager.html', icon: '🏥', title: 'Manage Services', desc: 'Edit services offered on website', cls: 'ai' },
+          { href: '/admin/contact-manager.html', icon: '📞', title: 'Contact Info', desc: 'Update contact details & hours', cls: 'database' },
+          { href: '/admin/about-manager.html', icon: '📝', title: 'About Content', desc: 'Edit about page content', cls: 'analytics' },
+          { href: '/admin/settings.html', icon: '⚙️', title: 'Settings', desc: 'Security & configuration', cls: 'website' },
+          { href: '/admin/appointments.html', icon: '📅', title: 'Appointments', desc: 'View & manage bookings', cls: 'ai' },
+          { href: '/admin/testimonials.html', icon: '⭐', title: 'Testimonials', desc: 'Manage client reviews', cls: 'database' },
+          { href: '/admin/gallery.html', icon: '📸', title: 'Photo Gallery', desc: 'Upload & organize images', cls: 'analytics' },
+          { href: '/admin/quick-stats.html', icon: '📊', title: 'Quick Stats', desc: 'View website analytics' },
+          { href: '/admin/notifications.html', icon: '🔔', title: 'Notifications', desc: 'Recent activity & alerts', cls: 'website' },
+          { href: '/admin/file-manager.html', icon: '📁', title: 'File Manager', desc: 'Browse & manage files', cls: 'ai' },
+          { href: '/admin/floating-blog.html', icon: '📝', title: 'Floating Blog Button', desc: 'Configure blog link button', cls: 'database' },
+          { href: '/admin/site-health.html', icon: '🏥', title: 'Site Health Check', desc: 'Monitor site integrity & issues', cls: 'ai' },
+          { href: '/admin/security-scanner.html', icon: '🔒', title: 'Security Scanner', desc: 'Detect vulnerabilities & threats', cls: 'analytics' },
+          { href: '/admin/seo-optimizer.html', icon: '🚀', title: 'SEO Optimizer', desc: 'Improve Google ranking' },
+          { href: '/admin/backup-restore.html', icon: '💾', title: 'Backup & Restore', desc: 'Automated backups & recovery', cls: 'website' },
+          { href: '/admin/performance-monitor.html', icon: '⚡', title: 'Performance Monitor', desc: 'Speed & optimization metrics', cls: 'database' },
+          { href: '/admin/code-validator.html', icon: '✅', title: 'Code Validator', desc: 'Check HTML/CSS/JS quality', cls: 'ai' }
+        ];
 
-      <a href="../index.html" class="admin-card website">
-        <div class="icon">🌐</div>
-        <h3>Main Website</h3>
-        <p>View public website</p>
-      </a>
+        // Inject admin cards with help icons
+        function renderAdminCards() {
+          const grid = document.getElementById('adminGrid');
+          grid.innerHTML = '';
+          adminCards.forEach((card, i) => {
+            const a = document.createElement('a');
+            a.href = card.href;
+            a.className = 'admin-card' + (card.cls ? ' ' + card.cls : '');
+            if (card.target) a.target = card.target;
+            a.innerHTML = `
+              <div class="icon">${card.icon}</div>
+              <h3>${card.title} <span class="help-icon" data-index="${i}" tabindex="0" aria-label="Help">❓</span></h3>
+              <p>${card.desc}</p>
+            `;
+            grid.appendChild(a);
+          });
+        }
 
-      <a href="/admin/diseases.html" class="admin-card analytics">
-        <div class="icon">🦠</div>
-        <h3>Disease Database</h3>
-        <p>Manage disease information</p>
-      </a>
+        // Tooltip logic
+        function setupTooltips() {
+          const tooltip = document.getElementById('tooltip');
+          document.querySelectorAll('.help-icon').forEach(icon => {
+            icon.addEventListener('mouseenter', function(e) {
+              const idx = this.getAttribute('data-index');
+              tooltip.textContent = adminHelp[idx]?.help || '';
+              const rect = this.getBoundingClientRect();
+              tooltip.style.display = 'block';
+              tooltip.style.left = (rect.left + window.scrollX + 24) + 'px';
+              tooltip.style.top = (rect.top + window.scrollY - 8) + 'px';
+            });
+            icon.addEventListener('mouseleave', function() {
+              tooltip.style.display = 'none';
+            });
+            icon.addEventListener('focus', function(e) {
+              const idx = this.getAttribute('data-index');
+              tooltip.textContent = adminHelp[idx]?.help || '';
+              const rect = this.getBoundingClientRect();
+              tooltip.style.display = 'block';
+              tooltip.style.left = (rect.left + window.scrollX + 24) + 'px';
+              tooltip.style.top = (rect.top + window.scrollY - 8) + 'px';
+            });
+            icon.addEventListener('blur', function() {
+              tooltip.style.display = 'none';
+            });
+          });
+          // Hide tooltip on scroll
+          window.addEventListener('scroll', () => { tooltip.style.display = 'none'; });
+        }
 
-      <a href="/admin/vets.html" class="admin-card">
-        <div class="icon">👨‍⚕️</div>
-        <h3>Manage Vets</h3>
-        <p>Add and manage veterinarians</p>
-      </a>
-
-      <a href="/admin/staff-manager.html" class="admin-card website">
-        <div class="icon">👥</div>
-        <h3>Manage Team</h3>
-        <p>Edit staff/team members on website</p>
-      </a>
-
-      <a href="/admin/services-manager.html" class="admin-card ai">
-        <div class="icon">🏥</div>
-        <h3>Manage Services</h3>
-        <p>Edit services offered on website</p>
-      </a>
-
-      <a href="/admin/contact-manager.html" class="admin-card database">
-        <div class="icon">📞</div>
-        <h3>Contact Info</h3>
-        <p>Update contact details & hours</p>
-      </a>
-
-      <a href="/admin/about-manager.html" class="admin-card analytics">
-        <div class="icon">📝</div>
-        <h3>About Content</h3>
-        <p>Edit about page content</p>
-      </a>
-
-      <a href="/admin/settings.html" class="admin-card website">
-        <div class="icon">⚙️</div>
-        <h3>Settings</h3>
-        <p>Security & configuration</p>
-      </a>
-
-      <a href="/admin/appointments.html" class="admin-card ai">
-        <div class="icon">📅</div>
-        <h3>Appointments</h3>
-        <p>View & manage bookings</p>
-      </a>
-
-      <a href="/admin/testimonials.html" class="admin-card database">
-        <div class="icon">⭐</div>
-        <h3>Testimonials</h3>
-        <p>Manage client reviews</p>
-      </a>
-
-      <a href="/admin/gallery.html" class="admin-card analytics">
-        <div class="icon">📸</div>
-        <h3>Photo Gallery</h3>
-        <p>Upload & organize images</p>
-      </a>
-
-      <a href="/admin/quick-stats.html" class="admin-card">
-        <div class="icon">📊</div>
-        <h3>Quick Stats</h3>
-        <p>View website analytics</p>
-      </a>
-
-      <a href="/admin/notifications.html" class="admin-card website">
-        <div class="icon">🔔</div>
-        <h3>Notifications</h3>
-        <p>Recent activity & alerts</p>
-      </a>
-
-      <a href="/admin/file-manager.html" class="admin-card ai">
-        <div class="icon">📁</div>
-        <h3>File Manager</h3>
-        <p>Browse & manage files</p>
-      </a>
-
-      <a href="/admin/floating-blog.html" class="admin-card database">
-        <div class="icon">📝</div>
-        <h3>Floating Blog Button</h3>
-        <p>Configure blog link button</p>
-      </a>
-
-      <a href="/admin/site-health.html" class="admin-card ai">
-        <div class="icon">🏥</div>
-        <h3>Site Health Check</h3>
-        <p>Monitor site integrity & issues</p>
-      </a>
-
-      <a href="/admin/security-scanner.html" class="admin-card analytics">
-        <div class="icon">🔒</div>
-        <h3>Security Scanner</h3>
-        <p>Detect vulnerabilities & threats</p>
-      </a>
-
-      <a href="/admin/seo-optimizer.html" class="admin-card">
-        <div class="icon">🚀</div>
-        <h3>SEO Optimizer</h3>
-        <p>Improve Google ranking</p>
-      </a>
-
-      <a href="/admin/backup-restore.html" class="admin-card website">
-        <div class="icon">💾</div>
-        <h3>Backup & Restore</h3>
-        <p>Automated backups & recovery</p>
-      </a>
-
-      <a href="/admin/performance-monitor.html" class="admin-card database">
-        <div class="icon">⚡</div>
-        <h3>Performance Monitor</h3>
-        <p>Speed & optimization metrics</p>
-      </a>
-
-      <a href="/admin/code-validator.html" class="admin-card ai">
-        <div class="icon">✅</div>
-        <h3>Code Validator</h3>
-        <p>Check HTML/CSS/JS quality</p>
-      </a>
+        window.addEventListener('DOMContentLoaded', function() {
+          renderAdminCards();
+          setupTooltips();
+          // ...existing code...
+        });
     </div>
 
     <div class="status-bar">
@@ -376,7 +377,38 @@
         indicators[1].classList.remove('online');
         indicators[1].classList.add('offline');
       }
-      // TODO: Add real checks for MongoDB, AI Provider, CMS if endpoints exist
+      // MongoDB status check
+      try {
+        const res = await fetch('/api/mongo-status', { method: 'GET' });
+        if (!res.ok) throw new Error();
+        indicators[2].classList.remove('offline');
+        indicators[2].classList.add('online');
+      } catch (e) {
+        indicators[2].classList.remove('online');
+        indicators[2].classList.add('offline');
+      }
+
+      // AI Provider status check
+      try {
+        const res = await fetch('/api/ai-provider-status', { method: 'GET' });
+        if (!res.ok) throw new Error();
+        indicators[3].classList.remove('offline');
+        indicators[3].classList.add('online');
+      } catch (e) {
+        indicators[3].classList.remove('online');
+        indicators[3].classList.add('offline');
+      }
+
+      // CMS status check
+      try {
+        const res = await fetch('/api/cms-status', { method: 'GET' });
+        if (!res.ok) throw new Error();
+        indicators[4].classList.remove('offline');
+        indicators[4].classList.add('online');
+      } catch (e) {
+        indicators[4].classList.remove('online');
+        indicators[4].classList.add('offline');
+      }
     }
 
     // Add Fix Suggestion button logic (improved for page errors)
