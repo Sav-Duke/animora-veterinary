@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Appointment Form</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    .form-container { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);}
+    select, input, button { display: block; width: 100%; margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <form id="appointmentForm">
+      <label for="animalCategory">Animal Category</label>
+      <select id="animalCategory" name="animalCategory">
+        <option value="">-- Select Category --</option>
+        <option value="Pet">Pet</option>
+        <option value="Livestock">Livestock</option>
+        <option value="Equine">Equine</option>
+      </select>
+      <label for="animal">Animal Type</label>
+      <select id="animal" name="animal">
+        <option value="">-- Select Animal --</option>
+      </select>
+      <label for="service">Service Needed</label>
+      <select id="service" name="service">
+        <option value="">-- Select a Service --</option>
+      </select>
+      <label for="date">Preferred Date</label>
+      <input type="date" id="date" name="date">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <script>
+    const animals = {
+      Pet: ["Dog", "Cat", "Rabbit"],
+      Livestock: ["Cattle", "Goat", "Sheep", "Pig"],
+      Equine: ["Horse", "Donkey", "Mule"]
+    };
+    const serviceOptions = {
+      Pet: ["General Check-up", "Vaccination"],
+      Livestock: ["General Check-up", "Artificial Insemination"],
+      Equine: ["General Check-up", "Hoof Trimming"]
+    };
+    const categorySelect = document.getElementById("animalCategory");
+    const animalSelect = document.getElementById("animal");
+    const serviceSelect = document.getElementById("service");
+    categorySelect.addEventListener("change", function() {
+      const category = categorySelect.value;
+      animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
+      (animals[category] || []).forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.textContent = a;
+        animalSelect.appendChild(opt);
+      });
+      serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
+      (serviceOptions[category] || []).forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        serviceSelect.appendChild(opt);
+      });
+    });
+  </script>
+</body>
+</html>
