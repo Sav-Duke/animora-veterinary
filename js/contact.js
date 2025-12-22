@@ -57,6 +57,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   // -----------------------------
   let vets = [];
   let currentPlace = null;
+  // Animal types by category
+  const animals = {
+    Pet: ["Dog", "Cat", "Rabbit"],
+    Livestock: ["Cattle", "Goat", "Sheep", "Pig"],
+    Equine: ["Horse", "Donkey", "Mule"]
+  };
+
   // Service options by animal category/type
   const serviceOptions = {
     Pet: [
