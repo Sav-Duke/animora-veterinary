@@ -11,9 +11,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   const animalSelect = document.getElementById("animal");
   const animalTypeContainer = document.getElementById("animalTypeContainer");
   const serviceSelect = document.getElementById("service");
-  const petServicesContainer = document.getElementById("petServicesContainer");
   const breedContainer = document.getElementById("breedContainer");
   const breedSelect = document.getElementById("breed");
+  const petName = document.getElementById("petName");
+  const petNameLabel = document.getElementById("petNameLabel");
+  const serviceLabel = document.getElementById("serviceLabel");
   const locationInput = document.getElementById("location");
   const suggestions = document.getElementById("suggestions");
   const vetNotice = document.getElementById("vetNotice");
@@ -50,6 +52,18 @@ document.addEventListener("DOMContentLoaded", async function () {
   // -----------------------------
   let vets = [];
   let currentPlace = null;
+  // Service options by animal category/type
+  const serviceOptions = {
+    Pet: [
+      "General Check-up", "Vaccination", "Deworming", "Dental Care", "Grooming", "Microchipping", "Spay and Neuter", "Behavioral Consultation", "Emergency Services", "Consultation", "Follow-up Care"
+    ],
+    Livestock: [
+      "General Check-up", "Vaccination", "Deworming", "Artificial Insemination", "Lab Test", "Breed Selection", "Surgery Consultation", "Dental Care", "Emergency Services", "Parasite Control", "Nutritional Planning", "Reproductive Health Monitoring", "Pregnancy Diagnosis", "Ultrasound Imaging", "X-ray Diagnostics", "Herd Health Management", "Farm Visits", "Biosecurity Assessment", "Housing and Hygiene Evaluation", "Neonatal Care", "Hoof Trimming", "Castration", "Dehorning", "Wound Care", "Chronic Disease Management", "Milk Testing", "Fecal Analysis", "Blood Tests", "Disease Screening", "Postmortem Examination", "Consultation", "Follow-up Care"
+    ],
+    Equine: [
+      "General Check-up", "Vaccination", "Deworming", "Dental Care", "Emergency Services", "Consultation", "Hoof Trimming", "Surgery Consultation", "Ultrasound Imaging", "X-ray Diagnostics", "Wound Care", "Behavioral Consultation", "Follow-up Care"
+    ]
+  };
 
   // -----------------------------
   // HELPERS
@@ -181,9 +195,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   function updateForm() {
     const category = categorySelect.value;
     const animal = animalSelect.value;
-    const service = serviceSelect.value;
-
-    if (animals[category]) {
+    // Step 1: Animal Category
+    if (category) {
       animalTypeContainer.style.display = "block";
       animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
       animals[category].forEach(a => {
@@ -192,14 +205,52 @@ document.addEventListener("DOMContentLoaded", async function () {
         opt.textContent = a;
         animalSelect.appendChild(opt);
       });
-      if (animals[category].includes(animal)) animalSelect.value = animal;
     } else {
       animalTypeContainer.style.display = "none";
       animalSelect.innerHTML = "";
+      petName.style.display = "none";
+      petNameLabel.style.display = "none";
+      serviceSelect.style.display = "none";
+      serviceLabel.style.display = "none";
+      breedContainer.style.display = "none";
+      breedSelect.innerHTML = "";
+      updateVetNotice();
+      return;
     }
 
-    petServicesContainer.style.display = category === "Pet" ? "block" : "none";
+    // Step 2: Animal Type
+    if (animal) {
+      // Show pet name for pets
+      if (category === "Pet") {
+        petName.style.display = "block";
+        petNameLabel.style.display = "block";
+      } else {
+        petName.style.display = "none";
+        petNameLabel.style.display = "none";
+      }
+      // Step 3: Service Needed (filtered)
+      serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
+      (serviceOptions[category] || []).forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        serviceSelect.appendChild(opt);
+      });
+      serviceSelect.style.display = "block";
+      serviceLabel.style.display = "block";
+    } else {
+      serviceSelect.style.display = "none";
+      serviceLabel.style.display = "none";
+      petName.style.display = "none";
+      petNameLabel.style.display = "none";
+      breedContainer.style.display = "none";
+      breedSelect.innerHTML = "";
+      updateVetNotice();
+      return;
+    }
 
+    // Step 4: Breed (if needed)
+    const service = serviceSelect.value;
     if (service === "Artificial Insemination" && breeds[animal]) {
       breedContainer.style.display = "block";
       breedSelect.innerHTML = "";
@@ -220,6 +271,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   categorySelect.addEventListener("change", updateForm);
   animalSelect.addEventListener("change", updateForm);
   serviceSelect.addEventListener("change", updateForm);
+  // Initial state
+  updateForm();
 
   // -----------------------------
   // LOCATION AUTOCOMPLETE

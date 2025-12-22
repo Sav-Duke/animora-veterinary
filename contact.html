@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+      /* Fix horizontal overflow on mobile */
+      html, body {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+      .form-container {
+        box-sizing: border-box;
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px 10px;
+      }
+      .contact-section {
+        width: 100vw;
+        overflow-x: hidden;
+      }
+      input, select, textarea {
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      /* Remove any accidental horizontal scrollbars */
+      ::-webkit-scrollbar:horizontal { display: none; }
+    </style>
   <meta charset="UTF-8">
   <title>Appointments | Animora Farm Health</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +84,7 @@
         <label for="phone">Phone</label>
         <input type="tel" id="phone" name="phone" required>
 
-        <!-- Animal Info -->
+        <!-- Animal Info (Progressive) -->
         <label for="animalCategory">Animal Category</label>
         <select id="animalCategory" name="animalCategory" required>
           <option value="">-- Select Category --</option>
@@ -74,64 +98,12 @@
           <select id="animal" name="animal"></select>
         </div>
 
-        <label for="petName">Pet's Name (if applicable)</label>
-        <input type="text" id="petName" name="petName">
+        <label for="petName" id="petNameLabel" style="display:none;">Pet's Name (if applicable)</label>
+        <input type="text" id="petName" name="petName" style="display:none;">
 
-        <!-- Pet Services -->
-        <div id="petServicesContainer" style="display:none;">
-          <label for="petService">Pet Service</label>
-          <select id="petService" name="petService">
-            <option value="">-- Select Pet Service --</option>
-            <option>Grooming</option>
-            <option>Vaccination</option>
-            <option>Deworming</option>
-            <option>Dental Care</option>
-          </select>
-        </div>
-
-        <!-- Services -->
-        <label for="service">Service Needed</label>
-        <select id="service" name="service" required>
-          <option value="">-- Select a Service --</option>
-          <option>General Check-up</option>
-          <option>Vaccination</option>
-          <option>Treatment</option>
-          <option>Artificial Insemination</option>
-          <option>Lab Test</option>
-          <option>Consultation</option>
-          <option>Breed Selection</option>
-          <option>Surgery Consultation</option>
-          <option>Dental Care</option>
-          <option>Emergency Services</option>
-          <option>Parasite Control</option>
-          <option>Deworming</option>
-          <option>Nutritional Planning</option>
-          <option>Reproductive Health Monitoring</option>
-          <option>Pregnancy Diagnosis</option>
-          <option>Ultrasound Imaging</option>
-          <option>X-ray Diagnostics</option>
-          <option>Herd Health Management</option>
-          <option>Farm Visits</option>
-          <option>Biosecurity Assessment</option>
-          <option>Housing and Hygiene Evaluation</option>
-          <option>Neonatal Care</option>
-          <option>Hoof Trimming</option>
-          <option>Castration</option>
-          <option>Dehorning</option>
-          <option>Wound Care</option>
-          <option>Chronic Disease Management</option>
-          <option>Milk Testing</option>
-          <option>Fecal Analysis</option>
-          <option>Blood Tests</option>
-          <option>Disease Screening</option>
-          <option>Postmortem Examination</option>
-          <option>Grooming</option>
-          <option>Microchipping</option>
-          <option>Spay and Neuter</option>
-          <option>Behavioral Consultation</option>
-          <option>Tele-Vet Consultation</option>
-          <option>Follow-up Care</option>
-        </select>
+        <!-- Services (Filtered) -->
+        <label for="service" id="serviceLabel" style="display:none;">Service Needed</label>
+        <select id="service" name="service" required style="display:none;"></select>
 
         <!-- Breeds -->
         <div id="breedContainer" style="display:none;">
