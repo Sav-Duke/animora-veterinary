@@ -16,7 +16,6 @@
             }
             .contact-section {
               width: 100%;
-              max-width: 100vw;
               background: transparent;
               margin: 0;
               padding: 0;
@@ -123,59 +122,57 @@
   <!-- Appointment Form -->
   <section class="contact-section">
     <div class="form-container">
-      <h2>Book an Appointment</h2>
-      <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
-
-      <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
-        <!-- Owner Info -->
-        <label for="ownerName">Your Full Name</label>
-        <input type="text" id="ownerName" name="ownerName" required>
-
-          <!-- Global Loading Spinner -->
-          <div id="globalLoading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;align-items:center;justify-content:center;">
-            <div style="border:6px solid #f3f3f3;border-top:6px solid #16A34A;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;"></div>
-            <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
-          </div>
-  
-          <!-- Global Error Handler & Loading Spinner Logic -->
-          <script>
-            function showLoading() { document.getElementById('globalLoading').style.display = 'flex'; }
-            function hideLoading() { document.getElementById('globalLoading').style.display = 'none'; }
-            const origFetch = window.fetch;
-            window.fetch = function(...args) { showLoading(); return origFetch.apply(this, args).finally(hideLoading); };
-            window.addEventListener('error', function(e) { alert('An unexpected error occurred. Please try again or contact support.'); });
-            window.addEventListener('unhandledrejection', function(e) { alert('A network or script error occurred. Please check your connection or try again.'); });
-          </script>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" required>
-
-        <!-- Animal Info (Progressive) -->
-        <label for="animalCategory">Animal Category</label>
-        <select id="animalCategory" name="animalCategory" required>
-          <option value="">-- Select Category --</option>
-          <option value="Pet">Pet</option>
-          <option value="Livestock">Livestock</option>
-          <option value="Equine">Equine</option>
-        </select>
-
-        <div id="animalTypeContainer" style="display:none;">
-          <label for="animal">Animal Type</label>
-          <select id="animal" name="animal"></select>
+      <!-- Appointment Form -->
+      <section class="contact-section">
+        <div class="form-container">
+          <h2>Book an Appointment</h2>
+          <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
+          <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
+            <label for="ownerName">Your Full Name</label>
+            <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required aria-label="Email">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" required aria-label="Phone">
+            <label for="animalCategory">Animal Category</label>
+            <select id="animalCategory" name="animalCategory" required aria-label="Animal Category">
+              <option value="">-- Select Category --</option>
+              <option value="Pet">Pet</option>
+              <option value="Livestock">Livestock</option>
+              <option value="Equine">Equine</option>
+            </select>
+            <div id="animalTypeContainer" style="display:none;">
+              <label for="animal">Animal Type</label>
+              <select id="animal" name="animal"></select>
+            </div>
+            <div id="petsContainer" style="display:none;">
+              <label>Pet(s) Details</label>
+              <div id="petFields"></div>
+              <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
+            </div>
+            <label for="service" id="serviceLabel" style="display:none;">Service Needed</label>
+            <select id="service" name="service" required style="display:none;"></select>
+            <div id="breedContainer" style="display:none;">
+              <label for="breed">Preferred Breed</label>
+              <select id="breed" name="breed"></select>
+            </div>
+            <label for="date">Preferred Date</label>
+            <input type="date" id="date" name="date" required aria-label="Preferred Date">
+            <label for="time">Preferred Time</label>
+            <input type="time" id="time" name="time" required aria-label="Preferred Time">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" placeholder="Start typing your location..." aria-label="Location">
+            <ul id="suggestions" class="suggestions-dropdown"></ul>
+            <label for="notes">Additional Notes</label>
+            <textarea id="notes" name="notes" aria-label="Additional Notes"></textarea>
+            <div id="vetNotice" class="vet-notice"></div>
+            <button type="submit" id="submitBtn">Submit Appointment</button>
+          </form>
+          <p id="successMessage" style="display:none; color:green; margin-top:15px;">
+            Thank you! Your appointment request has been sent. 🐾
+          </p>
         </div>
-
-        <label for="ownerName">Your Full Name</label>
-        <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required aria-label="Email">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" required aria-label="Phone">
-        <label for="animalCategory">Animal Category</label>
-        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category">
-          <option value="">-- Select Category --</option>
-          <option value="Pet">Pet</option>
+      </section>
           <option value="Livestock">Livestock</option>
           <option value="Equine">Equine</option>
         </select>
