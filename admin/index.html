@@ -356,7 +356,7 @@
     // Improved service status check for production
     async function checkServices() {
       const indicators = document.querySelectorAll('.status-indicator');
-      // Check frontend (current domain)
+      // Check frontend (current domain and port)
       try {
         await fetch(window.location.origin, { mode: 'no-cors' });
         indicators[0].classList.remove('offline');
@@ -379,11 +379,18 @@
       // TODO: Add real checks for MongoDB, AI Provider, CMS if endpoints exist
     }
 
-    // Add Fix Suggestion button logic (placeholder)
+    // Add Fix Suggestion button logic (improved for page errors)
     window.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.fix-suggestion').forEach(btn => {
         btn.addEventListener('click', function() {
-          alert('Automated fix coming soon! Please check your server or network connection.');
+          // Try to detect port and show actionable dialog
+          let port = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+          let docLink = 'https://github.com/Sav-Duke/animora-veterinary#deployment';
+          alert(
+            'Ensure your web server is running and accessible on port ' + port + '.\n' +
+            'If you are using a cloud server, check firewall rules.\n' +
+            'For more help, see deployment documentation:\n' + docLink
+          );
         });
       });
     });
