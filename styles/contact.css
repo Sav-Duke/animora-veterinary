@@ -127,6 +127,15 @@ button[type="submit"]:hover {
   color: #b71c1c;
 }
 
+/* --- Guarantee all selects and date inputs are interactive --- */
+select, input[type="date"] {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  background: #fff !important;
+  color: #222 !important;
+  z-index: 10 !important;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
