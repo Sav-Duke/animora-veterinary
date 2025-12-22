@@ -341,6 +341,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   const dateInput = document.getElementById("date");
   if (dateInput) dateInput.removeAttribute('disabled');
+
+  // --- Final Robust Fallback: Guarantee all selects and date inputs are selectable ---
+  document.querySelectorAll('select, input[type="date"]').forEach(el => {
+    el.removeAttribute('disabled');
+    el.style.pointerEvents = 'auto';
+    el.style.opacity = '1';
+  });
 });
 
 
