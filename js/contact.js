@@ -336,11 +336,11 @@ document.addEventListener("DOMContentLoaded", function () {
   [animalTypeContainer, petsContainer, serviceSelect, serviceLabel, breedContainer, breedSelect].forEach(el => {
     if (el) {
       el.style.display = "block";
-      el.disabled = false;
+      if (el.removeAttribute) el.removeAttribute('disabled');
     }
   });
   const dateInput = document.getElementById("date");
-  if (dateInput) dateInput.disabled = false;
+  if (dateInput) dateInput.removeAttribute('disabled');
 });
 
 
