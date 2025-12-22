@@ -353,27 +353,40 @@
   </div>
 
   <script>
-    // Check service status
+    // Improved service status check for production
     async function checkServices() {
       const indicators = document.querySelectorAll('.status-indicator');
-      
-      // Check frontend
+      // Check frontend (current domain)
       try {
-        await fetch('http://localhost:3000', { mode: 'no-cors' });
+        await fetch(window.location.origin, { mode: 'no-cors' });
+        indicators[0].classList.remove('offline');
+        indicators[0].classList.add('online');
       } catch (e) {
         indicators[0].classList.remove('online');
         indicators[0].classList.add('offline');
       }
 
-      // Check backend (Vercel serverless)
+      // Check backend API (example: /api/chat)
       try {
         const res = await fetch('/api/chat', { method: 'OPTIONS' });
         if (!res.ok) throw new Error();
+        indicators[1].classList.remove('offline');
+        indicators[1].classList.add('online');
       } catch (e) {
         indicators[1].classList.remove('online');
         indicators[1].classList.add('offline');
       }
+      // TODO: Add real checks for MongoDB, AI Provider, CMS if endpoints exist
     }
+
+    // Add Fix Suggestion button logic (placeholder)
+    window.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.fix-suggestion').forEach(btn => {
+        btn.addEventListener('click', function() {
+          alert('Automated fix coming soon! Please check your server or network connection.');
+        });
+      });
+    });
 
     checkServices();
     setInterval(checkServices, 30000); // Check every 30 seconds
