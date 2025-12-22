@@ -105,24 +105,9 @@
 
   <!-- Scripts -->
   <script src="js/contact.js"></script>
-  <script>
-    // Fallback: If JS fails, show all fields so user can still submit
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        var jsOk = typeof window.showPetsSection === 'function';
-        if (!jsOk) {
-          document.getElementById('animalTypeContainer').style.display = 'block';
-          document.getElementById('service').style.display = 'block';
-          document.getElementById('serviceLabel').style.display = 'block';
-          document.getElementById('breedContainer').style.display = 'block';
-          document.getElementById('petsContainer').style.display = 'block';
-        }
-      }, 1000);
-    });
-  </script>
-  <script src="js/main.js"></script>
-  <script src="js/floating-blog.js"></script>
-  
+  <!-- <script src="js/main.js"></script> -->
+  <!-- <script src="js/floating-blog.js"></script> -->
+  <!--
   <script>
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
@@ -131,7 +116,6 @@
       }
     });
   </script>
-  
   <script>
     // Fallback handler for contact info loading errors
     window.addEventListener('load', function() {
@@ -161,21 +145,16 @@
         }
       }, 2000);
     });
-    
     // Add form submission error handling with animal welfare message
     document.querySelector('form')?.addEventListener('submit', function(e) {
       const submitBtn = this.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
-      
       submitBtn.textContent = 'Sending...';
       submitBtn.disabled = true;
-      
-      // Re-enable after timeout with fallback message
       setTimeout(function() {
         if (submitBtn.disabled) {
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
-          
           const message = document.getElementById('successMessage');
           if (message && message.style.display === 'none') {
             message.style.display = 'block';
@@ -186,6 +165,7 @@
       }, 10000);
     });
   </script>
+  -->
 </body>
 </html>
 
