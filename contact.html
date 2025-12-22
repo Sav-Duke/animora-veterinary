@@ -1,95 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <style>
-        /* Remove persistent horizontal line/overflow and improve accessibility */
-        html, body, .contact-section, .form-container {
-          border: none !important;
-          box-shadow: none !important;
-          outline: none !important;
-          background-clip: padding-box !important;
-          <style>
-            html, body {
-              width: 100%;
-              max-width: 100vw;
-              overflow-x: hidden;
-            }
-            .contact-section {
-              width: 100%;
-              background: transparent;
-              margin: 0;
-              padding: 0;
-            }
-            .form-container {
-              background: #fff;
-              max-width: 480px;
-              width: 100%;
-              margin: 40px auto 32px auto;
-              padding: 32px 18px 24px 18px;
-              border-radius: 18px;
-              box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
-              position: relative;
-              z-index: 2;
-            }
-            input, select, textarea {
-              max-width: 100%;
-              box-sizing: border-box;
-            }
-            .pet-entry {
-              background: #f3f4f6;
-              border-radius: 8px;
-              padding: 10px;
-              margin-bottom: 8px;
-              display: flex;
-              gap: 8px;
-              align-items: center;
-            }
-            @media (max-width: 600px) {
-              .form-container {
-                max-width: 98vw;
-                padding: 12px 2vw 18px 2vw;
-              }
-            }
-          </style>
-        position: relative;
-      }
-      body {
-        background-attachment: fixed;
+    <style>
+      html, body {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
       }
       .contact-section {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
+        width: 100%;
+        background: transparent;
         margin: 0;
         padding: 0;
-        position: relative;
       }
       .form-container {
-        box-sizing: border-box;
+        background: #fff;
         max-width: 480px;
         width: 100%;
-        margin: 0 auto;
-        padding: 20px 10px;
-        background: #fff;
+        margin: 40px auto 32px auto;
+        padding: 32px 18px 24px 18px;
         border-radius: 18px;
         box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
-        border: none;
+        position: relative;
+        z-index: 2;
       }
       input, select, textarea {
         max-width: 100%;
         box-sizing: border-box;
       }
-      /* Remove any accidental horizontal scrollbars */
-      ::-webkit-scrollbar:horizontal { display: none; }
-      /* Remove any border or shadow that could cause a line */
-      .contact-section, .form-container {
-        border: none !important;
-        box-shadow: none !important;
+      .pet-entry {
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
       }
-      /* Prevent ghost lines from ::after or ::before */
-      .contact-section::after, .contact-section::before, .form-container::after, .form-container::before {
-        display: none !important;
-        content: none !important;
+      @media (max-width: 600px) {
+        .form-container {
+          max-width: 98vw;
+          padding: 12px 2vw 18px 2vw;
+        }
       }
     </style>
   <meta charset="UTF-8">
@@ -122,57 +74,54 @@
   <!-- Appointment Form -->
   <section class="contact-section">
     <div class="form-container">
-      <!-- Appointment Form -->
-      <section class="contact-section">
-        <div class="form-container">
-          <h2>Book an Appointment</h2>
-          <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
-          <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
-            <label for="ownerName">Your Full Name</label>
-            <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required aria-label="Email">
-            <label for="phone">Phone</label>
-            <input type="tel" id="phone" name="phone" required aria-label="Phone">
-            <label for="animalCategory">Animal Category</label>
-            <select id="animalCategory" name="animalCategory" required aria-label="Animal Category">
-              <option value="">-- Select Category --</option>
-              <option value="Pet">Pet</option>
-              <option value="Livestock">Livestock</option>
-              <option value="Equine">Equine</option>
-            </select>
-            <div id="animalTypeContainer" style="display:none;">
-              <label for="animal">Animal Type</label>
-              <select id="animal" name="animal"></select>
-            </div>
-            <div id="petsContainer" style="display:none;">
-              <label>Pet(s) Details</label>
-              <div id="petFields"></div>
-              <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
-            </div>
-            <label for="service" id="serviceLabel" style="display:none;">Service Needed</label>
-            <select id="service" name="service" required style="display:none;"></select>
-            <div id="breedContainer" style="display:none;">
-              <label for="breed">Preferred Breed</label>
-              <select id="breed" name="breed"></select>
-            </div>
-            <label for="date">Preferred Date</label>
-            <input type="date" id="date" name="date" required aria-label="Preferred Date">
-            <label for="time">Preferred Time</label>
-            <input type="time" id="time" name="time" required aria-label="Preferred Time">
-            <label for="location">Location</label>
-            <input type="text" id="location" name="location" placeholder="Start typing your location..." aria-label="Location">
-            <ul id="suggestions" class="suggestions-dropdown"></ul>
-            <label for="notes">Additional Notes</label>
-            <textarea id="notes" name="notes" aria-label="Additional Notes"></textarea>
-            <div id="vetNotice" class="vet-notice"></div>
-            <button type="submit" id="submitBtn">Submit Appointment</button>
-          </form>
-          <p id="successMessage" style="display:none; color:green; margin-top:15px;">
-            Thank you! Your appointment request has been sent. 🐾
-          </p>
+      <h2>Book an Appointment</h2>
+      <p>Fill out the form below and we’ll confirm your appointment shortly.</p>
+      <form id="appointmentForm" action="https://formspree.io/f/mjkaknjn" method="POST">
+        <label for="ownerName">Your Full Name</label>
+        <input type="text" id="ownerName" name="ownerName" required aria-label="Your Full Name">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required aria-label="Email">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" required aria-label="Phone">
+        <label for="animalCategory">Animal Category</label>
+        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category">
+          <option value="">-- Select Category --</option>
+          <option value="Pet">Pet</option>
+          <option value="Livestock">Livestock</option>
+          <option value="Equine">Equine</option>
+        </select>
+        <div id="animalTypeContainer" style="display:none;">
+          <label for="animal">Animal Type</label>
+          <select id="animal" name="animal"></select>
         </div>
-      </section>
+        <div id="petsContainer" style="display:none;">
+          <label>Pet(s) Details</label>
+          <div id="petFields"></div>
+          <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
+        </div>
+        <label for="service" id="serviceLabel" style="display:none;">Service Needed</label>
+        <select id="service" name="service" required style="display:none;"></select>
+        <div id="breedContainer" style="display:none;">
+          <label for="breed">Preferred Breed</label>
+          <select id="breed" name="breed"></select>
+        </div>
+        <label for="date">Preferred Date</label>
+        <input type="date" id="date" name="date" required aria-label="Preferred Date">
+        <label for="time">Preferred Time</label>
+        <input type="time" id="time" name="time" required aria-label="Preferred Time">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="Start typing your location..." aria-label="Location">
+        <ul id="suggestions" class="suggestions-dropdown"></ul>
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" name="notes" aria-label="Additional Notes"></textarea>
+        <div id="vetNotice" class="vet-notice"></div>
+        <button type="submit" id="submitBtn">Submit Appointment</button>
+      </form>
+      <p id="successMessage" style="display:none; color:green; margin-top:15px;">
+        Thank you! Your appointment request has been sent. 🐾
+      </p>
+    </div>
+  </section>
           <option value="Livestock">Livestock</option>
           <option value="Equine">Equine</option>
         </select>
