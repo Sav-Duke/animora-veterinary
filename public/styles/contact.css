@@ -78,3 +78,4 @@ button[type="submit"]:hover {
 	overflow-y: auto;
 	width: calc(100% - 2px);
 	margin-top: 4px;
+}
