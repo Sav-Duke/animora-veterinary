@@ -53,7 +53,7 @@
         <label for="phone">Phone</label>
         <input type="tel" id="phone" name="phone" required aria-label="Phone" autocomplete="tel">
         <label for="animalCategory">Animal Category</label>
-        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category" autocomplete="off">
+        <select id="animalCategory" name="animalCategory" required aria-label="Animal Category" autocomplete="section-animals category">
           <option value="">-- Select Category --</option>
           <option value="Pet">Pet</option>
           <option value="Livestock">Livestock</option>
@@ -61,22 +61,22 @@
         </select>
         <div id="animalTypeContainer">
           <label for="animal">Animal Type</label>
-          <select id="animal" name="animal" autocomplete="off">
+          <select id="animal" name="animal" autocomplete="section-animals type">
             <option value="">-- Select Animal --</option>
           </select>
         </div>
         <div id="petsContainer">
-          <label>Pet(s) Details</label>
+          <label for="petFields">Pet(s) Details</label>
           <div id="petFields"></div>
           <button type="button" id="addPetBtn" style="margin:8px 0 12px 0;">Add Another Pet</button>
         </div>
         <label for="service" id="serviceLabel">Service Needed</label>
-        <select id="service" name="service" required autocomplete="off">
+        <select id="service" name="service" required autocomplete="section-animals service">
           <option value="">-- Select a Service --</option>
         </select>
         <div id="breedContainer">
           <label for="breed">Preferred Breed</label>
-          <select id="breed" name="breed" autocomplete="off">
+          <select id="breed" name="breed" autocomplete="section-animals breed">
             <option value="">-- Select Breed --</option>
           </select>
         </div>
