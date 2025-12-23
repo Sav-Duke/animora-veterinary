@@ -328,9 +328,33 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
+
   // --- Initial State ---
   updateForm();
   submitBtn.disabled = !form.checkValidity();
+
+  // --- Utility: Confirm Reset ---
+  if (form) {
+    form.addEventListener('reset', function(e) {
+      if (!confirm('Are you sure you want to clear the form?')) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  // --- Utility: Scroll to First Error ---
+  function scrollToFirstError() {
+    const invalid = form.querySelector(':invalid');
+    if (invalid) {
+      invalid.focus();
+      invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+  form.addEventListener('submit', function(e) {
+    if (!form.checkValidity()) {
+      scrollToFirstError();
+    }
+  }, true);
 
   // --- Robust Fallback: Always show and enable all fields if JS runs ---
   [animalTypeContainer, petsContainer, serviceSelect, serviceLabel, breedContainer, breedSelect].forEach(el => {
