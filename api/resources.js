@@ -1,3 +1,4 @@
+// Trigger redeploy: minor comment for Vercel cache busting
 // Vercel Serverless Function - Unified Resources API (about-content, contact-info, staff, vets, diseases, services)
 import { MongoClient, ObjectId } from 'mongodb';
 
