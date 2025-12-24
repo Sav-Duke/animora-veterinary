@@ -6,6 +6,13 @@ console.log('contact.js loaded: deployment test at 2025-12-23');
 // Last updated: 2025-12-22
 
 document.addEventListener("DOMContentLoaded", function () {
+	function logError(msg, err) {
+		if (err) {
+			console.error('[contact.js]', msg, err);
+		} else {
+			console.error('[contact.js]', msg);
+		}
+	}
 	// --- DOM Elements ---
 	const form = document.getElementById("appointmentForm");
 	const successMessage = document.getElementById("successMessage");
@@ -101,97 +108,119 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// --- Central Form Update Logic ---
 	function updateForm(triggeredBy) {
-		const category = categorySelect.value;
-		const animal = animalSelect.value;
-		const service = serviceSelect.value;
+		try {
+			const category = categorySelect.value;
+			const animal = animalSelect.value;
+			const service = serviceSelect.value;
 
-		// 1. Animal dropdown
-		if (animals[category]) {
-			animalTypeContainer.style.display = "block";
-			animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
-			animals[category].forEach(a => {
-				const opt = document.createElement("option");
-				opt.value = a;
-				opt.textContent = a;
-				animalSelect.appendChild(opt);
-			});
-			animalSelect.disabled = false;
-			animalSelect.style.display = "block";
-			// Reset animal if not valid for new category
-			if (!animals[category].includes(animal)) {
-				animalSelect.value = '';
+			// 1. Animal dropdown
+			if (animals[category]) {
+				animalTypeContainer.style.display = "block";
+				animalSelect.innerHTML = "<option value=''>-- Select Animal --</option>";
+				animals[category].forEach(a => {
+					const opt = document.createElement("option");
+					opt.value = a;
+					opt.textContent = a;
+					animalSelect.appendChild(opt);
+				});
+				animalSelect.disabled = false;
+				animalSelect.style.display = "block";
+				// Reset animal if not valid for new category
+				if (!animals[category].includes(animal)) {
+					animalSelect.value = '';
+				}
+			} else {
+				animalTypeContainer.style.display = "none";
+				animalSelect.innerHTML = "";
+				animalSelect.disabled = true;
+				animalSelect.style.display = "none";
 			}
-		} else {
-			animalTypeContainer.style.display = "none";
-			animalSelect.innerHTML = "";
-			animalSelect.disabled = true;
-			animalSelect.style.display = "none";
-		}
 
-		// 2. Pet fields
-		if (category === "Pet") {
-			petsContainer.style.display = "block";
-			if (petFields.children.length === 0) addPetField();
-		} else {
-			petsContainer.style.display = "none";
-			petFields.innerHTML = "";
-			petCount = 0;
-		}
-
-		// 3. Service dropdown
-		if (category && serviceOptions[category]) {
-			serviceSelect.style.display = "block";
-			serviceLabel.style.display = "block";
-			serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
-			serviceOptions[category].forEach(s => {
-				const opt = document.createElement("option");
-				opt.value = s;
-				opt.textContent = s;
-				serviceSelect.appendChild(opt);
-			});
-			serviceSelect.disabled = false;
-			// Reset service if not valid for new category
-			if (!serviceOptions[category].includes(service)) {
-				serviceSelect.value = '';
+			// 2. Pet fields
+			if (category === "Pet") {
+				petsContainer.style.display = "block";
+				if (petFields.children.length === 0) addPetField();
+			} else {
+				petsContainer.style.display = "none";
+				petFields.innerHTML = "";
+				petCount = 0;
 			}
-		} else {
-			serviceSelect.style.display = "none";
-			serviceLabel.style.display = "none";
-			serviceSelect.innerHTML = "";
-			serviceSelect.disabled = true;
+
+			// 3. Service dropdown
+			if (category && serviceOptions[category]) {
+				serviceSelect.style.display = "block";
+				serviceLabel.style.display = "block";
+				serviceSelect.innerHTML = "<option value=''>-- Select a Service --</option>";
+				serviceOptions[category].forEach(s => {
+					const opt = document.createElement("option");
+					opt.value = s;
+					opt.textContent = s;
+					serviceSelect.appendChild(opt);
+				});
+				serviceSelect.disabled = false;
+				// Reset service if not valid for new category
+				if (!serviceOptions[category].includes(service)) {
+					serviceSelect.value = '';
+				}
+			} else {
+				serviceSelect.style.display = "none";
+				serviceLabel.style.display = "none";
+				serviceSelect.innerHTML = "";
+				serviceSelect.disabled = true;
+			}
+
+			// 4. Breed dropdown (only for AI)
+			if (service === "Artificial Insemination" && breeds[animal]) {
+				breedContainer.style.display = "block";
+				breedSelect.innerHTML = "<option value=''>-- Select Breed --</option>";
+				breeds[animal].forEach(b => {
+					const opt = document.createElement("option");
+					opt.value = b;
+					opt.textContent = b;
+					breedSelect.appendChild(opt);
+				});
+				breedSelect.disabled = false;
+				breedSelect.style.display = "block";
+			} else {
+				breedContainer.style.display = "none";
+				breedSelect.innerHTML = "";
+				breedSelect.disabled = true;
+				breedSelect.style.display = "none";
+			}
+
+			// 5. Ensure Preferred Date is always enabled
+			const dateInput = document.getElementById("date");
+			if (dateInput) dateInput.disabled = false;
+
+			// 6. Vet availability (exact match)
+			updateVetNotice();
+		} catch (err) {
+			logError('updateForm error', err);
 		}
-
-		// 4. Breed dropdown (only for AI)
-		if (service === "Artificial Insemination" && breeds[animal]) {
-			breedContainer.style.display = "block";
-			breedSelect.innerHTML = "<option value=''>-- Select Breed --</option>";
-			breeds[animal].forEach(b => {
-				const opt = document.createElement("option");
-				opt.value = b;
-				opt.textContent = b;
-				breedSelect.appendChild(opt);
-			});
-			breedSelect.disabled = false;
-			breedSelect.style.display = "block";
-		} else {
-			breedContainer.style.display = "none";
-			breedSelect.innerHTML = "";
-			breedSelect.disabled = true;
-			breedSelect.style.display = "none";
-		}
-
-		// 5. Ensure Preferred Date is always enabled
-		const dateInput = document.getElementById("date");
-		if (dateInput) dateInput.disabled = false;
-
-		// 6. Vet availability (exact match)
-		updateVetNotice();
 	}
 
 	// Defensive: Reset dependent fields on change
-	categorySelect.addEventListener("change", function() { updateForm('category'); });
-	animalSelect.addEventListener("change", function() { updateForm('animal'); });
-	serviceSelect.addEventListener("change", function() { updateForm('service'); });
+	categorySelect.addEventListener("change", function() {
+		try {
+			updateForm('category');
+		} catch (err) {
+			logError('categorySelect change error', err);
+		}
+	});
+	animalSelect.addEventListener("change", function() {
+		try {
+			updateForm('animal');
+		} catch (err) {
+			logError('animalSelect change error', err);
+		}
+	});
+	serviceSelect.addEventListener("change", function() {
+		try {
+			updateForm('service');
+		} catch (err) {
+			logError('serviceSelect change error', err);
+		}
+	});
 
 	// --- Accessibility: Keyboard Navigation for Suggestions ---
 	let debounceTimer;
