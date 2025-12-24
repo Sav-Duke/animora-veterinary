@@ -718,12 +718,14 @@
 
     async function loadVets() {
       const container = document.getElementById('vetsContainer');
-      
       try {
-          const response = await fetch(`${API_BASE}/api/fetch-vets`);
+        const response = await fetch(`/api/vets`);
+        if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
-        vets = data;
-        
+        vets = data.map(v => ({
+          ...v,
+          id: v._id || v.id // Support both MongoDB and legacy IDs
+        }));
         displayVets(vets);
       } catch (err) {
         container.innerHTML = `
@@ -872,37 +874,24 @@
         return;
       }
 
-      if (vetId) {
-        // Edit existing vet
-        const vetIndex = vets.findIndex(v => v.id === vetId);
-        if (vetIndex !== -1) {
-          vets[vetIndex] = {
-            id: vetId,
-            name,
-            location,
-            services
-          };
-        }
-      } else {
-        // Add new vet
-        const newVet = {
-          id: 'vet_' + Date.now().toString(16),
-          name,
-          location,
-          services
-        };
-        vets.push(newVet);
-      }
-
-      // Save to file
       try {
-          await fetch(`${API_BASE}/api/save-vet.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(vets)
-        });
-
-        showSuccess(vetId ? 'Veterinarian updated successfully!' : 'Veterinarian added successfully!');
+        if (vetId) {
+          // Edit existing vet
+          await fetch(`/api/vets`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: vetId, name, location, services })
+          });
+          showSuccess('Veterinarian updated successfully!');
+        } else {
+          // Add new vet
+          await fetch(`/api/vets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, location, services })
+          });
+          showSuccess('Veterinarian added successfully!');
+        }
         closeModal();
         loadVets();
       } catch (err) {
@@ -921,15 +910,10 @@
         return;
       }
 
-      vets = vets.filter(v => v.id !== id);
-
       try {
-          await fetch(`${API_BASE}/api/save-vet.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(vets)
+        await fetch(`/api/vets?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE'
         });
-
         showSuccess('Veterinarian deleted successfully!');
         loadVets();
       } catch (err) {
@@ -956,8 +940,6 @@
 
     // Load vets on page load
     loadVets();
-    // Add sample vets for demo if needed
-    setTimeout(() => { addSampleVets(); displayVets(vets); }, 1000);
   </script>
 </body>
 </html>
