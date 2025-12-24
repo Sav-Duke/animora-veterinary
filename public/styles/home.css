@@ -1,0 +1,111 @@
+/* Background */
+body {
+  background: linear-gradient(135deg, #0f2027, #2c5364, #203a43);
+  color: #f5f5f5;
+  font-family: "Ubuntu Condensed", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero Section */
+.hero {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: url("https://images.unsplash.com/photo-1619983081593-5f1a8d5b3b0c?auto=format&fit=crop&w=1600&q=80")
+              no-repeat center center/cover;
+  position: relative;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 20px;
+  animation: fadeInUp 1.2s ease;
+}
+
+.hero h2 {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  color: #ffd369;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn, .btn-small {
+  display: inline-block;
+  background: #ff9800;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn:hover, .btn-small:hover {
+  background: #e68900;
+}
+
+.btn-small {
+  padding: 8px 15px;
+  font-size: 0.9rem;
+}
+
+/* Quick Links Section */
+.quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin: 60px auto;
+  max-width: 1100px;
+}
+
+.link-card {
+  background: rgba(255,255,255,0.1);
+  padding: 25px;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.link-card h3 {
+  color: #ffb347;
+  margin-bottom: 10px;
+}
+
+.link-card p {
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.link-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
