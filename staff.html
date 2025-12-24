@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Our Team | Animora Farm Health</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/staff.css">
+  <link rel="stylesheet" href="styles/mediaqueries.css">
+</head>
+<body>
+    <!-- Global Loading Spinner -->
+    <div id="globalLoading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;align-items:center;justify-content:center;">
+      <div style="border:6px solid #f3f3f3;border-top:6px solid #16A34A;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;"></div>
+      <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
+    </div>
+  <header>
+    <h1 class="logo">Animora <span class="sub">Farm Health</span></h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="services.html">Care & Services</a></li>
+        <li><a href="staff.html" class="active">Our Team</a></li>
+        <li><a href="contact.html">Appointments</a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-section staff">
+    <h2>Meet Our Team</h2>
+    <p class="intro">Dedicated professionals committed to keeping your farm animals healthy and thriving.</p>
+
+    <div class="staff-cards" id="staffCards">
+      <!-- Staff cards will be loaded dynamically -->
+      <p style="text-align: center; color: #666;">Loading team members...</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Animora Farm Health</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/staff.js"></script>
+    <!-- Global Error Handler & Loading Spinner Logic -->
+    <script>
+      function showLoading() { document.getElementById('globalLoading').style.display = 'flex'; }
+      function hideLoading() { document.getElementById('globalLoading').style.display = 'none'; }
+      const origFetch = window.fetch;
+      window.fetch = function(...args) { showLoading(); return origFetch.apply(this, args).finally(hideLoading); };
+      window.addEventListener('error', function(e) { alert('An unexpected error occurred. Please try again or contact support.'); });
+      window.addEventListener('unhandledrejection', function(e) { alert('A network or script error occurred. Please check your connection or try again.'); });
+    </script>
+  <script>
+    // Load and display staff members dynamically
+    async function loadStaff() {
+      try {
+        const response = await fetch('/api/resources?type=staff');
+        const staffData = await response.json();
+        const container = document.getElementById('staffCards');
+        if (!Array.isArray(staffData) || staffData.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: #666;">No team members to display.</p>';
+          return;
+        }
+        container.innerHTML = staffData.map(member => `
+          <div class="staff-card">
+            <img src="${member.image}" alt="${member.name}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+            <h3>${member.name}</h3>
+            <p>${member.title}</p>
+            ${member.bio ? `<p style="font-size: 0.9rem; margin-top: 10px; color: #555;">${member.bio}</p>` : ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading staff:', error);
+        document.getElementById('staffCards').innerHTML = `
+          <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h3 style="color: #16A34A; text-align: center; margin-bottom: 20px; font-size: 1.8rem;">🌿 Our Commitment to Animal Welfare</h3>
+            <p style="color: #374151; line-height: 1.8; margin-bottom: 15px; text-align: justify;">
+              At Animora, we believe every animal deserves compassionate care and protection. Animal welfare is not just our profession—it's our sacred duty. We are guided by both legal standards and moral principles that recognize animals as sentient beings deserving of respect, proper care, and freedom from suffering.
+            </p>
+            <p style="color: #374151; line-height: 1.8; margin-bottom: 15px; text-align: justify;">
+              Our practice is founded on the principle that animals feel pain, experience emotions, and depend on us for their wellbeing. We honor this responsibility through evidence-based veterinary medicine, preventive care, and education on humane animal treatment.
+            </p>
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #16A34A;">
+              <h4 style="color: #16A34A; margin-bottom: 15px; font-size: 1.3rem;">📜 Legal Framework for Animal Protection</h4>
+              <div style="margin-bottom: 15px;">
+                <strong style="color: #374151;">The Animal Welfare Act (AWA):</strong>
+                <p style="color: #6b7280; margin-top: 5px; line-height: 1.6;">
+                  Establishes minimum standards of care for animals used in research, exhibition, transport, and by dealers. It mandates proper housing, handling, sanitation, nutrition, water, veterinary care, and protection from extreme weather and temperatures.
+                </p>
+              </div>
+              
+              <div>
+                <strong style="color: #374151;">Prevention of Cruelty to Animals Laws:</strong>
+                <p style="color: #6b7280; margin-top: 5px; line-height: 1.6;">
+                  Prohibits inflicting unnecessary pain or suffering on animals, abandonment, neglect, and failure to provide adequate food, water, shelter, and veterinary care. These laws recognize that animals have inherent value and the right to humane treatment.
+                </p>
+              </div>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+              <h4 style="color: #92400e; margin-bottom: 10px; font-size: 1.3rem;">✝️ Biblical Perspective on Animal Care</h4>
+              <p style="color: #78350f; line-height: 1.7; font-style: italic;">
+                "A righteous man cares for the needs of his animal, but the kindest acts of the wicked are cruel." - Proverbs 12:10
+              </p>
+              <p style="color: #78350f; margin-top: 10px; line-height: 1.6;">
+                Scripture teaches us that God entrusted animals to our care as stewards of His creation. Compassion toward animals reflects the character of a righteous heart and honors the Creator who made every living creature.
+              </p>
+            </div>
+            
+            <p style="text-align: center; color: #6b7280; margin-top: 25px; font-size: 0.9rem;">
+              <em>Unable to load team information due to network issues. Please refresh the page or contact us directly.</em>
+            </p>
+          </div>
+        `;
+      }
+    }
+    
+    // Load staff when page loads
+    loadStaff();
+  </script>
+  <script src="js/floating-blog.js"></script>
+  
+  <!-- Secret Admin Access: Press Ctrl+Shift+A -->
+  <script>
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    });
+  </script>
+</body>
+</html>

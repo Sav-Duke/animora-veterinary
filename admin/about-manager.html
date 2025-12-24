@@ -5,152 +5,10 @@
   <title>Manage About Content | Animora Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../styles/main.css">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    .header h1 {
-      color: #16A34A;
-      margin: 0;
-    }
-
-    .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: #16A34A;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #15803d;
-    }
-
-    .btn-secondary {
-      background: #6b7280;
-      color: white;
-    }
-
-    .btn-secondary:hover {
-      background: #4b5563;
-    }
-
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 0.9rem;
-    }
-
-    .form-section {
-      margin-bottom: 30px;
-      padding: 20px;
-      background: #f9fafb;
-      border-radius: 8px;
-    }
-
-    .form-section h2 {
-      color: #374151;
-      margin: 0 0 20px 0;
-      font-size: 1.3rem;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-family: inherit;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-    }
-
-    .values-list {
-      margin-top: 10px;
-    }
-
-    .value-item {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
-
-    .value-item input {
-      flex: 1;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .alert {
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-    }
-
-    .alert-success {
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #10b981;
-    }
-
-    .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #ef4444;
-    }
-  </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
+<body class="admin-bg">
+  <div class="container admin">
+    <div class="header admin">
       <h1>📝 Manage About Content</h1>
       <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
@@ -221,7 +79,7 @@
     // Load about data
     async function loadAbout() {
       try {
-        const response = await fetch('/api/about-content');
+        const response = await fetch('/api/resources?type=about-content');
         aboutData = await response.json();
         values = aboutData.values || [];
         populateForm();
@@ -288,14 +146,13 @@
       };
 
       try {
-        const response = await fetch('/api/about-content', {
+        const response = await fetch('/api/resources?type=about-content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)
         });
 
         if (!response.ok) throw new Error('Save failed');
-        
         aboutData = updatedData;
         values = filteredValues;
         showAlert('About content saved successfully!', 'success');

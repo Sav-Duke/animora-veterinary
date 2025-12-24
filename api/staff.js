@@ -1,26 +1,56 @@
-// Vercel Serverless Function - Staff API
-import fs from 'fs';
-import path from 'path';
+
+// Vercel Serverless Function - Staff API with MongoDB
+import { MongoClient, ObjectId } from 'mongodb';
+
+const uri = process.env.MONGO_URI;
+let cachedClient = null;
+
+async function connectToDatabase() {
+  if (cachedClient) {
+    return cachedClient;
+  }
+  const client = new MongoClient(uri);
+  await client.connect();
+  cachedClient = client;
+  return client;
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'staff.json');
-
   try {
+    const client = await connectToDatabase();
+    const db = client.db('animora');
+    const collection = db.collection('staff');
+
     if (req.method === 'GET') {
-      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      return res.status(200).json(data);
+      const staff = await collection.find({}).toArray();
+      return res.status(200).json(staff);
     }
 
     if (req.method === 'POST') {
-      fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2));
+      const result = await collection.insertOne(req.body);
+      return res.status(201).json({ success: true, id: result.insertedId });
+    }
+
+    if (req.method === 'PUT') {
+      const { id, ...data } = req.body;
+      await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: data }
+      );
+      return res.status(200).json({ success: true });
+    }
+
+    if (req.method === 'DELETE') {
+      const { id } = req.query;
+      await collection.deleteOne({ _id: new ObjectId(id) });
       return res.status(200).json({ success: true });
     }
 

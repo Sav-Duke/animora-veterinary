@@ -3,7 +3,7 @@ let servicesData = {};
 
 async function loadServices() {
   try {
-    const response = await fetch('/api/services');
+    const response = await fetch('/api/resources?type=services');
     servicesData = await response.json();
     renderServices();
   } catch (error) {

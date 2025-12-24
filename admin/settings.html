@@ -675,10 +675,10 @@
       try {
         if (type === 'all') {
           // Export all data
-          const staffRes = await fetch('/api/staff');
-          const servicesRes = await fetch('/api/services');
-          const contactRes = await fetch('/api/contact-info');
-          const aboutRes = await fetch('/api/about-content');
+          const staffRes = await fetch('/api/resources?type=staff');
+          const servicesRes = await fetch('/api/resources?type=services');
+          const contactRes = await fetch('/api/resources?type=contact-info');
+          const aboutRes = await fetch('/api/resources?type=about-content');
 
           data = {
             staff: await staffRes.json(),

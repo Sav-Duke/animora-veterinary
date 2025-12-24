@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>About Us | Animora Farm Health</title>
+        const response = await fetch('/api/resources?type=about-content');
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/main.css">
   <link rel="stylesheet" href="/styles/about.css">
@@ -65,7 +65,7 @@
     // Load and display about content dynamically
     async function loadAboutContent() {
       try {
-        const response = await fetch('/api/about-content');
+        const response = await fetch('/api/resources?type=about-content');
         const aboutData = await response.json();
         
         // Update main content
