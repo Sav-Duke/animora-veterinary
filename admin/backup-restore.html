@@ -68,7 +68,7 @@
     let backups = [];
 
     async function fetchBackups() {
-      const res = await fetch('/api/backup');
+      const res = await fetch('/api/util?action=backup');
       backups = await res.json();
       displayBackups();
     }
@@ -89,7 +89,7 @@
           adminBtn: localStorage.getItem('animoraAdminFloatingBtn')
         }
       };
-      await fetch('/api/backup', {
+      await fetch('/api/util?action=backup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(backup)
@@ -120,7 +120,7 @@
 
     async function deleteBackup(id) {
       if (!confirm('Delete this backup?')) return;
-      await fetch('/api/backup', {
+      await fetch('/api/util?action=backup', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })

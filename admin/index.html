@@ -246,7 +246,7 @@
         // Card HTML for admin features with help icons
         const adminCards = [
           { href: '../animora-ai/chat.html', icon: '🤖', title: 'Animora AI', desc: 'Access the complete AI chat system', cls: 'ai', target: '_blank' },
-          { href: '/api/chat', icon: '💾', title: 'API Backend', desc: 'View backend API status', cls: 'database', target: '_blank' },
+            { href: '/api/util?action=chat', icon: '💾', title: 'API Backend', desc: 'View backend API status', cls: 'database', target: '_blank' },
           { href: '../index.html', icon: '🌐', title: 'Main Website', desc: 'View public website', cls: 'website' },
           { href: '/admin/diseases.html', icon: '🦠', title: 'Disease Database', desc: 'Manage disease information', cls: 'analytics' },
           { href: '/admin/vets.html', icon: '👨‍⚕️', title: 'Manage Vets', desc: 'Add and manage veterinarians' },
@@ -367,9 +367,9 @@
         indicators[0].classList.add('offline');
       }
 
-      // Check backend API (example: /api/chat)
+      // Check backend API (example: /api/util?action=chat)
       try {
-        const res = await fetch('/api/chat', { method: 'OPTIONS' });
+        const res = await fetch('/api/util?action=chat', { method: 'OPTIONS' });
         if (!res.ok) throw new Error();
         indicators[1].classList.remove('offline');
         indicators[1].classList.add('online');

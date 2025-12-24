@@ -16,7 +16,7 @@ let notifications = [];
 
 async function loadNotifications() {
   try {
-    const res = await fetch('/api/notifications');
+    const res = await fetch('/api/util?action=notifications');
     notifications = await res.json();
     renderNotifications('all');
   } catch (err) {

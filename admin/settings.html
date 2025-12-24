@@ -805,12 +805,12 @@
         // Get current settings
         let settings = {};
         try {
-          const res = await fetch('/api/settings');
+          const res = await fetch('/api/util?action=settings');
           settings = await res.json();
         } catch {}
         // Merge section
         settings = { ...settings, ...section };
-        await fetch('/api/settings', {
+        await fetch('/api/util?action=settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(settings)
@@ -836,7 +836,7 @@
       window.addEventListener('DOMContentLoaded', async () => {
         let settings = {};
         try {
-          const res = await fetch('/api/settings');
+          const res = await fetch('/api/util?action=settings');
           settings = await res.json();
         } catch {}
         // Business Info
