@@ -34,11 +34,94 @@
       </div>
     </nav>
   </header>
+
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <!-- ...existing code... -->
+      <h2>Healthy Pets, Healthy Farms, Healthy Families</h2>
+      <p>Trusted veterinary services with a gentle touch.</p>
+      <a href="contact.html" class="btn">Book an Appointment</a>
     </div>
   </section>
+
+  <!-- Quick Links Section -->
+  <section class="quick-links">
+    <div class="link-card">
+      <h3>About Us</h3>
+      <p>Learn more about our story and mission to care for your Animals.</p>
+      <a href="about.html" class="btn-small">Explore</a>
+    </div>
+    <div class="link-card">
+      <h3>Services</h3>
+      <p>From preventive care to advanced surgery, we provide a full range of services.</p>
+      <a href="services.html" class="btn-small">Discover</a>
+    </div>
+    <div class="link-card">
+      <h3>Our Team</h3>
+      <p>Meet the passionate veterinarians and nurses who make Animora special.</p>
+      <a href="staff.html" class="btn-small">Meet Us</a>
+    </div>
+    <div class="link-card">
+      <h3>Appointments</h3>
+      <p>Schedule a consultation or wellness check for your beloved pet today.</p>
+      <a href="contact.html" class="btn-small">Book Now</a>
+    </div>
+  </section>
+
+  <!-- AI Assistant Section -->
+  <section style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="color: #16A34A; margin-bottom: 10px;">Animora AI</h2>
+      <p style="color: #d1d5db; margin-bottom: 5px; font-weight: 500;">Your intelligent veterinary assistant powered by advanced AI technology for instant answers about animal diseases, treatments, and care.</p>
+      <p style="color: #16A34A; font-size: 0.9rem; font-style: italic; font-weight: 600;">Developed by Duke Sav</p>
+    </div>
+    <iframe 
+      src="animora-ai/chat.html" 
+      style="width: 100%; height: 700px; border: none; border-radius: 12px; display: block;"
+      title="Animora AI Chat"
+    ></iframe>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Animora Farm Health | All Rights Reserved</p>
+  </footer>
+
+  <!-- Floating Blog Button -->
+  <script src="js/floating-blog.js"></script>
+
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+
+  <!-- Global Error Handler & Loading Spinner Logic -->
+  <script>
+    // Show loading spinner on fetch/ajax start, hide on complete
+    function showLoading() {
+      document.getElementById('globalLoading').style.display = 'flex';
+    }
+    function hideLoading() {
+      document.getElementById('globalLoading').style.display = 'none';
+    }
+    // Patch fetch to show spinner
+    const origFetch = window.fetch;
+    window.fetch = function(...args) {
+      showLoading();
+      return origFetch.apply(this, args).finally(hideLoading);
+    };
+    // Global error handler
+    window.addEventListener('error', function(e) {
+      alert('An unexpected error occurred. Please try again or contact support.');
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      alert('A network or script error occurred. Please check your connection or try again.');
+    });
+    // Secret Admin Access: Press Ctrl+Shift+A
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    });
+  </script>
 </body>
 </html>
