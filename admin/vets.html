@@ -419,9 +419,16 @@
 </head>
 <body>
   <div class="container">
+
     <div class="header">
       <h1>👨‍⚕️ Manage Veterinarians</h1>
       <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div class="search-bar" style="display:flex;justify-content:center;margin-bottom:20px;gap:10px;">
+      <input type="text" id="searchInput" placeholder="Search by name, location, or service..." style="width:320px;padding:10px 16px;border:2px solid #16A34A;border-radius:8px;font-size:1rem;">
+      <button onclick="searchVets()" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;cursor:pointer;">Search</button>
+      <button onclick="exportVets()" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;cursor:pointer;">Export</button>
     </div>
 
     <div id="successMessage" class="success" style="display: none;"></div>
@@ -728,14 +735,14 @@
       }
     }
 
+
     function displayVets(vetsData) {
       const container = document.getElementById('vetsContainer');
-      
       if (vetsData.length === 0) {
-        container.innerHTML = '<div class="loading">No veterinarians added yet. Click "Add New Vet" to get started.</div>';
+        container.innerHTML = '<div class="loading">No veterinarians added yet. Click "Add New Vet" to get started.' +
+          '<br><br><em>Tip: Use the Export button to backup your data.</em></div>';
         return;
       }
-
       container.innerHTML = `
         <div class="vets-grid">
           ${vetsData.map(vet => `
@@ -756,6 +763,53 @@
           `).join('')}
         </div>
       `;
+    }
+
+    function searchVets() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      if (!q) {
+        displayVets(vets);
+        return;
+      }
+      const filtered = vets.filter(vet =>
+        vet.name.toLowerCase().includes(q) ||
+        vet.location.toLowerCase().includes(q) ||
+        vet.services.some(s => s.toLowerCase().includes(q))
+      );
+      displayVets(filtered);
+    }
+
+    function exportVets() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(vets, null, 2));
+      const dl = document.createElement('a');
+      dl.setAttribute('href', dataStr);
+      dl.setAttribute('download', 'vets-backup.json');
+      document.body.appendChild(dl);
+      dl.click();
+      document.body.removeChild(dl);
+    }
+
+    // Add sample cards for demonstration (if less than 3)
+    function addSampleVets() {
+      if (vets.length < 3) {
+        const samples = [
+          {
+            id: 'vet_sample1',
+            name: 'Dr. Jane Mwangi',
+            location: 'Kisumu, Kenya',
+            services: ['Vaccination', 'Consultation', 'Lab Test']
+          },
+          {
+            id: 'vet_sample2',
+            name: 'Dr. Samuel Otieno',
+            location: 'Nairobi, Kenya',
+            services: ['Surgery', 'Emergency Services', 'Breed Selection']
+          }
+        ];
+        samples.forEach(s => {
+          if (!vets.find(v => v.id === s.id)) vets.push(s);
+        });
+      }
     }
 
     function openModal() {
@@ -902,6 +956,8 @@
 
     // Load vets on page load
     loadVets();
+    // Add sample vets for demo if needed
+    setTimeout(() => { addSampleVets(); displayVets(vets); }, 1000);
   </script>
 </body>
 </html>
