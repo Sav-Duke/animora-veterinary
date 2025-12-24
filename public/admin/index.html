@@ -1,1 +1,330 @@
-<!-- ...existing code... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+      .help-icon {
+        display: inline-block;
+        margin-left: 6px;
+        color: #16A34A;
+        font-size: 1.1rem;
+        cursor: pointer;
+        vertical-align: middle;
+        transition: color 0.2s;
+      }
+      .help-icon:hover {
+        color: #15803d;
+      }
+      .tooltip {
+        display: none;
+        position: absolute;
+        background: #fff;
+        color: #222;
+        border: 1px solid #16A34A;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 0.98rem;
+        z-index: 1000;
+        box-shadow: 0 2px 12px rgba(22,163,74,0.08);
+        max-width: 260px;
+        line-height: 1.5;
+      }
+    </style>
+  <meta charset="UTF-8">
+  <title>Admin Panel | Animora Farm Health</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+  
+  <!-- Admin Password Protection -->
+  <script>
+    (function() {
+      // CHANGE THIS PASSWORD TO YOUR OWN STRONG PASSWORD
+      const ADMIN_PASSWORD = 'Animora@2025!';
+      
+      // Check if user is authenticated in this session
+      const isAuthenticated = sessionStorage.getItem('animoraAdminAuth');
+      
+      if (isAuthenticated !== ADMIN_PASSWORD) {
+        // Prompt for password
+        const enteredPassword = prompt('🔒 Admin Access Required\n\nEnter Admin Password:');
+        
+        if (enteredPassword !== ADMIN_PASSWORD) {
+          alert('❌ Access Denied: Incorrect Password');
+          window.location.href = '../index.html';
+        } else {
+          // Store authentication for this session
+          sessionStorage.setItem('animoraAdminAuth', enteredPassword);
+        }
+      }
+    })();
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .admin-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 40px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .admin-header h1 {
+      color: #16A34A;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+
+    .admin-header p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .admin-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .admin-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .admin-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+    }
+
+    .admin-card p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .admin-card.ai {
+      background: linear-gradient(135deg, #16A34A 0%, #15803d 100%);
+    }
+
+    .admin-card.database {
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    .admin-card.website {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .admin-card.analytics {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    .icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .status-bar {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .status-bar h4 {
+      margin: 0 0 10px 0;
+      color: #374151;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .status-indicator.online {
+      background: #10b981;
+    }
+
+    .status-indicator.offline {
+      background: #ef4444;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>Admin Panel</h1>
+      <p>Welcome to the Animora Farm Health admin dashboard. Manage your content, staff, services, and more.</p>
+    </div>
+    <div class="admin-grid">
+      <a href="about-manager.html" class="admin-card">
+        <div class="icon">📝</div>
+        <h3>About Content</h3>
+        <p>Edit About page, mission, vision, and values</p>
+      </a>
+      <a href="contact-manager.html" class="admin-card">
+        <div class="icon">📞</div>
+        <h3>Contact Info</h3>
+        <p>Manage phone, email, address, and hours</p>
+      </a>
+      <a href="services-manager.html" class="admin-card">
+        <div class="icon">💉</div>
+        <h3>Services</h3>
+        <p>Update veterinary services and categories</p>
+      </a>
+      <a href="staff-manager.html" class="admin-card">
+        <div class="icon">👩‍⚕️</div>
+        <h3>Staff</h3>
+        <p>Edit team members, bios, and photos</p>
+      </a>
+      <a href="appointments.html" class="admin-card">
+        <div class="icon">📅</div>
+        <h3>Appointments</h3>
+        <p>View and manage appointment requests</p>
+      </a>
+      <a href="testimonials.html" class="admin-card">
+        <div class="icon">⭐</div>
+        <h3>Testimonials</h3>
+        <p>Approve, edit, or remove client reviews</p>
+      </a>
+      <a href="gallery.html" class="admin-card">
+        <div class="icon">📸</div>
+        <h3>Gallery</h3>
+        <p>Upload and manage photo gallery</p>
+      </a>
+      <a href="floating-blog.html" class="admin-card">
+        <div class="icon">📰</div>
+        <h3>Floating Blog</h3>
+        <p>Manage floating blog posts and settings</p>
+      </a>
+      <a href="performance-monitor.html" class="admin-card analytics">
+        <div class="icon">⚡</div>
+        <h3>Performance</h3>
+        <p>Monitor site speed and performance</p>
+      </a>
+      <a href="security-scanner.html" class="admin-card analytics">
+        <div class="icon">🔒</div>
+        <h3>Security</h3>
+        <p>Scan for vulnerabilities and threats</p>
+      </a>
+      <a href="site-health.html" class="admin-card analytics">
+        <div class="icon">🩺</div>
+        <h3>Site Health</h3>
+        <p>Check site health and diagnostics</p>
+      </a>
+      <a href="backup-restore.html" class="admin-card database">
+        <div class="icon">💾</div>
+        <h3>Backup & Restore</h3>
+        <p>Export and restore site data</p>
+      </a>
+      <a href="file-manager.html" class="admin-card database">
+        <div class="icon">🗂️</div>
+        <h3>File Manager</h3>
+        <p>Manage uploaded files and documents</p>
+      </a>
+      <a href="cms-test.html" class="admin-card ai">
+        <div class="icon">🪪</div>
+        <h3>CMS Test</h3>
+        <p>Test CMS API endpoints</p>
+      </a>
+      <a href="quick-stats.html" class="admin-card analytics">
+        <div class="icon">📊</div>
+        <h3>Quick Stats</h3>
+        <p>View site analytics and stats</p>
+      </a>
+      <a href="settings.html" class="admin-card">
+        <div class="icon">⚙️</div>
+        <h3>Settings</h3>
+        <p>Configure site and admin settings</p>
+      </a>
+      <a href="notifications.html" class="admin-card">
+        <div class="icon">🔔</div>
+        <h3>Notifications</h3>
+        <p>View system and user notifications</p>
+      </a>
+      <a href="diseases.html" class="admin-card">
+        <div class="icon">🦠</div>
+        <h3>Diseases</h3>
+        <p>Manage disease database</p>
+      </a>
+      <a href="vets.html" class="admin-card">
+        <div class="icon">👨‍⚕️</div>
+        <h3>Vets</h3>
+        <p>Manage veterinarians</p>
+      </a>
+      <a href="code-validator.html" class="admin-card">
+        <div class="icon">✅</div>
+        <h3>Code Validator</h3>
+        <p>Validate code quality and best practices</p>
+      </a>
+      <a href="seo-optimizer.html" class="admin-card">
+        <div class="icon">🚀</div>
+        <h3>SEO Optimizer</h3>
+        <p>Audit and improve SEO</p>
+      </a>
+    </div>
+    <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+    <div class="status-bar">
+      <h4>Status</h4>
+      <div class="status-item"><span class="status-indicator online"></span> Admin Panel Online</div>
+      <div class="status-item"><span class="status-indicator online"></span> All Systems Operational</div>
+    </div>
+  </div>
+  <script src="auth-check.js"></script>
+</body>
+</html>
