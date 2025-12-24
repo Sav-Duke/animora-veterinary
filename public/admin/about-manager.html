@@ -1,1 +1,222 @@
-<!-- ...existing code... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage About Content | Animora Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .header h1 {
+      color: #16A34A;
+      margin: 0;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: #16A34A;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #15803d;
+    }
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+    .form-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+    .form-section h2 {
+      color: #374151;
+      margin: 0 0 20px 0;
+      font-size: 1.3rem;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #374151;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      resize: vertical;
+    }
+    .values-list {
+      margin-top: 10px;
+    }
+    .value-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .value-item input {
+      flex: 1;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .alert {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Manage About Content</h1>
+      <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+    <div id="alertContainer"></div>
+    <form id="aboutForm">
+      <div class="form-section">
+        <h2>Main Content</h2>
+        <div class="form-group">
+          <label for="mainHeading">Main Heading</label>
+          <input type="text" id="mainHeading" placeholder="About Animora">
+        </div>
+        <div class="form-group">
+          <label for="introduction">Introduction Text</label>
+          <textarea id="introduction" rows="3" placeholder="Main introduction paragraph..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="promiseHeading">Promise/Commitment Heading</label>
+          <input type="text" id="promiseHeading" placeholder="Our Promise">
+        </div>
+        <div class="form-group">
+          <label for="promiseText">Promise/Commitment Text</label>
+          <textarea id="promiseText" rows="3" placeholder="Our commitment to clients..."></textarea>
+        </div>
+      </div>
+      <div class="form-section">
+        <h2>Mission & Vision</h2>
+        <div class="form-group">
+          <label for="mission">Mission Statement</label>
+          <textarea id="mission" rows="2" placeholder="Our mission..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="vision">Vision Statement</label>
+          <textarea id="vision" rows="2" placeholder="Our vision..."></textarea>
+        </div>
+      </div>
+      <div class="form-section">
+        <h2>Core Values</h2>
+        <div class="form-group">
+          <label for="coreValue1">Core Value 1</label>
+          <input type="text" id="coreValue1" placeholder="Value 1">
+        </div>
+        <div class="form-group">
+          <label for="coreValue2">Core Value 2</label>
+          <input type="text" id="coreValue2" placeholder="Value 2">
+        </div>
+        <div class="form-group">
+          <label for="coreValue3">Core Value 3</label>
+          <input type="text" id="coreValue3" placeholder="Value 3">
+        </div>
+        <div class="form-group">
+          <label for="coreValue4">Core Value 4</label>
+          <input type="text" id="coreValue4" placeholder="Value 4">
+        </div>
+        <div class="form-group values-list" id="coreValuesList">
+          <!-- Dynamic core values will be appended here -->
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="addValueBtn">+ Add Core Value</button>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    document.getElementById('aboutForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Gather form data and send to server (not implemented in this snippet)
+      alert('Changes saved! (This is a demo, no actual data is saved.)');
+    });
+
+    document.getElementById('addValueBtn').addEventListener('click', function() {
+      const valueList = document.getElementById('coreValuesList');
+      const index = valueList.children.length + 1;
+      const newValueItem = document.createElement('div');
+      newValueItem.classList.add('value-item');
+      newValueItem.innerHTML = `
+        <input type="text" id="coreValue${index}" placeholder="Value ${index}">
+        <button type="button" class="btn btn-small btn-secondary" onclick="removeValueItem(this)">✖ Remove</button>
+      `;
+      valueList.appendChild(newValueItem);
+    });
+
+    function removeValueItem(button) {
+      const valueItem = button.parentElement;
+      valueItem.remove();
+    }
+  </script>
+</body>
+</html>
