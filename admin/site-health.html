@@ -398,38 +398,72 @@
       const btn = document.getElementById('scanBtn');
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner"></div> Scanning...';
-      
       document.getElementById('checksGrid').style.display = 'none';
       document.getElementById('issuesList').style.display = 'none';
-      
       healthData.issues = [];
-      
       // Check pages
       await checkPages();
-      
       // Check APIs
       await checkAPIs();
-      
       // Check links (simulated)
       checkLinks();
-      
       // Check images (simulated)
       checkImages();
-      
       // Check performance
       checkPerformance();
-      
       // Check security
       checkSecurity();
-      
       // Calculate health score
       calculateHealthScore();
-      
+      // Save results to backend
+      const score = document.getElementById('scoreValue').textContent;
+      const lastScan = new Date().toLocaleTimeString();
+      try {
+        await fetch('/api/site-health', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lastScan, score, healthData })
+        });
+      } catch (e) { /* ignore */ }
       // Display results
       displayResults();
-      
       btn.disabled = false;
       btn.innerHTML = '🔍 Run Complete Health Check';
+    }
+
+    async function loadHealthCheck() {
+      try {
+        const res = await fetch('/api/site-health');
+        if (!res.ok) throw new Error('No scan data');
+        const data = await res.json();
+        if (data && data.healthData) {
+          healthData = data.healthData;
+          updateHealthUI(data);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    function updateHealthUI({ lastScan, score, healthData }) {
+      if (!healthData) return;
+      // Update all stats
+      document.getElementById('totalLinks').textContent = healthData.links.total;
+      document.getElementById('workingLinks').textContent = healthData.links.working;
+      document.getElementById('brokenLinks').textContent = healthData.links.broken;
+      document.getElementById('totalImages').textContent = healthData.images.total;
+      document.getElementById('loadedImages').textContent = healthData.images.loaded;
+      document.getElementById('missingImages').textContent = healthData.images.missing;
+      document.getElementById('totalPages').textContent = healthData.pages.total;
+      document.getElementById('accessiblePages').textContent = healthData.pages.accessible;
+      document.getElementById('errorPages').textContent = healthData.pages.errors;
+      document.getElementById('totalAPIs').textContent = healthData.apis.total;
+      document.getElementById('workingAPIs').textContent = healthData.apis.working;
+      document.getElementById('failedAPIs').textContent = healthData.apis.failed;
+      document.getElementById('scoreValue').textContent = score || '--';
+      document.getElementById('scoreLabel').textContent = lastScan ? `Last scan: ${lastScan}` : 'Click "Run Health Check" to scan';
+      document.getElementById('checksGrid').style.display = 'grid';
+      if (healthData.issues && healthData.issues.length > 0) {
+        displayIssues();
+      }
     }
 
     async function checkPages() {
@@ -675,7 +709,7 @@
 
     // Auto-run on load
     window.addEventListener('load', () => {
-      setTimeout(runHealthCheck, 500);
+      setTimeout(loadHealthCheck, 500);
     });
   </script>
 </body>

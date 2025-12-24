@@ -108,7 +108,6 @@
         description: 'Checking if user inputs are properly sanitized',
         severity: 'high',
         check: () => {
-          // Check if inputs have validation
           return document.querySelectorAll('input[type="text"]').length > 0;
         },
         fix: 'Add input sanitization and validation on all forms'
@@ -185,31 +184,68 @@
       btn.innerHTML = '⏳ Scanning for threats...';
 
       const threats = [];
-      const protected = [];
+      const protectedArr = [];
       let criticalCount = 0;
 
       securityChecks.forEach(check => {
         const isSecure = check.check();
-        
         if (!isSecure) {
           threats.push(check);
           if (check.severity === 'critical') criticalCount++;
         } else {
-          protected.push(check);
+          protectedArr.push(check);
         }
       });
 
       // Calculate security score
-      const secureCount = protected.length;
+      const secureCount = protectedArr.length;
       const totalChecks = securityChecks.length;
       const score = Math.round((secureCount / totalChecks) * 100);
+      const lastScan = new Date().toLocaleTimeString();
+
+      // Save results to backend
+      try {
+        await fetch('/api/security', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lastScan,
+            score,
+            threats,
+            protected: protectedArr,
+            criticalCount
+          })
+        });
+      } catch (e) {
+        // ignore
+      }
 
       // Update UI
-      document.getElementById('securityScore').textContent = score + '/100';
+      updateSecurityUI({ lastScan, score, threats, protected: protectedArr, criticalCount });
+
+      btn.disabled = false;
+      btn.innerHTML = '🔍 Scan for Security Threats';
+    }
+
+    async function loadSecurityScan() {
+      try {
+        const res = await fetch('/api/security');
+        if (!res.ok) throw new Error('No scan data');
+        const data = await res.json();
+        if (data && data.score !== null) {
+          updateSecurityUI(data);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function updateSecurityUI({ lastScan, score, threats, protected: protectedArr, criticalCount }) {
+      document.getElementById('securityScore').textContent = (score !== null ? score + '/100' : '--');
       document.getElementById('threatsCount').textContent = threats.length;
       document.getElementById('criticalCount').textContent = criticalCount;
-      document.getElementById('protectedCount').textContent = secureCount;
-      document.getElementById('lastScan').textContent = new Date().toLocaleTimeString();
+      document.getElementById('protectedCount').textContent = protectedArr.length;
+      document.getElementById('lastScan').textContent = lastScan || 'Never';
 
       const scoreElement = document.querySelector('.security-score');
       const labelElement = document.getElementById('securityLabel');
@@ -225,15 +261,9 @@
         scoreElement.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
       }
 
-      // Display threats
       displayThreats(threats);
-      
-      // Display recommendations
       displayRecommendations(score);
-
       document.getElementById('statsRow').style.display = 'grid';
-      btn.disabled = false;
-      btn.innerHTML = '🔍 Scan for Security Threats';
     }
 
     function displayThreats(threats) {
@@ -332,7 +362,7 @@
 
     // Auto-run on load
     window.addEventListener('load', () => {
-      setTimeout(runSecurityScan, 500);
+      setTimeout(loadSecurityScan, 500);
     });
   </script>
 </body>

@@ -80,70 +80,51 @@
       const btn = event.target;
       btn.disabled = true;
       btn.innerHTML = '⏳ Analyzing performance...';
+      try {
+        const response = await fetch('/api/performance', { method: 'POST' });
+        if (!response.ok) throw new Error('Performance test failed');
+        const result = await response.json();
+        // result: { loadTime, resourcesCount, pageSizeMB, score, timing, recommendations }
+        document.getElementById('loadTime').textContent = result.loadTime + 's';
+        document.getElementById('requests').textContent = result.resourcesCount;
+        document.getElementById('pageSize').textContent = result.pageSizeMB + ' MB';
+        document.getElementById('perfScore').textContent = result.score;
 
-      // Get performance metrics
-      const perfData = window.performance.timing;
-      const loadTime = ((perfData.loadEventEnd - perfData.navigationStart) / 1000).toFixed(2);
-      const resourcesCount = performance.getEntriesByType('resource').length;
-      
-      // Calculate page size
-      let totalSize = 0;
-      performance.getEntriesByType('resource').forEach(resource => {
-        totalSize += resource.transferSize || 0;
-      });
-      const pageSizeMB = (totalSize / 1024 / 1024).toFixed(2);
+        // Color code metrics
+        const loadTimeEl = document.getElementById('loadTime');
+        if (result.loadTime < 2) {
+          loadTimeEl.className = 'metric-value good';
+        } else if (result.loadTime < 4) {
+          loadTimeEl.className = 'metric-value warn';
+        } else {
+          loadTimeEl.className = 'metric-value bad';
+        }
+        const scoreEl = document.getElementById('perfScore');
+        if (result.score >= 80) {
+          scoreEl.className = 'metric-value good';
+        } else if (result.score >= 60) {
+          scoreEl.className = 'metric-value warn';
+        } else {
+          scoreEl.className = 'metric-value bad';
+        }
 
-      // Calculate performance score
-      let score = 100;
-      if (loadTime > 3) score -= 20;
-      if (loadTime > 5) score -= 20;
-      if (resourcesCount > 50) score -= 10;
-      if (totalSize > 5000000) score -= 10;
-
-      // Update UI
-      document.getElementById('loadTime').textContent = loadTime + 's';
-      document.getElementById('requests').textContent = resourcesCount;
-      document.getElementById('pageSize').textContent = pageSizeMB + ' MB';
-      document.getElementById('perfScore').textContent = score;
-
-      // Color code metrics
-      const loadTimeEl = document.getElementById('loadTime');
-      if (loadTime < 2) {
-        loadTimeEl.className = 'metric-value good';
-      } else if (loadTime < 4) {
-        loadTimeEl.className = 'metric-value warn';
-      } else {
-        loadTimeEl.className = 'metric-value bad';
+        // Show timing breakdown
+        showTimingBreakdown(result.timing);
+        // Show recommendations
+        showRecommendations(result.recommendations);
+      } catch (error) {
+        showAlert('Error running performance test', 'error');
       }
-
-      const scoreEl = document.getElementById('perfScore');
-      if (score >= 80) {
-        scoreEl.className = 'metric-value good';
-      } else if (score >= 60) {
-        scoreEl.className = 'metric-value warn';
-      } else {
-        scoreEl.className = 'metric-value bad';
-      }
-
-      // Show timing breakdown
-      showTimingBreakdown();
-
-      // Show recommendations
-      showRecommendations(loadTime, resourcesCount, totalSize);
-
       btn.disabled = false;
       btn.innerHTML = '🔍 Run Performance Test';
     }
 
-    function showTimingBreakdown() {
-      const perfData = window.performance.timing;
-      const dns = perfData.domainLookupEnd - perfData.domainLookupStart;
-      const tcp = perfData.connectEnd - perfData.connectStart;
-      const request = perfData.responseStart - perfData.requestStart;
-      const response = perfData.responseEnd - perfData.responseStart;
-      const dom = perfData.domContentLoadedEventEnd - perfData.domLoading;
-      const load = perfData.loadEventEnd - perfData.loadEventStart;
-
+    function showTimingBreakdown(timing) {
+      if (!timing) {
+        document.getElementById('timingChart').innerHTML = '<p>No timing data available.</p>';
+        return;
+      }
+      const { dns, tcp, response, dom } = timing;
       document.getElementById('timingChart').innerHTML = `
         <div style="text-align: left; max-width: 600px; margin: 0 auto;">
           <div style="margin-bottom: 15px;">
@@ -186,45 +167,11 @@
       `;
     }
 
-    function showRecommendations(loadTime, resources, size) {
-      const recommendations = [];
-
-      if (loadTime > 3) {
-        recommendations.push({
-          title: 'Reduce Page Load Time',
-          desc: 'Page takes longer than 3 seconds to load. Consider lazy loading images, minifying CSS/JS, and enabling browser caching.'
-        });
+    function showRecommendations(recommendations) {
+      if (!recommendations || !recommendations.length) {
+        document.getElementById('recommendations').style.display = 'none';
+        return;
       }
-
-      if (resources > 30) {
-        recommendations.push({
-          title: 'Optimize Resource Count',
-          desc: `${resources} resources loaded. Combine CSS/JS files, use CSS sprites for small images, and remove unused resources.`
-        });
-      }
-
-      if (size > 3000000) {
-        recommendations.push({
-          title: 'Reduce Page Size',
-          desc: `Page size is ${(size/1024/1024).toFixed(2)}MB. Compress images, minify code, and enable gzip compression.`
-        });
-      }
-
-      recommendations.push({
-        title: 'Enable Browser Caching',
-        desc: 'Set proper cache headers to allow browsers to cache static resources like images, CSS, and JavaScript files.'
-      });
-
-      recommendations.push({
-        title: 'Use CDN for Static Assets',
-        desc: 'Host images and libraries on a Content Delivery Network (CDN) for faster global delivery.'
-      });
-
-      recommendations.push({
-        title: 'Implement Lazy Loading',
-        desc: 'Load images and resources only when they\'re about to enter the viewport to improve initial page load.'
-      });
-
       const container = document.getElementById('recList');
       container.innerHTML = recommendations.map(rec => `
         <div class="rec-item">
@@ -232,8 +179,20 @@
           <p>${rec.desc}</p>
         </div>
       `).join('');
-
       document.getElementById('recommendations').style.display = 'block';
+    }
+    function showAlert(message, type) {
+      let container = document.getElementById('alertContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'alertContainer';
+        document.querySelector('.container').prepend(container);
+      }
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
     }
 
     // Auto-run on load

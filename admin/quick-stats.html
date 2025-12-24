@@ -490,36 +490,57 @@
   </div>
 
   <script>
-    // Load stats from various sources
+    // Load stats from backend APIs
     async function loadStats() {
       try {
-        // Load appointments
-        const appointments = JSON.parse(localStorage.getItem('animoraAppointments') || '[]');
+        // Appointments
+        const appointmentsRes = await fetch('/api/appointments');
+        const appointments = await appointmentsRes.json();
         const today = new Date().toISOString().split('T')[0];
-        const todayAppointments = appointments.filter(a => a.date === today);
+        const todayAppointments = Array.isArray(appointments) ? appointments.filter(a => a.date === today) : [];
         document.getElementById('appointmentsToday').textContent = todayAppointments.length;
 
-        // Load staff
+        // Staff
         const staffResponse = await fetch('/api/staff');
         const staff = await staffResponse.json();
-        document.getElementById('totalStaff').textContent = staff.length;
+        document.getElementById('totalStaff').textContent = Array.isArray(staff) ? staff.length : 0;
 
-        // Load services
+        // Services
         const servicesResponse = await fetch('/api/services');
         const services = await servicesResponse.json();
         let totalServices = 0;
-        Object.values(services).forEach(category => {
-          if (Array.isArray(category)) totalServices += category.length;
-        });
+        if (Array.isArray(services)) {
+          totalServices = services.length;
+        } else {
+          Object.values(services).forEach(category => {
+            if (Array.isArray(category)) totalServices += category.length;
+          });
+        }
         document.getElementById('totalServices').textContent = totalServices;
 
-        // Load diseases count
+        // Diseases
         try {
-          const diseasesResponse = await fetch('http://localhost:4001/api/diseases');
+          const diseasesResponse = await fetch('/api/diseases');
           const diseases = await diseasesResponse.json();
-          document.getElementById('totalDiseases').textContent = diseases.length;
+          document.getElementById('totalDiseases').textContent = Array.isArray(diseases) ? diseases.length : 0;
         } catch (e) {
           document.getElementById('totalDiseases').textContent = '20+';
+        }
+
+        // Pending Contacts
+        try {
+          const contactsResponse = await fetch('/api/contact-info');
+          const contacts = await contactsResponse.json();
+          // If contacts have a 'status' field, count those pending
+          let pending = 0;
+          if (Array.isArray(contacts)) {
+            pending = contacts.filter(c => c.status === 'pending').length;
+          } else if (contacts && contacts.inquiries) {
+            pending = contacts.inquiries.filter(c => c.status === 'pending').length;
+          }
+          document.getElementById('pendingContacts').textContent = pending;
+        } catch (e) {
+          document.getElementById('pendingContacts').textContent = '0';
         }
 
       } catch (error) {

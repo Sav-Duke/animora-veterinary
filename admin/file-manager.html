@@ -384,66 +384,23 @@
   </div>
 
   <script>
+    let files = [];
     let currentPath = '';
-    
-    // File system structure
-    const fileSystem = {
-      folders: [
-        { name: 'images', icon: '📁', type: 'folder', files: [
-          { name: 'team', icon: '📂', type: 'folder' },
-          { name: 'gallery', icon: '📂', type: 'folder' },
-          { name: 'services', icon: '📂', type: 'folder' }
-        ]},
-        { name: 'documents', icon: '📁', type: 'folder', files: [
-          { name: 'policies.pdf', icon: '📄', type: 'document', size: '256 KB' },
-          { name: 'forms.pdf', icon: '📄', type: 'document', size: '128 KB' }
-        ]},
-        { name: 'data', icon: '📁', type: 'folder', files: [
-          { name: 'staff.json', icon: '📊', type: 'document', size: '12 KB' },
-          { name: 'services.json', icon: '📊', type: 'document', size: '8 KB' },
-          { name: 'vets.json', icon: '📊', type: 'document', size: '24 KB' }
-        ]},
-        { name: 'styles', icon: '📁', type: 'folder', files: [] },
-        { name: 'js', icon: '📁', type: 'folder', files: [] }
-      ],
-      root: [
-        { name: 'index.html', icon: '🌐', type: 'document', size: '45 KB' },
-        { name: 'about.html', icon: '🌐', type: 'document', size: '38 KB' },
-        { name: 'services.html', icon: '🌐', type: 'document', size: '42 KB' },
-        { name: 'contact.html', icon: '🌐', type: 'document', size: '35 KB' },
-        { name: 'staff.html', icon: '🌐', type: 'document', size: '40 KB' },
-        { name: 'README.md', icon: '📝', type: 'document', size: '18 KB' }
-      ]
-    };
 
-    function loadFiles() {
+    async function loadFiles() {
       const fileGrid = document.getElementById('fileGrid');
       const emptyState = document.getElementById('emptyState');
-      
-      let files = [];
-      
-      if (currentPath === '') {
-        // Root level
-        files = [...fileSystem.folders, ...fileSystem.root];
-      } else {
-        // Inside a folder
-        const folder = fileSystem.folders.find(f => f.name === currentPath);
-        if (folder && folder.files) {
-          files = folder.files;
-        }
-      }
-
-      if (files.length === 0) {
+      const res = await fetch('/api/file-manager');
+      files = await res.json();
+      if (!files || files.length === 0) {
         fileGrid.style.display = 'none';
         emptyState.style.display = 'block';
         return;
       }
-
       fileGrid.style.display = 'grid';
       emptyState.style.display = 'none';
-
       fileGrid.innerHTML = files.map(file => `
-        <div class="file-item ${file.type}" onclick="handleFileClick('${file.name}', '${file.type}')">
+        <div class="file-item ${file.type || (file.isDirectory ? 'folder' : 'document')}" onclick="handleFileClick('${file.name}', '${file.type || (file.isDirectory ? 'folder' : 'document')}')">
           <div class="file-actions">
             <div class="action-icon" onclick="event.stopPropagation(); downloadFile('${file.name}')" title="Download">
               ⬇️
@@ -452,23 +409,18 @@
               🗑️
             </div>
           </div>
-          <div class="file-icon">${file.icon}</div>
+          <div class="file-icon">${file.icon || (file.isDirectory ? '📁' : '📄')}</div>
           <div class="file-name">${file.name}</div>
-          ${file.size ? `<div class="file-size">${file.size}</div>` : ''}
+          ${file.size ? `<div class="file-size">${(file.size/1024).toFixed(1)} KB</div>` : ''}
         </div>
       `).join('');
-
       updateBreadcrumb();
       updateStorageInfo();
     }
 
     function handleFileClick(fileName, type) {
-      if (type === 'folder') {
-        currentPath = fileName;
-        loadFiles();
-      } else {
-        alert(`Opening: ${fileName}\n\nIn a real implementation, this would open/preview the file.`);
-      }
+      // For demo, folders are not navigable in this API version
+      alert(`Opening: ${fileName}\n\nIn a real implementation, this would open/preview the file or folder.`);
     }
 
     function navigateTo(path) {
@@ -478,25 +430,15 @@
 
     function updateBreadcrumb() {
       const breadcrumb = document.getElementById('breadcrumb');
-      
-      if (currentPath === '') {
-        breadcrumb.innerHTML = '<span onclick="navigateTo(\'\')">🏠 Root</span>';
-      } else {
-        breadcrumb.innerHTML = `
-          <span onclick="navigateTo('')">🏠 Root</span>
-          <span>›</span>
-          <span style="color: #16A34A;">${currentPath}</span>
-        `;
-      }
+      breadcrumb.innerHTML = '<span onclick="navigateTo(\'\')">🏠 Root</span>';
     }
 
     function updateStorageInfo() {
       // Simulated storage calculation
-      const usedMB = 125; // Simulated value
+      const usedMB = files.reduce((sum, f) => sum + (f.size || 0), 0) / 1024 / 1024;
       const totalMB = 1000;
       const percentage = (usedMB / totalMB * 100).toFixed(1);
-
-      document.getElementById('storageUsed').textContent = usedMB;
+      document.getElementById('storageUsed').textContent = usedMB.toFixed(1);
       document.getElementById('storagePercent').textContent = percentage + '%';
       document.getElementById('storageBar').style.width = percentage + '%';
     }
@@ -518,23 +460,34 @@
       }
     }
 
-    function uploadFiles(files) {
+    async function uploadFiles(fileList) {
       const uploadProgress = document.getElementById('uploadProgress');
       const progressBar = document.getElementById('uploadProgressBar');
-      
       uploadProgress.style.display = 'block';
-      
-      // Simulate upload progress
+      // Simulate upload progress and API call
       let progress = 0;
       const interval = setInterval(() => {
         progress += 10;
         progressBar.style.width = progress + '%';
-        
         if (progress >= 100) {
           clearInterval(interval);
-          setTimeout(() => {
+          setTimeout(async () => {
+            // For each file, add to API (simulate, no binary upload)
+            for (let i = 0; i < fileList.length; i++) {
+              await fetch('/api/file-manager', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: fileList[i].name,
+                  size: fileList[i].size,
+                  type: fileList[i].type || 'document',
+                  icon: fileList[i].type && fileList[i].type.startsWith('image') ? '🖼️' : '📄',
+                  isDirectory: false
+                })
+              });
+            }
             closeUploadModal();
-            alert(`✅ Successfully uploaded ${files.length} file(s)!\n\nFiles have been added to the ${currentPath || 'root'} directory.`);
+            alert(`✅ Successfully uploaded ${fileList.length} file(s)!`);
             loadFiles();
           }, 500);
         }
@@ -545,29 +498,29 @@
       alert(`⬇️ Downloading: ${fileName}\n\nIn a real implementation, this would trigger a file download.`);
     }
 
-    function deleteFile(fileName) {
+    async function deleteFile(fileName) {
       if (confirm(`Are you sure you want to delete "${fileName}"?`)) {
-        alert(`🗑️ Deleted: ${fileName}\n\nIn a real implementation, this would remove the file from the server.`);
+        await fetch('/api/file-manager', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: fileName })
+        });
         loadFiles();
       }
     }
 
     // Drag and drop support
     const uploadArea = document.getElementById('uploadArea');
-    
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
       uploadArea.classList.add('dragover');
     });
-
     uploadArea.addEventListener('dragleave', () => {
       uploadArea.classList.remove('dragover');
     });
-
     uploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
       uploadArea.classList.remove('dragover');
-      
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         uploadFiles(files);

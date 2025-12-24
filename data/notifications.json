@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "type": "appointments",
+    "icon": "📅",
+    "title": "New Appointment Booking",
+    "text": "John Doe has booked an appointment for tomorrow at 10:00 AM for general checkup.",
+    "time": "5 minutes ago",
+    "unread": true
+  },
+  {
+    "id": 2,
+    "type": "system",
+    "icon": "⚠️",
+    "title": "Server Performance Alert",
+    "text": "Backend API response time has increased by 15%. Consider optimization.",
+    "time": "3 hours ago",
+    "unread": true
+  },
+  {
+    "id": 3,
+    "type": "appointments",
+    "icon": "✅",
+    "title": "Appointment Completed",
+    "text": "Mike Johnson's surgery consultation was marked as completed.",
+    "time": "2 days ago",
+    "unread": false
+  },
+  {
+    "id": 4,
+    "type": "system",
+    "icon": "👥",
+    "title": "Staff Profile Updated",
+    "text": "Dr. Jay's profile information has been modified by admin.",
+    "time": "Yesterday",
+    "unread": false
+  },
+  {
+    "id": 5,
+    "type": "appointments",
+    "icon": "📞",
+    "title": "Contact Form Submission",
+    "text": "Sarah Smith inquired about vaccination services. Requires response.",
+    "time": "1 hour ago",
+    "unread": true
+  },
+  {
+    "id": 6,
+    "type": "system",
+    "icon": "⭐",
+    "title": "New Review Received",
+    "text": "Emily Brown left a 5-star review for dental cleaning service.",
+    "time": "3 days ago",
+    "unread": false
+  }
+]

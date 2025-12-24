@@ -370,97 +370,17 @@
     let appointments = [];
     let filteredAppointments = [];
 
-    // Initialize with sample data
-    function initializeSampleData() {
-      const today = new Date();
-      const sampleAppointments = [
-        {
-          id: 1,
-          date: today.toISOString().split('T')[0],
-          time: '09:00',
-          clientName: 'John Doe',
-          petName: 'Max',
-          petType: 'Dog',
-          service: 'General Checkup',
-          email: 'john@email.com',
-          phone: '(555) 123-4567',
-          status: 'confirmed',
-          notes: 'Annual checkup for Max',
-          createdAt: new Date(today - 86400000).toISOString()
-        },
-        {
-          id: 2,
-          date: today.toISOString().split('T')[0],
-          time: '10:30',
-          clientName: 'Sarah Smith',
-          petName: 'Bella',
-          petType: 'Cat',
-          service: 'Vaccination',
-          email: 'sarah@email.com',
-          phone: '(555) 234-5678',
-          status: 'pending',
-          notes: 'Rabies vaccination due',
-          createdAt: new Date(today - 172800000).toISOString()
-        },
-        {
-          id: 3,
-          date: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
-          time: '14:00',
-          clientName: 'Mike Johnson',
-          petName: 'Rocky',
-          petType: 'Dog',
-          service: 'Surgery Consultation',
-          email: 'mike@email.com',
-          phone: '(555) 345-6789',
-          status: 'confirmed',
-          notes: 'Hip surgery consultation',
-          createdAt: new Date(today - 259200000).toISOString()
-        },
-        {
-          id: 4,
-          date: new Date(today.getTime() - 86400000).toISOString().split('T')[0],
-          time: '11:00',
-          clientName: 'Emily Brown',
-          petName: 'Whiskers',
-          petType: 'Cat',
-          service: 'Dental Cleaning',
-          email: 'emily@email.com',
-          phone: '(555) 456-7890',
-          status: 'completed',
-          notes: 'Regular dental checkup',
-          createdAt: new Date(today - 345600000).toISOString()
-        },
-        {
-          id: 5,
-          date: new Date(today.getTime() - 172800000).toISOString().split('T')[0],
-          time: '15:30',
-          clientName: 'David Wilson',
-          petName: 'Luna',
-          petType: 'Dog',
-          service: 'Emergency Visit',
-          email: 'david@email.com',
-          phone: '(555) 567-8901',
-          status: 'completed',
-          notes: 'Emergency - ate chocolate',
-          createdAt: new Date(today - 432000000).toISOString()
-        }
-      ];
-
-      // Check if data already exists in localStorage
-      const storedAppointments = localStorage.getItem('animoraAppointments');
-      if (!storedAppointments) {
-        localStorage.setItem('animoraAppointments', JSON.stringify(sampleAppointments));
+    // API-driven appointments
+    async function loadAppointments() {
+      try {
+        const response = await fetch('/api/appointments');
+        appointments = await response.json();
+        filteredAppointments = [...appointments];
+        updateStats();
+        renderAppointments();
+      } catch (error) {
+        showAlert('Error loading appointments', 'error');
       }
-
-      loadAppointments();
-    }
-
-    function loadAppointments() {
-      const stored = localStorage.getItem('animoraAppointments');
-      appointments = stored ? JSON.parse(stored) : [];
-      filteredAppointments = [...appointments];
-      updateStats();
-      renderAppointments();
     }
 
     function updateStats() {
@@ -581,26 +501,53 @@
       document.getElementById('detailsModal').style.display = 'none';
     }
 
-    function confirmAppointment(id) {
-      if (confirm('Confirm this appointment?')) {
-        const index = appointments.findIndex(a => a.id === id);
-        if (index !== -1) {
-          appointments[index].status = 'confirmed';
-          localStorage.setItem('animoraAppointments', JSON.stringify(appointments));
-          loadAppointments();
-        }
+    async function confirmAppointment(id) {
+      if (!confirm('Confirm this appointment?')) return;
+      try {
+        const apt = appointments.find(a => a.id === id);
+        if (!apt) return;
+        apt.status = 'confirmed';
+        await saveAppointments();
+        showAlert('Appointment confirmed', 'success');
+        await loadAppointments();
+      } catch (error) {
+        showAlert('Error confirming appointment', 'error');
       }
     }
 
-    function cancelAppointment(id) {
-      if (confirm('Cancel this appointment?')) {
-        const index = appointments.findIndex(a => a.id === id);
-        if (index !== -1) {
-          appointments[index].status = 'cancelled';
-          localStorage.setItem('animoraAppointments', JSON.stringify(appointments));
-          loadAppointments();
-        }
+    async function cancelAppointment(id) {
+      if (!confirm('Cancel this appointment?')) return;
+      try {
+        const apt = appointments.find(a => a.id === id);
+        if (!apt) return;
+        apt.status = 'cancelled';
+        await saveAppointments();
+        showAlert('Appointment cancelled', 'success');
+        await loadAppointments();
+      } catch (error) {
+        showAlert('Error cancelling appointment', 'error');
       }
+    }
+    async function saveAppointments() {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointments)
+      });
+      if (!response.ok) throw new Error('Save failed');
+    }
+    function showAlert(message, type) {
+      let container = document.getElementById('alertContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'alertContainer';
+        document.querySelector('.container').prepend(container);
+      }
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
     }
 
     function formatDate(dateStr) {
@@ -614,7 +561,7 @@
     }
 
     // Initialize on page load
-    initializeSampleData();
+    loadAppointments();
   </script>
 </body>
 </html>

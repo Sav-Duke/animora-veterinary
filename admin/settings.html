@@ -753,134 +753,120 @@
     function hashPasswordSync(password) {
       let hash = 0;
       const str = password + 'AnimoraSalt2025';
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return Math.abs(hash).toString(16);
-    }
-
-    function checkPasswordStrength() {
-      const password = document.getElementById('newPassword').value;
-      const strengthDiv = document.getElementById('passwordStrength');
-      const submitBtn = document.getElementById('submitBtn');
-
-      // Check requirements
-      const hasLength = password.length >= 12;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-
-      // Update requirement indicators
-      updateRequirement('req-length', hasLength);
-      updateRequirement('req-uppercase', hasUppercase);
-      updateRequirement('req-lowercase', hasLowercase);
-      updateRequirement('req-number', hasNumber);
-      updateRequirement('req-special', hasSpecial);
-
-      // Calculate strength
-      let strength = 0;
-      if (hasLength) strength++;
-      if (hasUppercase) strength++;
-      if (hasLowercase) strength++;
-      if (hasNumber) strength++;
-      if (hasSpecial) strength++;
-
-      // Display strength
-      if (password.length === 0) {
-        strengthDiv.textContent = '';
-        strengthDiv.className = 'password-strength';
-      } else if (strength < 3) {
-        strengthDiv.textContent = '⚠️ Weak Password';
-        strengthDiv.className = 'password-strength weak';
-      } else if (strength < 5) {
-        strengthDiv.textContent = '⚡ Medium Password';
-        strengthDiv.className = 'password-strength medium';
-      } else {
-        strengthDiv.textContent = '✅ Strong Password';
-        strengthDiv.className = 'password-strength strong';
+      // API-driven settings
+      async function saveBusinessInfo(event) {
+        event.preventDefault();
+        const name = document.getElementById('clinicName').value;
+        const tagline = document.getElementById('tagline').value;
+        const copyright = document.getElementById('copyrightName').value;
+        await saveSettingsSection({ business: { name, tagline, copyright } });
+        showSuccess('Business information saved!');
       }
 
-      // Enable/disable submit button
-      submitBtn.disabled = strength < 5;
-    }
-
-    function updateRequirement(id, met) {
-      const element = document.getElementById(id);
-      const icon = element.querySelector('.icon');
-      if (met) {
-        element.classList.add('met');
-        icon.textContent = '✓';
-      } else {
-        element.classList.remove('met');
-        icon.textContent = '○';
-      }
-    }
-
-    async function changePassword(event) {
-      event.preventDefault();
-
-      const currentPassword = document.getElementById('currentPassword').value;
-      const newPassword = document.getElementById('newPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-
-      const successDiv = document.getElementById('successMessage');
-      const errorDiv = document.getElementById('errorMessage');
-
-      // Hide previous messages
-      successDiv.style.display = 'none';
-      errorDiv.style.display = 'none';
-
-      // Verify current password
-      const currentHash = hashPasswordSync(currentPassword);
-      const storedHash = localStorage.getItem('animoraAdminPasswordHash');
-
-      if (currentHash !== storedHash) {
-        errorDiv.textContent = '❌ Current password is incorrect';
-        errorDiv.style.display = 'block';
-        document.getElementById('currentPassword').focus();
-        return;
+      async function saveSEOSettings(event) {
+        event.preventDefault();
+        const metaDescription = document.getElementById('metaDescription').value;
+        const metaKeywords = document.getElementById('metaKeywords').value;
+        const googleAnalytics = document.getElementById('googleAnalytics').value;
+        await saveSettingsSection({ seo: { metaDescription, metaKeywords, googleAnalytics } });
+        showSuccess('SEO settings saved!');
       }
 
-      // Check if passwords match
-      if (newPassword !== confirmPassword) {
-        errorDiv.textContent = '❌ New passwords do not match';
-        errorDiv.style.display = 'block';
-        document.getElementById('confirmPassword').focus();
-        return;
+      async function saveAppointmentSettings(event) {
+        event.preventDefault();
+        const appointmentEmail = document.getElementById('appointmentEmail').value;
+        const maxDailyAppointments = document.getElementById('maxDailyAppointments').value;
+        const appointmentDuration = document.getElementById('appointmentDuration').value;
+        const requireDeposit = document.getElementById('requireDeposit').checked;
+        await saveSettingsSection({ appointment: { appointmentEmail, maxDailyAppointments, appointmentDuration, requireDeposit } });
+        showSuccess('Appointment settings saved!');
       }
 
-      // Check if new password is different from current
-      if (currentPassword === newPassword) {
-        errorDiv.textContent = '❌ New password must be different from current password';
-        errorDiv.style.display = 'block';
-        document.getElementById('newPassword').focus();
-        return;
+      async function saveNotificationSettings(event) {
+        event.preventDefault();
+        const notifyNewAppointment = document.getElementById('notifyNewAppointment').checked;
+        const notifyNewContact = document.getElementById('notifyNewContact').checked;
+        const notifyNewReview = document.getElementById('notifyNewReview').checked;
+        await saveSettingsSection({ notification: { notifyNewAppointment, notifyNewContact, notifyNewReview } });
+        showSuccess('Notification settings saved!');
       }
 
-      // Update password
-      const newHash = hashPasswordSync(newPassword);
-      localStorage.setItem('animoraAdminPasswordHash', newHash);
+      async function saveSocialMedia(event) {
+        event.preventDefault();
+        const facebookUrl = document.getElementById('facebookUrl').value;
+        const twitterUrl = document.getElementById('twitterUrl').value;
+        const instagramUrl = document.getElementById('instagramUrl').value;
+        const linkedinUrl = document.getElementById('linkedinUrl').value;
+        await saveSettingsSection({ social: { facebookUrl, twitterUrl, instagramUrl, linkedinUrl } });
+        showSuccess('Social media links saved!');
+      }
 
-      // Show success message
-      successDiv.textContent = '✅ Password updated successfully! Please use your new password on next login.';
-      successDiv.style.display = 'block';
+      async function saveSettingsSection(section) {
+        // Get current settings
+        let settings = {};
+        try {
+          const res = await fetch('/api/settings');
+          settings = await res.json();
+        } catch {}
+        // Merge section
+        settings = { ...settings, ...section };
+        await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+      }
 
-      // Reset form
-      document.getElementById('passwordChangeForm').reset();
-      document.getElementById('passwordStrength').textContent = '';
-      document.getElementById('passwordStrength').className = 'password-strength';
+      function showSuccess(msg) {
+        const div = document.getElementById('successMessage');
+        div.textContent = '✅ ' + msg;
+        div.style.display = 'block';
+        document.getElementById('errorMessage').style.display = 'none';
+        setTimeout(() => { div.style.display = 'none'; }, 3000);
+      }
+      function showError(msg) {
+        const div = document.getElementById('errorMessage');
+        div.textContent = '❌ ' + msg;
+        div.style.display = 'block';
+        document.getElementById('successMessage').style.display = 'none';
+        setTimeout(() => { div.style.display = 'none'; }, 4000);
+      }
 
-      // Reset requirement indicators
-      ['req-length', 'req-uppercase', 'req-lowercase', 'req-number', 'req-special'].forEach(id => {
-        updateRequirement(id, false);
+      // Load settings on page load
+      window.addEventListener('DOMContentLoaded', async () => {
+        let settings = {};
+        try {
+          const res = await fetch('/api/settings');
+          settings = await res.json();
+        } catch {}
+        // Business Info
+        const business = settings.business || {};
+        document.getElementById('clinicName').value = business.name || '';
+        document.getElementById('tagline').value = business.tagline || '';
+        document.getElementById('copyrightName').value = business.copyright || '';
+        // SEO
+        const seo = settings.seo || {};
+        document.getElementById('metaDescription').value = seo.metaDescription || '';
+        document.getElementById('metaKeywords').value = seo.metaKeywords || '';
+        document.getElementById('googleAnalytics').value = seo.googleAnalytics || '';
+        // Appointments
+        const appt = settings.appointment || {};
+        document.getElementById('appointmentEmail').value = appt.appointmentEmail || '';
+        document.getElementById('maxDailyAppointments').value = appt.maxDailyAppointments || '';
+        document.getElementById('appointmentDuration').value = appt.appointmentDuration || '';
+        document.getElementById('requireDeposit').checked = appt.requireDeposit || false;
+        // Notifications
+        const notif = settings.notification || {};
+        document.getElementById('notifyNewAppointment').checked = notif.notifyNewAppointment !== false;
+        document.getElementById('notifyNewContact').checked = notif.notifyNewContact !== false;
+        document.getElementById('notifyNewReview').checked = notif.notifyNewReview !== false;
+        // Social Media
+        const social = settings.social || {};
+        document.getElementById('facebookUrl').value = social.facebookUrl || '';
+        document.getElementById('twitterUrl').value = social.twitterUrl || '';
+        document.getElementById('instagramUrl').value = social.instagramUrl || '';
+        document.getElementById('linkedinUrl').value = social.linkedinUrl || '';
       });
-
-      // Scroll to top to show success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
     // Initialize requirement indicators
     checkPasswordStrength();

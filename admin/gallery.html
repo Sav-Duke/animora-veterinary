@@ -120,61 +120,151 @@
       <a href="index.html" class="back-btn">← Back to Admin</a>
     </div>
 
-    <div class="upload-section" onclick="alert('Upload interface would open here. Drag & drop or click to select multiple images.')">
+    <div id="alertContainer"></div>
+    <div class="upload-section" id="uploadSection">
       <div class="upload-icon">📤</div>
       <h3 style="color: #374151; margin-bottom: 8px;">Upload New Photos</h3>
       <p style="color: #6b7280;">Drag & drop images or click to browse</p>
+      <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+      <button class="btn btn-primary" onclick="document.getElementById('fileInput').click(); event.stopPropagation();">Select Images</button>
     </div>
 
-    <div class="gallery-grid">
-      <div class="gallery-item">
-        <div class="placeholder-img">🐕</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
-        </div>
-      </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
 
-      <div class="gallery-item">
-        <div class="placeholder-img">🐈</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
+    <!-- Modal for viewing image -->
+    <div class="modal" id="viewModal" style="display:none;">
+      <div class="modal-content" style="max-width:700px;">
+        <div class="modal-header">
+          <h2>View Image</h2>
+          <button class="close-btn" onclick="closeViewModal()">×</button>
         </div>
-      </div>
-
-      <div class="gallery-item">
-        <div class="placeholder-img">🏥</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
-        </div>
-      </div>
-
-      <div class="gallery-item">
-        <div class="placeholder-img">👨‍⚕️</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
-        </div>
-      </div>
-
-      <div class="gallery-item">
-        <div class="placeholder-img">🦴</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
-        </div>
-      </div>
-
-      <div class="gallery-item">
-        <div class="placeholder-img">💉</div>
-        <div class="gallery-overlay">
-          <button class="overlay-btn">👁️ View</button>
-          <button class="overlay-btn">🗑️ Delete</button>
-        </div>
+        <img id="modalImage" src="" style="width:100%;border-radius:10px;">
       </div>
     </div>
+
+    <script>
+      let gallery = [];
+
+      // Load gallery images
+      async function loadGallery() {
+        try {
+          const response = await fetch('/api/gallery');
+          gallery = await response.json();
+          renderGallery();
+        } catch (error) {
+          showAlert('Error loading gallery', 'error');
+        }
+      }
+
+      // Render gallery
+      function renderGallery() {
+        const grid = document.getElementById('galleryGrid');
+        if (!gallery.length) {
+          grid.innerHTML = '<p style="color:#6b7280;text-align:center;">No images in gallery yet.</p>';
+          return;
+        }
+        grid.innerHTML = gallery.map(img => `
+          <div class="gallery-item">
+            <img src="../${img.path}" alt="Gallery Image" onclick="viewImage('../${img.path}')">
+            <div class="gallery-overlay">
+              <button class="overlay-btn" onclick="viewImage('../${img.path}')">👁️ View</button>
+              <button class="overlay-btn" onclick="deleteImage('${img.id}')">🗑️ Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Upload images
+      document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          if (file.size > 10 * 1024 * 1024) {
+            showAlert('Image too large (max 10MB)', 'error');
+            continue;
+          }
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            try {
+              const response = await fetch('/api/gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: event.target.result })
+              });
+              if (!response.ok) throw new Error('Upload failed');
+              showAlert('Image uploaded', 'success');
+              await loadGallery();
+            } catch (error) {
+              showAlert('Error uploading image', 'error');
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+      });
+
+      // Delete image
+      async function deleteImage(id) {
+        if (!confirm('Delete this image?')) return;
+        try {
+          const response = await fetch('/api/gallery', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          if (!response.ok) throw new Error('Delete failed');
+          showAlert('Image deleted', 'success');
+          await loadGallery();
+        } catch (error) {
+          showAlert('Error deleting image', 'error');
+        }
+      }
+
+      // View image modal
+      function viewImage(src) {
+        document.getElementById('modalImage').src = src;
+        document.getElementById('viewModal').style.display = 'flex';
+      }
+      function closeViewModal() {
+        document.getElementById('viewModal').style.display = 'none';
+      }
+
+      // Show alert
+      function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+      }
+
+      // Drag & drop upload
+      const uploadSection = document.getElementById('uploadSection');
+      uploadSection.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadSection.style.background = 'linear-gradient(135deg, #bbf7d0 0%, #dcfce7 100%)';
+      });
+      uploadSection.addEventListener('dragleave', () => {
+        uploadSection.style.background = '';
+      });
+      uploadSection.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadSection.style.background = '';
+        const files = Array.from(e.dataTransfer.files);
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        document.getElementById('fileInput').dispatchEvent(new Event('change'));
+      });
+
+      // Modal close on outside click
+      document.getElementById('viewModal').addEventListener('click', (e) => {
+        if (e.target.id === 'viewModal') closeViewModal();
+      });
+
+      // Initialize
+      loadGallery();
+    </script>
   </div>
 </body>
 </html>

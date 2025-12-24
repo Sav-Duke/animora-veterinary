@@ -65,9 +65,15 @@
   </div>
 
   <script>
-    let backups = JSON.parse(localStorage.getItem('animoraBackups') || '[]');
+    let backups = [];
 
-    function createBackup() {
+    async function fetchBackups() {
+      const res = await fetch('/api/backup');
+      backups = await res.json();
+      displayBackups();
+    }
+
+    async function createBackup() {
       const backup = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -83,20 +89,19 @@
           adminBtn: localStorage.getItem('animoraAdminFloatingBtn')
         }
       };
-
-      backups.unshift(backup);
-      localStorage.setItem('animoraBackups', JSON.stringify(backups));
-      
+      await fetch('/api/backup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(backup)
+      });
       alert('✅ Backup created successfully!');
-      displayBackups();
+      fetchBackups();
     }
 
-    function restoreBackup(id) {
+    async function restoreBackup(id) {
       if (!confirm('Are you sure you want to restore this backup? Current data will be replaced.')) return;
-
       const backup = backups.find(b => b.id === id);
       if (!backup) return;
-
       Object.keys(backup.data).forEach(key => {
         if (backup.data[key]) {
           const storageKey = key === 'staff' ? 'animoraStaff' :
@@ -110,15 +115,17 @@
           localStorage.setItem(storageKey, backup.data[key]);
         }
       });
-
       alert('✅ Backup restored successfully! Refresh pages to see restored data.');
     }
 
-    function deleteBackup(id) {
+    async function deleteBackup(id) {
       if (!confirm('Delete this backup?')) return;
-      backups = backups.filter(b => b.id !== id);
-      localStorage.setItem('animoraBackups', JSON.stringify(backups));
-      displayBackups();
+      await fetch('/api/backup', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      fetchBackups();
     }
 
     function scheduleBackup() {
@@ -127,11 +134,10 @@
 
     function displayBackups() {
       const container = document.getElementById('backupList');
-      if (backups.length === 0) {
+      if (!backups || backups.length === 0) {
         container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No backups created yet. Click "Create Full Backup Now" to get started.</p>';
         return;
       }
-
       container.innerHTML = backups.map(backup => {
         const date = new Date(backup.timestamp);
         return `
@@ -149,7 +155,7 @@
       }).join('');
     }
 
-    displayBackups();
+    fetchBackups();
   </script>
 </body>
 </html>

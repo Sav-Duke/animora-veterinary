@@ -538,55 +538,60 @@
     let gradientEnd = '#15803d';
     let selectedAdminIcon = '⚙️';
 
-    // Load existing settings
-    function loadSettings() {
-      const blogSettings = JSON.parse(localStorage.getItem('animoraFloatingBlog') || '{}');
-      
-      document.getElementById('enableButton').checked = blogSettings.enabled || false;
-      document.getElementById('blogUrl').value = blogSettings.url || '';
-      document.getElementById('buttonHeading').value = blogSettings.heading || 'Blog';
-      document.getElementById('buttonText').value = blogSettings.text || 'Check out our blog for exciting stories on livestock production';
-      document.getElementById('openNewTab').checked = blogSettings.newTab || false;
-      
-      if (blogSettings.icon) {
-        selectedIcon = blogSettings.icon;
-        document.querySelectorAll('#iconPicker .icon-option').forEach(icon => {
-          if (icon.dataset.icon === selectedIcon) {
-            icon.classList.add('selected');
-          } else {
-            icon.classList.remove('selected');
-          }
-        });
+    // Load settings from API
+    async function loadSettings() {
+      try {
+        const response = await fetch('/api/blog');
+        const data = await response.json();
+        const blogSettings = data.blogSettings || {};
+        const adminSettings = data.adminSettings || {};
+
+        document.getElementById('enableButton').checked = blogSettings.enabled || false;
+        document.getElementById('blogUrl').value = blogSettings.url || '';
+        document.getElementById('buttonHeading').value = blogSettings.heading || 'Blog';
+        document.getElementById('buttonText').value = blogSettings.text || 'Check out our blog for exciting stories on livestock production';
+        document.getElementById('openNewTab').checked = blogSettings.newTab || false;
+
+        if (blogSettings.icon) {
+          selectedIcon = blogSettings.icon;
+          document.querySelectorAll('#iconPicker .icon-option').forEach(icon => {
+            if (icon.dataset.icon === selectedIcon) {
+              icon.classList.add('selected');
+            } else {
+              icon.classList.remove('selected');
+            }
+          });
+        }
+
+        if (blogSettings.gradientStart && blogSettings.gradientEnd) {
+          gradientStart = blogSettings.gradientStart;
+          gradientEnd = blogSettings.gradientEnd;
+          document.getElementById('gradientStart').value = gradientStart;
+          document.getElementById('gradientEnd').value = gradientEnd;
+          selectedColor = `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`;
+        }
+
+        document.getElementById('enableAdminBtn').checked = adminSettings.enabled || false;
+        document.getElementById('adminBtnPosition').value = adminSettings.position || 'bottom-left';
+        document.getElementById('adminGradientStart').value = adminSettings.gradientStart || '#dc2626';
+        document.getElementById('adminGradientEnd').value = adminSettings.gradientEnd || '#b91c1c';
+
+        if (adminSettings.icon) {
+          selectedAdminIcon = adminSettings.icon;
+          document.querySelectorAll('#adminIconPicker .icon-option').forEach(icon => {
+            if (icon.dataset.icon === selectedAdminIcon) {
+              icon.classList.add('selected');
+            } else {
+              icon.classList.remove('selected');
+            }
+          });
+        }
+
+        updatePreview();
+        updateAdminPreview();
+      } catch (error) {
+        showAlert('Error loading blog settings', 'error');
       }
-      
-      if (blogSettings.gradientStart && blogSettings.gradientEnd) {
-        gradientStart = blogSettings.gradientStart;
-        gradientEnd = blogSettings.gradientEnd;
-        document.getElementById('gradientStart').value = gradientStart;
-        document.getElementById('gradientEnd').value = gradientEnd;
-        selectedColor = `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`;
-      }
-      
-      // Load admin button settings
-      const adminSettings = JSON.parse(localStorage.getItem('animoraAdminFloatingBtn') || '{}');
-      document.getElementById('enableAdminBtn').checked = adminSettings.enabled || false;
-      document.getElementById('adminBtnPosition').value = adminSettings.position || 'bottom-left';
-      document.getElementById('adminGradientStart').value = adminSettings.gradientStart || '#dc2626';
-      document.getElementById('adminGradientEnd').value = adminSettings.gradientEnd || '#b91c1c';
-      
-      if (adminSettings.icon) {
-        selectedAdminIcon = adminSettings.icon;
-        document.querySelectorAll('#adminIconPicker .icon-option').forEach(icon => {
-          if (icon.dataset.icon === selectedAdminIcon) {
-            icon.classList.add('selected');
-          } else {
-            icon.classList.remove('selected');
-          }
-        });
-      }
-      
-      updatePreview();
-      updateAdminPreview();
     }
 
     function selectIcon(element) {
@@ -694,9 +699,8 @@
       }
     }
 
-    function saveBlogSettings(event) {
+    async function saveBlogSettings(event) {
       event.preventDefault();
-      
       const blogSettings = {
         enabled: document.getElementById('enableButton').checked,
         url: document.getElementById('blogUrl').value,
@@ -709,23 +713,25 @@
         newTab: document.getElementById('openNewTab').checked,
         updatedAt: new Date().toISOString()
       };
-
-      localStorage.setItem('animoraFloatingBlog', JSON.stringify(blogSettings));
-      
-      const successDiv = document.getElementById('successMessage');
-      successDiv.textContent = '✅ Blog button settings saved successfully! Changes are now live on your website.';
-      successDiv.style.display = 'block';
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      setTimeout(() => {
-        successDiv.style.display = 'none';
-      }, 5000);
+      try {
+        const response = await fetch('/api/blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ blogSettings })
+        });
+        if (!response.ok) throw new Error('Save failed');
+        const successDiv = document.getElementById('successMessage');
+        successDiv.textContent = '✅ Blog button settings saved successfully! Changes are now live on your website.';
+        successDiv.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => { successDiv.style.display = 'none'; }, 5000);
+      } catch (error) {
+        showAlert('Error saving blog settings', 'error');
+      }
     }
 
-    function saveAdminBtnSettings(event) {
+    async function saveAdminBtnSettings(event) {
       event.preventDefault();
-      
       const adminSettings = {
         enabled: document.getElementById('enableAdminBtn').checked,
         icon: selectedAdminIcon,
@@ -734,18 +740,34 @@
         gradientEnd: document.getElementById('adminGradientEnd').value,
         updatedAt: new Date().toISOString()
       };
-
-      localStorage.setItem('animoraAdminFloatingBtn', JSON.stringify(adminSettings));
-      
-      const successDiv = document.getElementById('successMessage');
-      successDiv.textContent = '✅ Admin button settings saved successfully! Changes are now live.';
-      successDiv.style.display = 'block';
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      setTimeout(() => {
-        successDiv.style.display = 'none';
-      }, 5000);
+      try {
+        const response = await fetch('/api/blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminSettings })
+        });
+        if (!response.ok) throw new Error('Save failed');
+        const successDiv = document.getElementById('successMessage');
+        successDiv.textContent = '✅ Admin button settings saved successfully! Changes are now live.';
+        successDiv.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => { successDiv.style.display = 'none'; }, 5000);
+      } catch (error) {
+        showAlert('Error saving admin button settings', 'error');
+      }
+    }
+    function showAlert(message, type) {
+      let container = document.getElementById('alertContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'alertContainer';
+        document.querySelector('.container').prepend(container);
+      }
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
     }
 
     // Initialize

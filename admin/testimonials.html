@@ -148,77 +148,235 @@
       <a href="index.html" class="back-btn">← Back to Admin</a>
     </div>
 
-    <button class="add-btn" onclick="alert('Add New Testimonial form would open here')">➕ Add New Testimonial</button>
+    <div id="alertContainer"></div>
+    <button class="add-btn" onclick="openModal()">➕ Add New Testimonial</button>
+    <div id="testimonialsContainer"></div>
 
-    <div class="testimonial-card">
-      <div class="testimonial-header">
-        <div class="client-info">
-          <div class="client-avatar">JD</div>
-          <div>
-            <div class="client-name">John Doe</div>
-            <div class="client-service">General Checkup • Max (Dog)</div>
+    <!-- Modal for Add/Edit -->
+    <div class="modal" id="testimonialModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Testimonial</h2>
+          <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <form id="testimonialForm">
+          <input type="hidden" id="testimonialId">
+          <div class="form-group">
+            <label for="clientName">Client Name *</label>
+            <input type="text" id="clientName" required>
           </div>
-        </div>
-        <div>
-          <div class="stars">★★★★★</div>
-          <span class="status-badge published" style="margin-top: 5px; display: inline-block;">Published</span>
-        </div>
-      </div>
-      <div class="testimonial-text">
-        "Excellent service! Dr. Jay was very thorough and caring with Max. The facility is clean and modern. Highly recommend Animora to anyone looking for quality veterinary care."
-      </div>
-      <div class="testimonial-actions">
-        <button class="action-btn edit">✏️ Edit</button>
-        <button class="action-btn delete">🗑️ Delete</button>
+          <div class="form-group">
+            <label for="petName">Pet Name *</label>
+            <input type="text" id="petName" required>
+          </div>
+          <div class="form-group">
+            <label for="service">Service *</label>
+            <input type="text" id="service" required>
+          </div>
+          <div class="form-group">
+            <label for="rating">Rating *</label>
+            <select id="rating" required>
+              <option value="">-- Select --</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="testimonialText">Testimonial *</label>
+            <textarea id="testimonialText" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" required>
+              <option value="pending">Pending</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          </div>
+        </form>
       </div>
     </div>
 
-    <div class="testimonial-card">
-      <div class="testimonial-header">
-        <div class="client-info">
-          <div class="client-avatar" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">SS</div>
-          <div>
-            <div class="client-name">Sarah Smith</div>
-            <div class="client-service">Vaccination • Bella (Cat)</div>
-          </div>
-        </div>
-        <div>
-          <div class="stars">★★★★★</div>
-          <span class="status-badge pending" style="margin-top: 5px; display: inline-block;">Pending</span>
-        </div>
-      </div>
-      <div class="testimonial-text">
-        "Great experience! The staff was friendly and professional. Bella was nervous but they handled her with such care. Will definitely be back for future visits."
-      </div>
-      <div class="testimonial-actions">
-        <button class="action-btn approve">✓ Approve</button>
-        <button class="action-btn edit">✏️ Edit</button>
-        <button class="action-btn delete">🗑️ Delete</button>
-      </div>
-    </div>
+    <script>
+      let testimonials = [];
+      let editingId = null;
 
-    <div class="testimonial-card">
-      <div class="testimonial-header">
-        <div class="client-info">
-          <div class="client-avatar" style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);">MJ</div>
-          <div>
-            <div class="client-name">Mike Johnson</div>
-            <div class="client-service">Surgery • Rocky (Dog)</div>
+      // Load testimonials
+      async function loadTestimonials() {
+        try {
+          const response = await fetch('/api/testimonials');
+          testimonials = await response.json();
+          renderTestimonials();
+        } catch (error) {
+          showAlert('Error loading testimonials', 'error');
+        }
+      }
+
+      // Render testimonials
+      function renderTestimonials() {
+        const container = document.getElementById('testimonialsContainer');
+        if (!testimonials.length) {
+          container.innerHTML = '<p style="color: #6b7280; text-align:center;">No testimonials yet.</p>';
+          return;
+        }
+        container.innerHTML = testimonials.map(t => `
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="client-info">
+                <div class="client-avatar" style="background: linear-gradient(135deg, #${stringToColor(t.clientName)} 0%, #${stringToColor(t.petName)} 100%);">${getInitials(t.clientName)}</div>
+                <div>
+                  <div class="client-name">${t.clientName}</div>
+                  <div class="client-service">${t.service} • ${t.petName}</div>
+                </div>
+              </div>
+              <div>
+                <div class="stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div>
+                <span class="status-badge ${t.status}" style="margin-top: 5px; display: inline-block;">${capitalize(t.status)}</span>
+              </div>
+            </div>
+            <div class="testimonial-text">"${t.text}"</div>
+            <div class="testimonial-actions">
+              ${t.status === 'pending' ? `<button class="action-btn approve" onclick="approveTestimonial('${t.id}')">✓ Approve</button>` : ''}
+              <button class="action-btn edit" onclick="editTestimonial('${t.id}')">✏️ Edit</button>
+              <button class="action-btn delete" onclick="deleteTestimonial('${t.id}')">🗑️ Delete</button>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="stars">★★★★★</div>
-          <span class="status-badge published" style="margin-top: 5px; display: inline-block;">Published</span>
-        </div>
-      </div>
-      <div class="testimonial-text">
-        "Rocky's surgery went perfectly thanks to the skilled team at Animora. They explained everything clearly and the recovery has been smooth. Thank you for taking such good care of him!"
-      </div>
-      <div class="testimonial-actions">
-        <button class="action-btn edit">✏️ Edit</button>
-        <button class="action-btn delete">🗑️ Delete</button>
-      </div>
-    </div>
+        `).join('');
+      }
+
+      // Open modal
+      function openModal(id = null) {
+        editingId = id;
+        const modal = document.getElementById('testimonialModal');
+        const form = document.getElementById('testimonialForm');
+        const title = document.getElementById('modalTitle');
+        form.reset();
+        if (id) {
+          title.textContent = 'Edit Testimonial';
+          const t = testimonials.find(x => x.id === id);
+          if (t) {
+            document.getElementById('testimonialId').value = t.id;
+            document.getElementById('clientName').value = t.clientName;
+            document.getElementById('petName').value = t.petName;
+            document.getElementById('service').value = t.service;
+            document.getElementById('rating').value = t.rating;
+            document.getElementById('testimonialText').value = t.text;
+            document.getElementById('status').value = t.status;
+          }
+        } else {
+          title.textContent = 'Add Testimonial';
+        }
+        modal.classList.add('active');
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById('testimonialModal').classList.remove('active');
+        editingId = null;
+      }
+
+      // Edit testimonial
+      function editTestimonial(id) {
+        openModal(id);
+      }
+
+      // Approve testimonial
+      async function approveTestimonial(id) {
+        const t = testimonials.find(x => x.id === id);
+        if (t) {
+          t.status = 'published';
+          await saveTestimonials();
+          showAlert('Testimonial approved', 'success');
+        }
+      }
+
+      // Delete testimonial
+      async function deleteTestimonial(id) {
+        if (!confirm('Delete this testimonial?')) return;
+        testimonials = testimonials.filter(x => x.id !== id);
+        await saveTestimonials();
+        showAlert('Testimonial deleted', 'success');
+      }
+
+      // Handle form submit
+      document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('testimonialId').value || generateId();
+        const t = {
+          id,
+          clientName: document.getElementById('clientName').value,
+          petName: document.getElementById('petName').value,
+          service: document.getElementById('service').value,
+          rating: parseInt(document.getElementById('rating').value),
+          text: document.getElementById('testimonialText').value,
+          status: document.getElementById('status').value
+        };
+        if (editingId) {
+          const idx = testimonials.findIndex(x => x.id === editingId);
+          testimonials[idx] = t;
+        } else {
+          testimonials.push(t);
+        }
+        await saveTestimonials();
+        closeModal();
+        showAlert('Testimonial saved', 'success');
+      });
+
+      // Save testimonials
+      async function saveTestimonials() {
+        const response = await fetch('/api/testimonials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testimonials)
+        });
+        if (!response.ok) throw new Error('Save failed');
+        renderTestimonials();
+      }
+
+      // Helpers
+      function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+      }
+      function generateId() {
+        return 'tst_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      }
+      function getInitials(name) {
+        return name.split(' ').map(x => x[0]).join('').toUpperCase().slice(0,2);
+      }
+      function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+      function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let color = '';
+        for (let i = 0; i < 3; i++) {
+          color += ('00' + ((hash >> (i * 8)) & 0xFF).toString(16)).slice(-2);
+        }
+        return color;
+      }
+
+      // Close modal on outside click
+      document.getElementById('testimonialModal').addEventListener('click', (e) => {
+        if (e.target.id === 'testimonialModal') closeModal();
+      });
+
+      // Initialize
+      loadTestimonials();
+    </script>
   </div>
 </body>
 </html>

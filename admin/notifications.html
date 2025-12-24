@@ -6,61 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f3f4f6;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #16A34A;
-    }
-    .header h1 {
-      color: #16A34A;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .back-btn {
-      background: #6b7280;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .back-btn:hover { background: #4b5563; }
-    .notification-item {
-      padding: 20px;
-      border-left: 4px solid #16A34A;
-      background: #f9fafb;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      display: flex;
-      gap: 15px;
-      align-items: start;
-      transition: all 0.2s;
-    }
-    .notification-item:hover {
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .notification-item.unread {
-      background: #f0fdf4;
+    <div id="notificationList">
+      <!-- Notifications will be loaded here by notifications.js -->
+    </div>
       border-left-color: #16A34A;
       font-weight: 600;
     }
@@ -190,15 +138,6 @@
   </div>
 
   <script>
-    function filterNotifications(type) {
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-      
-      // In real implementation, filter notifications by type
-      console.log('Filter:', type);
-    }
-  </script>
+    <script src="../js/notifications.js"></script>
 </body>
 </html>
