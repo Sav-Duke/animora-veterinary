@@ -4,17 +4,430 @@
   <meta charset="UTF-8">
   <title>Animora AI Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/styles/ai.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: transparent;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      max-height: 700px;
+    }
+
+    .chat-header {
+      display: none;
+    }
+
+    .chat-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .chat-header p {
+      margin: 5px 0 0 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f9fafb;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message.user {
+      align-items: flex-end;
+    }
+
+    .message.ai {
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 75%;
+      padding: 12px 18px;
+      border-radius: 18px;
+      word-wrap: break-word;
+      line-height: 1.6;
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .message.ai .message-bubble {
+      background: white;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
+
+    .message.ai .message-bubble p {
+      margin: 10px 0;
+    }
+
+    .message.ai .message-bubble h1, 
+    .message.ai .message-bubble h2,
+    .message.ai .message-bubble h3 {
+      color: #16A34A;
+      margin: 15px 0 10px 0;
+    }
+
+    .message.ai .message-bubble h1 { font-size: 1.5rem; }
+    .message.ai .message-bubble h2 { font-size: 1.3rem; }
+    .message.ai .message-bubble h3 { font-size: 1.1rem; }
+
+    .message.ai .message-bubble ul,
+    .message.ai .message-bubble ol {
+      margin: 12px 0;
+      padding-left: 20px;
+    }
+
+    .message.ai .message-bubble li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+
+    .message.ai .message-bubble strong {
+      color: #16A34A;
+    }
+
+    .message.ai .message-bubble code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .typing-indicator {
+      padding: 12px 18px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      display: inline-block;
+    }
+
+    .typing-indicator span {
+      height: 8px;
+      width: 8px;
+      background: #9ca3af;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 0 2px;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .chat-input-container {
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 8px;
+      max-width: 100%;
+    }
+
+    .chat-input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .chat-input:focus {
+      border-color: #16A34A;
+    }
+
+    .send-button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #16A34A 0%, #15803d 100%);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .send-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(22, 163, 74, 0.3);
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .chat-messages {
+        padding: 15px;
+      }
+
+      .message-bubble {
+        max-width: 85%;
+        padding: 14px 16px;
+        line-height: 1.7;
+      }
+
+      .message.ai .message-bubble p {
+        margin: 12px 0;
+      }
+
+      .message.ai .message-bubble h1,
+      .message.ai .message-bubble h2,
+      .message.ai .message-bubble h3 {
+        margin: 18px 0 12px 0;
+      }
+
+      .message.ai .message-bubble ul,
+      .message.ai .message-bubble ol {
+        margin: 15px 0;
+        padding-left: 24px;
+      }
+
+      .message.ai .message-bubble li {
+        margin: 10px 0;
+        line-height: 1.7;
+      }
+
+      .chat-input-container {
+        padding: 10px;
+      }
+      
+      .chat-input-wrapper {
+        gap: 6px;
+      }
+
+      .chat-input {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+      }
+
+      .send-button {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+      }
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
-  <div id="ai-widget">
-    <h3>Animora AI Assistant</h3>
-    <div id="aiChat"></div>
-    <div class="ai-input">
-      <input id="aiInput" type="text" placeholder="Ask a question..." autocomplete="off" />
-      <button onclick="sendAIMessage()">Send</button>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>🐾 Animora AI Assistant</h1>
+      <p>Ask anything about animal diseases, treatments, and veterinary care</p>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="message ai">
+        <div class="message-bubble">
+          <strong>👋 Hello!</strong> I'm Animora AI, your veterinary assistant. I can help you with:
+          <ul>
+            <li>Animal disease information</li>
+            <li>Treatment recommendations</li>
+            <li>Diagnostic procedures</li>
+            <li>Clinical symptoms</li>
+            <li>Preventive care advice</li>
+          </ul>
+          What would you like to know?
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-container">
+      <div class="chat-input-wrapper">
+        <input 
+          type="text" 
+          id="chatInput" 
+          class="chat-input" 
+          placeholder="Ask about animal diseases, symptoms, treatments..."
+          autocomplete="off"
+        >
+        <button id="sendButton" class="send-button">Send</button>
+      </div>
     </div>
   </div>
-  <script src="/js/ai.js"></script>
+
+  <script>
+    // Use Vercel API routes
+    const API_BASE = '/api';
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+
+    let isTyping = false;
+
+    // Convert markdown to HTML (simple implementation)
+    function markdownToHtml(text) {
+      // Headers
+      text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+      text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+      text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+      
+      // Bold
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // Lists
+      text = text.replace(/^\* (.*$)/gim, '<li>$1</li>');
+      text = text.replace(/^- (.*$)/gim, '<li>$1</li>');
+      text = text.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+      
+      // Line breaks
+      text = text.replace(/\n\n/g, '</p><p>');
+      text = text.replace(/\n/g, '<br>');
+      
+      return '<p>' + text + '</p>';
+    }
+
+    function addMessage(type, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      
+      if (type === 'ai') {
+        bubbleDiv.innerHTML = markdownToHtml(content);
+      } else {
+        bubbleDiv.textContent = content;
+      }
+      
+      messageDiv.appendChild(bubbleDiv);
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      messageDiv.id = 'typingIndicator';
+      
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.innerHTML = '<span></span><span></span><span></span>';
+      
+      messageDiv.appendChild(typingDiv);
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message || isTyping) return;
+
+      addMessage('user', message);
+      chatInput.value = '';
+      
+      isTyping = true;
+      sendButton.disabled = true;
+      showTyping();
+
+      try {
+        const response = await fetch(`${API_BASE}/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        hideTyping();
+        addMessage('ai', data.response || data.reply || 'Sorry, I could not generate a response.');
+      } catch (error) {
+        hideTyping();
+        addMessage('ai', '👋 **Welcome to Animora AI!**\n\nOur AI assistant is currently being set up. In the meantime, you can:\n\n- 📞 **Call us** for immediate assistance\n- 📧 **Email** your questions\n- 📅 **Book an appointment** online\n\nWe\'ll have AI chat working soon! Thank you for your patience. 🐾');
+      } finally {
+        isTyping = false;
+        sendButton.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Don't auto-focus on mobile to prevent auto-scroll
+    if (window.innerWidth > 768) {
+      chatInput.focus();
+    }
+  </script>
 </body>
 </html>
