@@ -1,7 +1,8 @@
 {
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node@3.2.21"
-    }
-  }
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/admin/:path*.html", "destination": "/admin/:path*.html" },
+    { "source": "/admin/:path*", "destination": "/admin/index.html" }
+  ]
 }
