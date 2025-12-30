@@ -1,9 +1,17 @@
+
 // Animora Appointment Form — Enhanced, Modern, and Maintainable
 // Deployment test: If you see this in the console, contact.js loaded successfully.
 console.log('contact.js loaded: deployment test at 2025-12-23');
 // Last updated: 2025-12-22
 
 document.addEventListener("DOMContentLoaded", function () {
+  function logError(msg, err) {
+    if (err) {
+      console.error('[contact.js]', msg, err);
+    } else {
+      console.error('[contact.js]', msg);
+    }
+  }
   // --- DOM Elements ---
   const form = document.getElementById("appointmentForm");
   const successMessage = document.getElementById("successMessage");
