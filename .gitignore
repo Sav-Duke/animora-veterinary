@@ -6,3 +6,4 @@ animora-ai/backend/node_modules/
 .DS_Store
 Thumbs.db
 .cache/
+.env
