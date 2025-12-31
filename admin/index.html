@@ -36,23 +36,34 @@
   
   <!-- Admin Password Protection -->
   <script>
-    (function() {
-      // CHANGE THIS PASSWORD TO YOUR OWN STRONG PASSWORD
-      const ADMIN_PASSWORD = 'Animora@2025!';
-      
+    (async function() {
       // Check if user is authenticated in this session
       const isAuthenticated = sessionStorage.getItem('animoraAdminAuth');
-      
-      if (isAuthenticated !== ADMIN_PASSWORD) {
+      if (isAuthenticated !== 'true') {
         // Prompt for password
         const enteredPassword = prompt('🔒 Admin Access Required\n\nEnter Admin Password:');
-        
-        if (enteredPassword !== ADMIN_PASSWORD) {
-          alert('❌ Access Denied: Incorrect Password');
+        if (!enteredPassword) {
+          alert('❌ Access Denied: No Password Entered');
           window.location.href = '../index.html';
-        } else {
-          // Store authentication for this session
-          sessionStorage.setItem('animoraAdminAuth', enteredPassword);
+          return;
+        }
+        // Call backend for authentication
+        try {
+          const resp = await fetch('/api/main?action=admin-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: enteredPassword })
+          });
+          const data = await resp.json();
+          if (data.success) {
+            sessionStorage.setItem('animoraAdminAuth', 'true');
+          } else {
+            alert('❌ Access Denied: Incorrect Password');
+            window.location.href = '../index.html';
+          }
+        } catch (e) {
+          alert('❌ Access Denied: Server Error');
+          window.location.href = '../index.html';
         }
       }
     })();

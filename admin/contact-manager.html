@@ -84,7 +84,7 @@
     // Load contact data
     async function loadContact() {
       try {
-        const response = await fetch('/api/resources?type=contact-info');
+        const response = await fetch('/api/main?type=contact-info');
         contactData = await response.json();
         populateForm();
       } catch (error) {
@@ -134,7 +134,7 @@
       };
 
       try {
-        const response = await fetch('/api/resources?type=contact-info', {
+        const response = await fetch('/api/main?type=contact-info', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)

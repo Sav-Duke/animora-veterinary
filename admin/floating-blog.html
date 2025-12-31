@@ -541,7 +541,7 @@
     // Load settings from API
     async function loadSettings() {
       try {
-        const response = await fetch('/api/blog');
+        const response = await fetch('/api/main?action=blog');
         const data = await response.json();
         const blogSettings = data.blogSettings || {};
         const adminSettings = data.adminSettings || {};
@@ -714,7 +714,7 @@
         updatedAt: new Date().toISOString()
       };
       try {
-        const response = await fetch('/api/blog', {
+        const response = await fetch('/api/main?action=blog', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ blogSettings })
@@ -741,7 +741,7 @@
         updatedAt: new Date().toISOString()
       };
       try {
-        const response = await fetch('/api/blog', {
+        const response = await fetch('/api/main?action=blog', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ adminSettings })

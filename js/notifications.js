@@ -14,9 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let notifications = [];
 
+
 async function loadNotifications() {
   try {
-    const res = await fetch('/api/util?action=notifications');
+    const res = await fetch('/api/main?action=notifications');
     notifications = await res.json();
     renderNotifications('all');
   } catch (err) {

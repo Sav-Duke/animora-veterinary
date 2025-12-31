@@ -1,15 +1,11 @@
 // Admin Authentication Check
 // Include this file in all admin pages to protect them
 
-(function() {
-  // MUST MATCH THE PASSWORD IN index.html
-  const ADMIN_PASSWORD = 'Animora@2025!';
-  
+
+(async function() {
   // Check if user is authenticated
   const isAuthenticated = sessionStorage.getItem('animoraAdminAuth');
-  
-  if (isAuthenticated !== ADMIN_PASSWORD) {
-    // Not authenticated - redirect to admin index which will prompt for password
+  if (isAuthenticated !== 'true') {
     alert('⚠️ Session expired. Please login again.');
     window.location.href = 'index.html';
   }

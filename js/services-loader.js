@@ -1,9 +1,10 @@
 // Load and display services dynamically
 let servicesData = {};
 
+
 async function loadServices() {
   try {
-    const response = await fetch('/api/resources?type=services');
+    const response = await fetch('/api/main?type=services');
     servicesData = await response.json();
     renderServices();
   } catch (error) {

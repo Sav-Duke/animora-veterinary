@@ -146,9 +146,10 @@
       let gallery = [];
 
       // Load gallery images
+
       async function loadGallery() {
         try {
-          const response = await fetch('/api/gallery');
+          const response = await fetch('/api/main?action=gallery');
           gallery = await response.json();
           renderGallery();
         } catch (error) {
@@ -187,7 +188,7 @@
           const reader = new FileReader();
           reader.onload = async (event) => {
             try {
-              const response = await fetch('/api/gallery', {
+              const response = await fetch('/api/main?action=gallery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: event.target.result })
@@ -208,7 +209,7 @@
       async function deleteImage(id) {
         if (!confirm('Delete this image?')) return;
         try {
-          const response = await fetch('/api/gallery', {
+          const response = await fetch('/api/main?action=gallery', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id })

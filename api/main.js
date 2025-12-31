@@ -29,6 +29,18 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // Admin login endpoint
+  if (req.query.action === 'admin-login') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: 'Password required' });
+    if (password === process.env.ADMIN_PASSWORD) {
+      return res.status(200).json({ success: true });
+    } else {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+  }
+
   // Hello endpoint
   if (req.query.action === 'hello') {
     return res.status(200).json({ message: 'Hello from Vercel serverless!' });
@@ -118,6 +130,62 @@ export default async function handler(req, res) {
       }
       if (req.method === 'POST') {
         fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2));
+        return res.status(200).json({ success: true });
+      }
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // GALLERY
+    if (action === 'gallery') {
+      const filePath = path.join(process.cwd(), 'data', 'gallery.json');
+      if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, '[]');
+      if (req.method === 'GET') {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return res.status(200).json(data);
+      }
+      if (req.method === 'POST') {
+        const files = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        // Expecting { image: base64, ... }
+        const { image } = req.body;
+        if (!image) return res.status(400).json({ error: 'Image required' });
+        const id = Date.now().toString();
+        const imagePath = `uploads/gallery_${id}.png`;
+        const base64Data = image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+        fs.writeFileSync(path.join(process.cwd(), imagePath), base64Data, 'base64');
+        const newImage = { id, path: imagePath, uploadedAt: new Date().toISOString() };
+        files.unshift(newImage);
+        fs.writeFileSync(filePath, JSON.stringify(files, null, 2));
+        return res.status(201).json(newImage);
+      }
+      if (req.method === 'DELETE') {
+        const { id } = req.body;
+        let files = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const img = files.find(f => f.id === id);
+        if (!img) return res.status(404).json({ error: 'Image not found' });
+        files = files.filter(f => f.id !== id);
+        fs.writeFileSync(filePath, JSON.stringify(files, null, 2));
+        // Optionally delete the file from uploads
+        const imgPath = path.join(process.cwd(), img.path);
+        if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+        return res.status(200).json({ success: true });
+      }
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // BLOG BUTTON SETTINGS
+    if (action === 'blog') {
+      const filePath = path.join(process.cwd(), 'data', 'blog.json');
+      if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, '{}');
+      if (req.method === 'GET') {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        return res.status(200).json(data);
+      }
+      if (req.method === 'POST') {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const { blogSettings, adminSettings } = req.body;
+        if (blogSettings) data.blogSettings = blogSettings;
+        if (adminSettings) data.adminSettings = adminSettings;
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
         return res.status(200).json({ success: true });
       }
       return res.status(405).json({ error: 'Method not allowed' });

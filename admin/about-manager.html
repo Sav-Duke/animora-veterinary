@@ -79,7 +79,7 @@
     // Load about data
     async function loadAbout() {
       try {
-        const response = await fetch('/api/resources?type=about-content');
+        const response = await fetch('/api/main?type=about-content');
         aboutData = await response.json();
         values = aboutData.values || [];
         populateForm();
@@ -146,7 +146,7 @@
       };
 
       try {
-        const response = await fetch('/api/resources?type=about-content', {
+        const response = await fetch('/api/main?type=about-content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)
