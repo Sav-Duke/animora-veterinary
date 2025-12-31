@@ -2,8 +2,12 @@ node_modules/
 animora-ai/frontend/node_modules/
 animora-ai/backend/node_modules/
 .env
+!.env.example
 *.log
 .DS_Store
 Thumbs.db
 .cache/
 .env
+!.env.example
+.vercel
+.env*.local

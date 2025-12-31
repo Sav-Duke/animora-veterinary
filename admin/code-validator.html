@@ -43,6 +43,13 @@
 
     <button class="scan-btn" onclick="validateCode()">🔍 Validate Code Quality</button>
 
+    <div style="margin: 30px 0;">
+      <h2 style="color:#374151;">Code Validation Results</h2>
+      <button class="fix-btn" onclick="showAddValidationForm()">➕ Add Validation Result</button>
+      <div id="validationList"></div>
+      <div id="validationFormContainer" style="display:none;"></div>
+    </div>
+
     <div class="validation-grid" id="validationGrid"></div>
 
     <div class="best-practices" id="bestPractices" style="display: none;">
@@ -214,9 +221,144 @@
       });
     }
 
+    // --- Code Validator CRUD LOGIC ---
+    const validatorApi = '/api/code-validator';
+
+    async function fetchValidationResults() {
+      const res = await fetch(validatorApi);
+      const data = await res.json();
+      renderValidationList(data);
+    }
+
+    function renderValidationList(list) {
+      const el = document.getElementById('validationList');
+      if (!list.length) {
+        el.innerHTML = '<p style="color:#888;">No validation results found.</p>';
+        return;
+      }
+      el.innerHTML = `<table style="width:100%;margin-top:10px;border-collapse:collapse;">
+        <tr style="background:#f3f4f6;"><th>File</th><th>Result</th><th>Errors</th><th>Warnings</th><th>Actions</th></tr>
+        ${list.map(val => `
+          <tr style="border-bottom:1px solid #eee;">
+            <td>${val.file}</td>
+            <td>${val.result}</td>
+            <td>${val.errors.join('<br>')}</td>
+            <td>${val.warnings.join('<br>')}</td>
+            <td>
+              <button class="fix-btn" style="background:#f59e0b;" onclick="showEditValidationForm('${val._id}')">✏️ Edit</button>
+              <button class="fix-btn" style="background:#dc2626;" onclick="deleteValidationResult('${val._id}')">🗑️ Delete</button>
+            </td>
+          </tr>
+        `).join('')}
+      </table>`;
+    }
+
+    function showAddValidationForm() {
+      const c = document.getElementById('validationFormContainer');
+      c.innerHTML = `
+        <h3>Add Validation Result</h3>
+        <form onsubmit="addValidationResult(event)">
+          <input required name="file" placeholder="File (e.g. index.html)" style="width:200px;"> <br><br>
+          <input required name="result" placeholder="Result (pass/fail)" style="width:120px;"> <br><br>
+          <textarea name="errors" placeholder="Errors (one per line)" style="width:300px;height:40px;"></textarea> <br><br>
+          <textarea name="warnings" placeholder="Warnings (one per line)" style="width:300px;height:40px;"></textarea> <br><br>
+          <button class="fix-btn" type="submit">Add</button>
+          <button class="fix-btn" type="button" style="background:#6b7280;" onclick="hideValidationForm()">Cancel</button>
+        </form>
+      `;
+      c.style.display = '';
+    }
+
+    function showEditValidationForm(id) {
+      fetch(`${validatorApi}/${id}`)
+        .then(res => res.json())
+        .then(val => {
+          const c = document.getElementById('validationFormContainer');
+          c.innerHTML = `
+            <h3>Edit Validation Result</h3>
+            <form onsubmit="editValidationResult(event, '${val._id}')">
+              <input required name="file" value="${val.file}" style="width:200px;"> <br><br>
+              <input required name="result" value="${val.result}" style="width:120px;"> <br><br>
+              <textarea name="errors" style="width:300px;height:40px;">${val.errors.join('\n')}</textarea> <br><br>
+              <textarea name="warnings" style="width:300px;height:40px;">${val.warnings.join('\n')}</textarea> <br><br>
+              <button class="fix-btn" type="submit">Save</button>
+              <button class="fix-btn" type="button" style="background:#6b7280;" onclick="hideValidationForm()">Cancel</button>
+            </form>
+          `;
+          c.style.display = '';
+        });
+    }
+
+    function hideValidationForm() {
+      document.getElementById('validationFormContainer').style.display = 'none';
+    }
+
+    async function addValidationResult(e) {
+      e.preventDefault();
+      const f = e.target;
+      const body = {
+        file: f.file.value.trim(),
+        result: f.result.value.trim(),
+        errors: f.errors.value.split('\n').map(x=>x.trim()).filter(Boolean),
+        warnings: f.warnings.value.split('\n').map(x=>x.trim()).filter(Boolean)
+      };
+      const res = await fetch(validatorApi, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        hideValidationForm();
+        fetchValidationResults();
+      } else {
+        alert('Failed to add validation result');
+      }
+    }
+
+    async function editValidationResult(e, id) {
+      e.preventDefault();
+      const f = e.target;
+      const body = {
+        file: f.file.value.trim(),
+        result: f.result.value.trim(),
+        errors: f.errors.value.split('\n').map(x=>x.trim()).filter(Boolean),
+        warnings: f.warnings.value.split('\n').map(x=>x.trim()).filter(Boolean)
+      };
+      const res = await fetch(`${validatorApi}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        hideValidationForm();
+        fetchValidationResults();
+      } else {
+        alert('Failed to update validation result');
+      }
+    }
+
+    async function deleteValidationResult(id) {
+      if (!confirm('Delete this validation result?')) return;
+      const res = await fetch(`${validatorApi}/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchValidationResults();
+      } else {
+        alert('Failed to delete validation result');
+      }
+    }
+
+    window.fetchValidationResults = fetchValidationResults;
+    window.showAddValidationForm = showAddValidationForm;
+    window.showEditValidationForm = showEditValidationForm;
+    window.hideValidationForm = hideValidationForm;
+    window.addValidationResult = addValidationResult;
+    window.editValidationResult = editValidationResult;
+    window.deleteValidationResult = deleteValidationResult;
+
     // Auto-run on load
     window.addEventListener('load', () => {
       setTimeout(validateCode, 500);
+      fetchValidationResults();
     });
   </script>
 </body>

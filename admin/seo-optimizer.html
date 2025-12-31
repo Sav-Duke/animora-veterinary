@@ -42,6 +42,13 @@
 
     <button class="scan-btn" onclick="runSEOAudit()">🔍 Run SEO Audit</button>
 
+    <div style="margin: 30px 0;">
+      <h2 style="color:#374151;">SEO Entries</h2>
+      <button class="fix-btn" onclick="showAddSEOForm()">➕ Add SEO Entry</button>
+      <div id="seoList"></div>
+      <div id="seoFormContainer" style="display:none;"></div>
+    </div>
+
     <div class="checks-grid" id="checksGrid"></div>
 
     <div class="tips" id="tips" style="display: none;">
@@ -182,8 +189,143 @@
       });
     }
 
+    // --- SEO CRUD LOGIC ---
+    const apiBase = '/api/seo';
+
+    async function fetchSEOEntries() {
+      const res = await fetch(apiBase);
+      const data = await res.json();
+      renderSEOList(data);
+    }
+
+    function renderSEOList(list) {
+      const el = document.getElementById('seoList');
+      if (!list.length) {
+        el.innerHTML = '<p style="color:#888;">No SEO entries found.</p>';
+        return;
+      }
+      el.innerHTML = `<table style="width:100%;margin-top:10px;border-collapse:collapse;">
+        <tr style="background:#f3f4f6;"><th>Page</th><th>Title</th><th>Description</th><th>Keywords</th><th>Actions</th></tr>
+        ${list.map(seo => `
+          <tr style="border-bottom:1px solid #eee;">
+            <td>${seo.page}</td>
+            <td>${seo.title}</td>
+            <td>${seo.description}</td>
+            <td>${seo.keywords.join(', ')}</td>
+            <td>
+              <button class="fix-btn" style="background:#f59e0b;" onclick="showEditSEOForm('${seo.page}')">✏️ Edit</button>
+              <button class="fix-btn" style="background:#dc2626;" onclick="deleteSEOEntry('${seo.page}')">🗑️ Delete</button>
+            </td>
+          </tr>
+        `).join('')}
+      </table>`;
+    }
+
+    function showAddSEOForm() {
+      const c = document.getElementById('seoFormContainer');
+      c.innerHTML = `
+        <h3>Add SEO Entry</h3>
+        <form onsubmit="addSEOEntry(event)">
+          <input required name="page" placeholder="Page (e.g. about.html)" style="width:200px;"> <br><br>
+          <input required name="title" placeholder="Title" style="width:300px;"> <br><br>
+          <textarea required name="description" placeholder="Description" style="width:300px;height:60px;"></textarea> <br><br>
+          <input name="keywords" placeholder="Keywords (comma separated)" style="width:300px;"> <br><br>
+          <button class="fix-btn" type="submit">Add</button>
+          <button class="fix-btn" type="button" style="background:#6b7280;" onclick="hideSEOForm()">Cancel</button>
+        </form>
+      `;
+      c.style.display = '';
+    }
+
+    function showEditSEOForm(page) {
+      fetch(`${apiBase}/${encodeURIComponent(page)}`)
+        .then(res => res.json())
+        .then(seo => {
+          const c = document.getElementById('seoFormContainer');
+          c.innerHTML = `
+            <h3>Edit SEO Entry</h3>
+            <form onsubmit="editSEOEntry(event, '${seo.page}')">
+              <input required name="title" value="${seo.title}" style="width:300px;"> <br><br>
+              <textarea required name="description" style="width:300px;height:60px;">${seo.description}</textarea> <br><br>
+              <input name="keywords" value="${seo.keywords.join(', ')}" style="width:300px;"> <br><br>
+              <button class="fix-btn" type="submit">Save</button>
+              <button class="fix-btn" type="button" style="background:#6b7280;" onclick="hideSEOForm()">Cancel</button>
+            </form>
+          `;
+          c.style.display = '';
+        });
+    }
+
+    function hideSEOForm() {
+      document.getElementById('seoFormContainer').style.display = 'none';
+    }
+
+    async function addSEOEntry(e) {
+      e.preventDefault();
+      const f = e.target;
+      const body = {
+        page: f.page.value.trim(),
+        title: f.title.value.trim(),
+        description: f.description.value.trim(),
+        keywords: f.keywords.value.split(',').map(k=>k.trim()).filter(Boolean)
+      };
+      const res = await fetch(apiBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        hideSEOForm();
+        fetchSEOEntries();
+      } else {
+        alert('Failed to add SEO entry');
+      }
+    }
+
+    async function editSEOEntry(e, page) {
+      e.preventDefault();
+      const f = e.target;
+      const body = {
+        title: f.title.value.trim(),
+        description: f.description.value.trim(),
+        keywords: f.keywords.value.split(',').map(k=>k.trim()).filter(Boolean)
+      };
+      const res = await fetch(`${apiBase}/${encodeURIComponent(page)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        hideSEOForm();
+        fetchSEOEntries();
+      } else {
+        alert('Failed to update SEO entry');
+      }
+    }
+
+    async function deleteSEOEntry(page) {
+      if (!confirm('Delete SEO entry for ' + page + '?')) return;
+      const res = await fetch(`${apiBase}/${encodeURIComponent(page)}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchSEOEntries();
+      } else {
+        alert('Failed to delete SEO entry');
+      }
+    }
+
+    window.fetchSEOEntries = fetchSEOEntries;
+    window.showAddSEOForm = showAddSEOForm;
+    window.showEditSEOForm = showEditSEOForm;
+    window.hideSEOForm = hideSEOForm;
+    window.addSEOEntry = addSEOEntry;
+    window.editSEOEntry = editSEOEntry;
+    window.deleteSEOEntry = deleteSEOEntry;
+
     // Auto-run
-    window.addEventListener('load', () => setTimeout(runSEOAudit, 500));
+    window.addEventListener('load', () => {
+      setTimeout(runSEOAudit, 500);
+      fetchSEOEntries();
+    });
   </script>
 </body>
 </html>

@@ -2,7 +2,6 @@
   "name": "animora-veterinary-website",
   "version": "1.0.0",
   "description": "Animora Farm Health Website with AI Integration",
-  "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
