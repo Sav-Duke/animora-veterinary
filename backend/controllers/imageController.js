@@ -3,4 +3,3 @@ import { analyzeAnimalImage, searchDiseasesBySymptoms } from '../utils/visionAge
 import { getAIResponse } from '../utils/aiAgent.js';
 import Disease from '../models/diseaseModel.js';
 // ...rest of the code as previously read...
-

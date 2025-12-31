@@ -19,4 +19,3 @@ const diseaseSchema = new mongoose.Schema({
 });
 
 export default mongoose.model("Disease", diseaseSchema);
-

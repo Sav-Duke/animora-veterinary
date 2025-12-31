@@ -10,4 +10,3 @@ const seoSchema = new mongoose.Schema({
 
 const SEO = mongoose.model('SEO', seoSchema);
 export default SEO;
-

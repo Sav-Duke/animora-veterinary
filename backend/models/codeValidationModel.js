@@ -10,4 +10,3 @@ const codeValidationSchema = new mongoose.Schema({
 
 const CodeValidation = mongoose.model('CodeValidation', codeValidationSchema);
 export default CodeValidation;
-
