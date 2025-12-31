@@ -1,6 +1,6 @@
 // Vercel serverless function for /api/chat
 import mongoose from 'mongoose';
-import { chatWithAI } from '../animora-ai/backend/controllers/chatController.js';
+import { chatWithAI } from './backend/controllers/chatController.js';
 
 // Connection caching for Vercel serverless
 let cached = global.mongoose;

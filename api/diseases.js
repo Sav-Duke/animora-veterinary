@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Disease from '../animora-ai/backend/models/diseaseModel.js';
+import Disease from './backend/models/diseaseModel.js';
 
 async function connectDB() {
   if (mongoose.connection.readyState === 1) return;

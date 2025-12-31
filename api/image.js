@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { analyzeImage } from '../animora-ai/backend/controllers/imageController.js';
+import { analyzeImage } from './backend/controllers/imageController.js';
 
 async function connectDB() {
   if (mongoose.connection.readyState === 1) return;

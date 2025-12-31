@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import * as codeValidatorController from '../animora-ai/backend/controllers/codeValidatorController.js';
+import * as codeValidatorController from './backend/controllers/codeValidatorController.js';
 
 async function connectDB() {
   if (mongoose.connection.readyState === 1) return;

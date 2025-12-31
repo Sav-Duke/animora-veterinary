@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import * as seoController from '../animora-ai/backend/controllers/seoController.js';
+import * as seoController from './backend/controllers/seoController.js';
 
 async function connectDB() {
   if (mongoose.connection.readyState === 1) return;
