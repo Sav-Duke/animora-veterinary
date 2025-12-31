@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>Photo Gallery | Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -149,7 +152,8 @@
 
       async function loadGallery() {
         try {
-          const response = await fetch('/api/main?action=gallery');
+          const apiBase = window.VITE_API_URL || '';
+          const response = await fetch(`${apiBase}/main?action=gallery`);
           gallery = await response.json();
           renderGallery();
         } catch (error) {
@@ -188,7 +192,8 @@
           const reader = new FileReader();
           reader.onload = async (event) => {
             try {
-              const response = await fetch('/api/main?action=gallery', {
+              const apiBase = window.VITE_API_URL || '';
+              const response = await fetch(`${apiBase}/main?action=gallery`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: event.target.result })

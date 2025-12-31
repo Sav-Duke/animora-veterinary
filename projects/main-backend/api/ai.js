@@ -13,12 +13,38 @@ async function connectDB() {
 }
 
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigins = [
+    'https://your-main-frontend.vercel.app',
+    'https://your-admin-frontend.vercel.app',
+    'http://localhost:3000'
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0]);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // --- Example CORS code for Vercel serverless ---
+  // This block allows only requests from your deployed frontends (replace with your actual Vercel domains):
+  // const allowedOrigins = [
+  //   'https://your-main-frontend.vercel.app',
+  //   'https://your-admin-frontend.vercel.app',
+  //   'http://localhost:3000'
+  // ];
+  // const origin = req.headers.origin;
+  // if (allowedOrigins.includes(origin)) {
+  //   res.setHeader('Access-Control-Allow-Origin', origin);
+  // } else {
+  //   res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0]);
+  // }
+  // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // if (req.method === 'OPTIONS') return res.status(200).end();
 
   await connectDB();
   const { action } = req.query;

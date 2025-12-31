@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>Code Validator | Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -225,7 +228,8 @@
     const validatorApi = '/api/ai?action=code-validator';
 
     async function fetchValidationResults() {
-      const res = await fetch(validatorApi);
+      const apiBase = window.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}${validatorApi}`);
       const data = await res.json();
       renderValidationList(data);
     }
@@ -270,7 +274,7 @@
     }
 
     function showEditValidationForm(id) {
-      fetch(`${validatorApi}&id=${id}`)
+      fetch(`${apiBase}${validatorApi}&id=${id}`)
         .then(res => res.json())
         .then(val => {
           const c = document.getElementById('validationFormContainer');
@@ -302,7 +306,8 @@
         errors: f.errors.value.split('\n').map(x=>x.trim()).filter(Boolean),
         warnings: f.warnings.value.split('\n').map(x=>x.trim()).filter(Boolean)
       };
-      const res = await fetch(validatorApi, {
+      const apiBase = window.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}${validatorApi}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -324,7 +329,8 @@
         errors: f.errors.value.split('\n').map(x=>x.trim()).filter(Boolean),
         warnings: f.warnings.value.split('\n').map(x=>x.trim()).filter(Boolean)
       };
-      const res = await fetch(`${validatorApi}&id=${id}`, {
+      const apiBase = window.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}${validatorApi}&id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -339,7 +345,8 @@
 
     async function deleteValidationResult(id) {
       if (!confirm('Delete this validation result?')) return;
-      const res = await fetch(`${validatorApi}&id=${id}`, { method: 'DELETE' });
+      const apiBase = window.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}${validatorApi}&id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         fetchValidationResults();
       } else {

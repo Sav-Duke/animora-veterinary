@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>Backup & Restore | Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,7 +71,8 @@
     let backups = [];
 
     async function fetchBackups() {
-      const res = await fetch('/api/util?action=backup');
+      const apiBase = window.VITE_API_URL || '';
+      const res = await fetch(`${apiBase}/util?action=backup`);
       backups = await res.json();
       displayBackups();
     }
@@ -89,7 +93,8 @@
           adminBtn: localStorage.getItem('animoraAdminFloatingBtn')
         }
       };
-      await fetch('/api/util?action=backup', {
+      const apiBase = window.VITE_API_URL || '';
+      await fetch(`${apiBase}/util?action=backup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(backup)

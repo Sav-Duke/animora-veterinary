@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>CMS Test Page | Animora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -137,9 +140,9 @@
 
     async function testAll() {
       const results = await Promise.all([
-        testEndpoint('Staff', '/api/resources?type=staff', 'staffResult', '#staffTest .status'),
-        testEndpoint('Services', '/api/resources?type=services', 'servicesResult', '#servicesTest .status'),
-        testEndpoint('Contact Info', '/api/resources?type=contact-info', 'contactResult', '#contactTest .status'),
+          testEndpoint('Staff', `${apiBase}/resources?type=staff`, 'staffResult', '#staffTest .status'),
+          testEndpoint('Services', `${apiBase}/resources?type=services`, 'servicesResult', '#servicesTest .status'),
+          testEndpoint('Contact Info', `${apiBase}/resources?type=contact-info`, 'contactResult', '#contactTest .status'),
         testEndpoint('About Content', '/api/resources?type=about-content', 'aboutResult', '#aboutTest .status')
       ]);
 

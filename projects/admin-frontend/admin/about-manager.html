@@ -5,6 +5,9 @@
   <title>Manage About Content | Animora Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../styles/main.css">
+  <script>
+    window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+  </script>
 </head>
 <body class="admin-bg">
   <div class="container admin">
@@ -79,7 +82,8 @@
     // Load about data
     async function loadAbout() {
       try {
-        const response = await fetch('/api/main?type=about-content');
+        const apiBase = window.VITE_API_URL || '';
+        const response = await fetch(`${apiBase}/main?type=about-content`);
         aboutData = await response.json();
         values = aboutData.values || [];
         populateForm();

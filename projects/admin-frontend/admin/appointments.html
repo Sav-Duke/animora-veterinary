@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>Appointments Manager | Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -373,7 +376,8 @@
     // API-driven appointments
     async function loadAppointments() {
       try {
-        const response = await fetch('/api/appointments');
+        const apiBase = window.VITE_API_URL || '';
+        const response = await fetch(`${apiBase}/appointments`);
         appointments = await response.json();
         filteredAppointments = [...appointments];
         updateStats();
@@ -529,7 +533,8 @@
       }
     }
     async function saveAppointments() {
-      const response = await fetch('/api/appointments', {
+      const apiBase = window.VITE_API_URL || '';
+      const response = await fetch(`${apiBase}/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(appointments)

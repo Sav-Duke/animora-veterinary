@@ -4,7 +4,8 @@ let servicesData = {};
 
 async function loadServices() {
   try {
-    const response = await fetch('/api/main?type=services');
+    const apiBase = import.meta.env ? import.meta.env.VITE_API_URL : (window.VITE_API_URL || '');
+    const response = await fetch(`${apiBase}/main?type=services`);
     servicesData = await response.json();
     renderServices();
   } catch (error) {

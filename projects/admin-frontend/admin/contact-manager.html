@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      window.VITE_API_URL = window.VITE_API_URL || (typeof import !== 'undefined' && import.meta && import.meta.env && import.meta.env.VITE_API_URL) || '';
+    </script>
   <meta charset="UTF-8">
   <title>Manage Contact Info | Animora Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,7 +87,8 @@
     // Load contact data
     async function loadContact() {
       try {
-        const response = await fetch('/api/main?type=contact-info');
+        const apiBase = window.VITE_API_URL || '';
+        const response = await fetch(`${apiBase}/main?type=contact-info`);
         contactData = await response.json();
         populateForm();
       } catch (error) {
@@ -134,7 +138,8 @@
       };
 
       try {
-        const response = await fetch('/api/main?type=contact-info', {
+        const apiBase = window.VITE_API_URL || '';
+        const response = await fetch(`${apiBase}/main?type=contact-info`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)

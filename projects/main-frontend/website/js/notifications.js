@@ -17,7 +17,8 @@ let notifications = [];
 
 async function loadNotifications() {
   try {
-    const res = await fetch('/api/main?action=notifications');
+    const apiBase = import.meta.env ? import.meta.env.VITE_API_URL : (window.VITE_API_URL || '');
+    const res = await fetch(`${apiBase}/main?action=notifications`);
     notifications = await res.json();
     renderNotifications('all');
   } catch (err) {

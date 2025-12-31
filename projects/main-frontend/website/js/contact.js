@@ -211,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     debounceTimer = setTimeout(() => {
+      // This is an external API, so we keep it as is
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=KE&limit=5`)
         .then(res => res.json())
         .then(data => {
@@ -310,7 +311,13 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
     const data = new FormData(form);
-    fetch(form.action, {
+    // If form.action is a relative path, prepend API base
+    const apiBase = import.meta.env ? import.meta.env.VITE_API_URL : (window.VITE_API_URL || '');
+    let actionUrl = form.action;
+    if (actionUrl.startsWith('/')) {
+      actionUrl = apiBase + actionUrl;
+    }
+    fetch(actionUrl, {
       method: form.method,
       body: data,
       headers: { 'Accept': 'application/json' }
