@@ -3,5 +3,10 @@
 		{ "source": "/admin", "destination": "/admin/index.html" },
 		{ "source": "/admin/", "destination": "/admin/index.html" },
 		{ "source": "/admin/:path*", "destination": "/admin/:path*" }
-	]
+	],
+	"functions": {
+		"api/*.js": {
+			"runtime": "nodejs20.x"
+		}
+	}
 }
