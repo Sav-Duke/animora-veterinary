@@ -190,7 +190,7 @@
     }
 
     // --- SEO CRUD LOGIC ---
-    const apiBase = '/api/seo';
+    const apiBase = '/api/ai?action=seo';
 
     async function fetchSEOEntries() {
       const res = await fetch(apiBase);
@@ -238,7 +238,7 @@
     }
 
     function showEditSEOForm(page) {
-      fetch(`${apiBase}/${encodeURIComponent(page)}`)
+      fetch(`${apiBase}&page=${encodeURIComponent(page)}`)
         .then(res => res.json())
         .then(seo => {
           const c = document.getElementById('seoFormContainer');
@@ -290,7 +290,7 @@
         description: f.description.value.trim(),
         keywords: f.keywords.value.split(',').map(k=>k.trim()).filter(Boolean)
       };
-      const res = await fetch(`${apiBase}/${encodeURIComponent(page)}`, {
+      const res = await fetch(`${apiBase}&page=${encodeURIComponent(page)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -305,7 +305,7 @@
 
     async function deleteSEOEntry(page) {
       if (!confirm('Delete SEO entry for ' + page + '?')) return;
-      const res = await fetch(`${apiBase}/${encodeURIComponent(page)}`, { method: 'DELETE' });
+      const res = await fetch(`${apiBase}&page=${encodeURIComponent(page)}`, { method: 'DELETE' });
       if (res.ok) {
         fetchSEOEntries();
       } else {

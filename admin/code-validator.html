@@ -222,7 +222,7 @@
     }
 
     // --- Code Validator CRUD LOGIC ---
-    const validatorApi = '/api/code-validator';
+    const validatorApi = '/api/ai?action=code-validator';
 
     async function fetchValidationResults() {
       const res = await fetch(validatorApi);
@@ -270,7 +270,7 @@
     }
 
     function showEditValidationForm(id) {
-      fetch(`${validatorApi}/${id}`)
+      fetch(`${validatorApi}&id=${id}`)
         .then(res => res.json())
         .then(val => {
           const c = document.getElementById('validationFormContainer');
@@ -324,7 +324,7 @@
         errors: f.errors.value.split('\n').map(x=>x.trim()).filter(Boolean),
         warnings: f.warnings.value.split('\n').map(x=>x.trim()).filter(Boolean)
       };
-      const res = await fetch(`${validatorApi}/${id}`, {
+      const res = await fetch(`${validatorApi}&id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -339,7 +339,7 @@
 
     async function deleteValidationResult(id) {
       if (!confirm('Delete this validation result?')) return;
-      const res = await fetch(`${validatorApi}/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${validatorApi}&id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         fetchValidationResults();
       } else {

@@ -313,8 +313,8 @@
   <script>
     // Set API_BASE to production backend URL, fallback to /api for local/dev
     const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? '/api'
-      : 'https://animora-backend.vercel.app/api';
+      ? '/api/ai?action=chat'
+      : 'https://animora-backend.vercel.app/api/ai?action=chat';
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const sendButton = document.getElementById('sendButton');
@@ -394,7 +394,7 @@
       showTyping();
 
       try {
-        const response = await fetch(`${API_BASE}/chat`, {
+        const response = await fetch(API_BASE, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
