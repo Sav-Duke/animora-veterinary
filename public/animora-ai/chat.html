@@ -311,8 +311,10 @@
   </div>
 
   <script>
-    // Use Vercel API routes
-    const API_BASE = '/api';
+    // Set API_BASE to production backend URL, fallback to /api for local/dev
+    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? '/api'
+      : 'https://animora-backend.vercel.app/api';
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const sendButton = document.getElementById('sendButton');
