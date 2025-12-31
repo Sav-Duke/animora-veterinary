@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Testimonials Manager | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #16A34A;
+    }
+    .header h1 { color: #16A34A; display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      background: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: #4b5563; }
+    .add-btn {
+      background: #16A34A;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-bottom: 25px;
+      transition: all 0.2s;
+    }
+    .add-btn:hover { background: #15803d; transform: translateY(-2px); }
+    .testimonial-card {
+      padding: 25px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+    .testimonial-card:hover {
+      border-color: #16A34A;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    }
+    .testimonial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+    .client-info {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .client-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .client-name {
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 3px;
+    }
+    .client-service {
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+    .stars {
+      color: #f59e0b;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+    .testimonial-text {
+      color: #6b7280;
+      line-height: 1.7;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+    .testimonial-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .action-btn.approve {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .action-btn.edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .action-btn.delete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .action-btn:hover { transform: translateY(-2px); }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status-badge.published { background: #d1fae5; color: #065f46; }
+    .status-badge.pending { background: #fef3c7; color: #92400e; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>⭐</span>Testimonials Manager</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div id="alertContainer"></div>
+    <button class="add-btn" onclick="openModal()">➕ Add New Testimonial</button>
+    <div id="testimonialsContainer"></div>
+
+    <!-- Modal for Add/Edit -->
+    <div class="modal" id="testimonialModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Testimonial</h2>
+          <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <form id="testimonialForm">
+          <input type="hidden" id="testimonialId">
+          <div class="form-group">
+            <label for="clientName">Client Name *</label>
+            <input type="text" id="clientName" required>
+          </div>
+          <div class="form-group">
+            <label for="petName">Pet Name *</label>
+            <input type="text" id="petName" required>
+          </div>
+          <div class="form-group">
+            <label for="service">Service *</label>
+            <input type="text" id="service" required>
+          </div>
+          <div class="form-group">
+            <label for="rating">Rating *</label>
+            <select id="rating" required>
+              <option value="">-- Select --</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="testimonialText">Testimonial *</label>
+            <textarea id="testimonialText" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" required>
+              <option value="pending">Pending</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let testimonials = [];
+      let editingId = null;
+
+      // Load testimonials
+      async function loadTestimonials() {
+        try {
+          const response = await fetch('/api/testimonials');
+          testimonials = await response.json();
+          renderTestimonials();
+        } catch (error) {
+          showAlert('Error loading testimonials', 'error');
+        }
+      }
+
+      // Render testimonials
+      function renderTestimonials() {
+        const container = document.getElementById('testimonialsContainer');
+        if (!testimonials.length) {
+          container.innerHTML = '<p style="color: #6b7280; text-align:center;">No testimonials yet.</p>';
+          return;
+        }
+        container.innerHTML = testimonials.map(t => `
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="client-info">
+                <div class="client-avatar" style="background: linear-gradient(135deg, #${stringToColor(t.clientName)} 0%, #${stringToColor(t.petName)} 100%);">${getInitials(t.clientName)}</div>
+                <div>
+                  <div class="client-name">${t.clientName}</div>
+                  <div class="client-service">${t.service} • ${t.petName}</div>
+                </div>
+              </div>
+              <div>
+                <div class="stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div>
+                <span class="status-badge ${t.status}" style="margin-top: 5px; display: inline-block;">${capitalize(t.status)}</span>
+              </div>
+            </div>
+            <div class="testimonial-text">"${t.text}"</div>
+            <div class="testimonial-actions">
+              ${t.status === 'pending' ? `<button class="action-btn approve" onclick="approveTestimonial('${t.id}')">✓ Approve</button>` : ''}
+              <button class="action-btn edit" onclick="editTestimonial('${t.id}')">✏️ Edit</button>
+              <button class="action-btn delete" onclick="deleteTestimonial('${t.id}')">🗑️ Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Open modal
+      function openModal(id = null) {
+        editingId = id;
+        const modal = document.getElementById('testimonialModal');
+        const form = document.getElementById('testimonialForm');
+        const title = document.getElementById('modalTitle');
+        form.reset();
+        if (id) {
+          title.textContent = 'Edit Testimonial';
+          const t = testimonials.find(x => x.id === id);
+          if (t) {
+            document.getElementById('testimonialId').value = t.id;
+            document.getElementById('clientName').value = t.clientName;
+            document.getElementById('petName').value = t.petName;
+            document.getElementById('service').value = t.service;
+            document.getElementById('rating').value = t.rating;
+            document.getElementById('testimonialText').value = t.text;
+            document.getElementById('status').value = t.status;
+          }
+        } else {
+          title.textContent = 'Add Testimonial';
+        }
+        modal.classList.add('active');
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById('testimonialModal').classList.remove('active');
+        editingId = null;
+      }
+
+      // Edit testimonial
+      function editTestimonial(id) {
+        openModal(id);
+      }
+
+      // Approve testimonial
+      async function approveTestimonial(id) {
+        const t = testimonials.find(x => x.id === id);
+        if (t) {
+          t.status = 'published';
+          await saveTestimonials();
+          showAlert('Testimonial approved', 'success');
+        }
+      }
+
+      // Delete testimonial
+      async function deleteTestimonial(id) {
+        if (!confirm('Delete this testimonial?')) return;
+        testimonials = testimonials.filter(x => x.id !== id);
+        await saveTestimonials();
+        showAlert('Testimonial deleted', 'success');
+      }
+
+      // Handle form submit
+      document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('testimonialId').value || generateId();
+        const t = {
+          id,
+          clientName: document.getElementById('clientName').value,
+          petName: document.getElementById('petName').value,
+          service: document.getElementById('service').value,
+          rating: parseInt(document.getElementById('rating').value),
+          text: document.getElementById('testimonialText').value,
+          status: document.getElementById('status').value
+        };
+        if (editingId) {
+          const idx = testimonials.findIndex(x => x.id === editingId);
+          testimonials[idx] = t;
+        } else {
+          testimonials.push(t);
+        }
+        await saveTestimonials();
+        closeModal();
+        showAlert('Testimonial saved', 'success');
+      });
+
+      // Save testimonials
+      async function saveTestimonials() {
+        const response = await fetch('/api/testimonials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testimonials)
+        });
+        if (!response.ok) throw new Error('Save failed');
+        renderTestimonials();
+      }
+
+      // Helpers
+      function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+      }
+      function generateId() {
+        return 'tst_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      }
+      function getInitials(name) {
+        return name.split(' ').map(x => x[0]).join('').toUpperCase().slice(0,2);
+      }
+      function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+      function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let color = '';
+        for (let i = 0; i < 3; i++) {
+          color += ('00' + ((hash >> (i * 8)) & 0xFF).toString(16)).slice(-2);
+        }
+        return color;
+      }
+
+      // Close modal on outside click
+      document.getElementById('testimonialModal').addEventListener('click', (e) => {
+        if (e.target.id === 'testimonialModal') closeModal();
+      });
+
+      // Initialize
+      loadTestimonials();
+    </script>
+  </div>
+</body>
+</html>

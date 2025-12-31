@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Disease Database | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="admin-bg">
+  <div class="container admin">
+    <div class="header admin">
+      <h1>🦠 Disease Database</h1>
+      <a href="index.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <button class="add-disease-btn" onclick="openAddModal()">+ Add New Disease</button>
+
+    <div class="stats">
+      <div class="stat-card">
+        <h3 id="totalDiseases">-</h3>
+        <p>Total Diseases</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalSpecies">-</h3>
+        <p>Species Covered</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalTreatments">-</h3>
+        <p>Treatments Available</p>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="🔍 Search diseases by name or species...">
+    </div>
+
+    <div id="diseaseContainer">
+      <div class="loading">Loading disease database...</div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Disease Modal -->
+  <div id="diseaseModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">Add New Disease</h2>
+      <form id="diseaseForm" onsubmit="saveDisease(event)">
+        <input type="hidden" id="diseaseId">
+        
+        <div class="form-group">
+          <label for="diseaseName">Disease Name *</label>
+          <input type="text" id="diseaseName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="diseaseCategory">Category</label>
+          <input type="text" id="diseaseCategory" placeholder="e.g., Bacterial, Viral, Parasitic">
+        </div>
+
+        <div class="form-group">
+          <label>Species Affected</label>
+          <div id="speciesList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addSpecies()">+ Add Species</button>
+        </div>
+
+        <div class="form-group">
+          <label>Clinical Findings</label>
+          <div id="findingsList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addFinding()">+ Add Finding</button>
+        </div>
+
+        <div class="form-group">
+          <label>Treatment Options</label>
+          <div id="treatmentList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addTreatment()">+ Add Treatment</button>
+        </div>
+
+        <div class="form-group">
+          <label>Prevalence Regions</label>
+          <div id="regionsList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addRegion()">+ Add Region</button>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Save Disease</button>
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom Alert/Confirm Modal -->
+  <div id="customAlertOverlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+      <div class="alert-header">
+        <div class="alert-icon" id="alertIcon"></div>
+        <div class="alert-title" id="alertTitle"></div>
+      </div>
+      <div class="alert-body">
+        <div class="alert-message" id="alertMessage"></div>
+      </div>
+      <div class="alert-actions" id="alertActions"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/main?type=diseases';
+    let allDiseases = [];
+
+    // Custom Alert/Confirm Functions
+    function showCustomAlert(title, message, type = 'info') {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('customAlertOverlay');
+        const icon = document.getElementById('alertIcon');
+        const titleEl = document.getElementById('alertTitle');
+        const messageEl = document.getElementById('alertMessage');
+        const actionsEl = document.getElementById('alertActions');
+
+        // Set icon
+        const icons = {
+          success: '✓',
+          error: '✕',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+        icon.textContent = icons[type] || icons.info;
+        icon.className = `alert-icon ${type}`;
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        // Create OK button
+        actionsEl.innerHTML = `
+          <button class="alert-btn ${type === 'success' ? 'success' : 'primary'}" onclick="closeCustomAlert()">OK</button>
+        `;
+
+        overlay.style.display = 'block';
+
+        window.closeCustomAlert = () => {
+          overlay.style.display = 'none';
+          resolve(true);
+        };
+      });
+    }
+
+    function showCustomConfirm(title, message, type = 'warning') {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('customAlertOverlay');
+        const icon = document.getElementById('alertIcon');
+        const titleEl = document.getElementById('alertTitle');
+        const messageEl = document.getElementById('alertMessage');
+        const actionsEl = document.getElementById('alertActions');
+
+        // Set icon
+        const icons = {
+          success: '✓',
+          error: '✕',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+        icon.textContent = icons[type] || icons.warning;
+        icon.className = `alert-icon ${type}`;
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        // Create action buttons
+        const confirmBtnClass = type === 'error' || type === 'warning' ? 'danger' : 'primary';
+        actionsEl.innerHTML = `
+          <button class="alert-btn secondary" onclick="closeCustomConfirm(false)">Cancel</button>
+          <button class="alert-btn ${confirmBtnClass}" onclick="closeCustomConfirm(true)">OK</button>
+        `;
+
+        overlay.style.display = 'block';
+
+        window.closeCustomConfirm = (result) => {
+          overlay.style.display = 'none';
+          resolve(result);
+        };
+      });
+    }
+
+    // Close on overlay click
+    document.addEventListener('click', (e) => {
+      const overlay = document.getElementById('customAlertOverlay');
+      if (e.target === overlay) {
+        overlay.style.display = 'none';
+      }
+    });
+
+    async function loadDiseases() {
+      const container = document.getElementById('diseaseContainer');
+      
+      try {
+        console.log('Fetching diseases from:', `${API_BASE}`);
+        const res = await fetch(`${API_BASE}`);
+        console.log('Response status:', res.status);
+        
+        if (!res.ok) throw new Error('Failed to fetch');
+        
+        const data = await res.json();
+        console.log('Received data:', data);
+        
+        // Handle both array and object responses
+        allDiseases = Array.isArray(data) ? data : (data.diseases || []);
+        console.log('Total diseases loaded:', allDiseases.length);
+        
+        // Update stats
+        document.getElementById('totalDiseases').textContent = allDiseases.length;
+        
+        const allSpecies = new Set();
+        let treatmentCount = 0;
+        allDiseases.forEach(d => {
+          if (d.species) d.species.forEach(s => allSpecies.add(s));
+          if (d.treatment) treatmentCount += d.treatment.length;
+        });
+        
+        document.getElementById('totalSpecies').textContent = allSpecies.size;
+        document.getElementById('totalTreatments').textContent = treatmentCount;
+        
+        displayDiseases(allDiseases);
+      } catch (err) {
+        console.error('Error loading diseases:', err);
+        container.innerHTML = `
+          <div class="error">
+            <h3>❌ Error loading disease database</h3>
+            <p>Make sure the backend server is running on port 4001</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Error: ${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function displayDiseases(diseases) {
+      const container = document.getElementById('diseaseContainer');
+      
+      if (diseases.length === 0) {
+        container.innerHTML = '<div class="loading">No diseases found</div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="disease-list">
+          ${diseases.map(d => `
+            <div class="disease-card">
+              <h3>${d.name}</h3>
+              <p style="color: #6b7280; font-size: 0.9rem; margin-top: 5px;">
+                ${d.clinical_diagnosis_and_findings ? d.clinical_diagnosis_and_findings.length : 0} symptoms • 
+                ${d.treatment ? d.treatment.length : 0} treatments
+              </p>
+              <div class="species">
+                ${(d.species || []).slice(0, 3).map(s => `<span class="species-tag">${s}</span>`).join('')}
+                ${d.species && d.species.length > 3 ? `<span class="species-tag">+${d.species.length - 3} more</span>` : ''}
+              </div>
+              <div class="card-actions">
+                <button class="btn-edit" onclick="editDisease('${d._id}')">Edit</button>
+                <button class="btn-danger btn-delete" onclick="deleteDisease('${d._id}', '${d.name.replace(/'/g, "\\'")}')">Delete</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Modal functions
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Disease';
+      document.getElementById('diseaseForm').reset();
+      document.getElementById('diseaseId').value = '';
+      clearDynamicLists();
+      document.getElementById('diseaseModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('diseaseModal').style.display = 'none';
+    }
+
+    function clearDynamicLists() {
+      document.getElementById('speciesList').innerHTML = '';
+      document.getElementById('findingsList').innerHTML = '';
+      document.getElementById('treatmentList').innerHTML = '';
+      document.getElementById('regionsList').innerHTML = '';
+    }
+
+    function addSpecies(value = '') {
+      const list = document.getElementById('speciesList');
+      const id = Date.now();
+      list.innerHTML += `
+        <div class="list-item" id="species-${id}">
+          <input type="text" value="${value}" placeholder="e.g., Cattle, Dogs, Poultry">
+          <button type="button" class="btn-remove" onclick="removeItem('species-${id}')">Remove</button>
+        </div>
+      `;
+    }
+
+    function addFinding(value = '') {
+      const list = document.getElementById('findingsList');
+      const id = Date.now();
+      list.innerHTML += `
+        <div class="list-item" id="finding-${id}">
+          <input type="text" value="${value}" placeholder="e.g., Fever, Coughing, Lesions">
+          <button type="button" class="btn-remove" onclick="removeItem('finding-${id}')">Remove</button>
+        </div>
+      `;
+    }
+
+    function addTreatment(value = '') {
+      const list = document.getElementById('treatmentList');
+      const id = Date.now();
+      list.innerHTML += `
+        <div class="list-item" id="treatment-${id}">
+          <input type="text" value="${value}" placeholder="e.g., Antibiotics, Supportive care">
+          <button type="button" class="btn-remove" onclick="removeItem('treatment-${id}')">Remove</button>
+        </div>
+      `;
+    }
+
+    function addRegion(value = '') {
+      const list = document.getElementById('regionsList');
+      const id = Date.now();
+      list.innerHTML += `
+        <div class="list-item" id="region-${id}">
+          <input type="text" value="${value}" placeholder="e.g., North America, Europe">
+          <button type="button" class="btn-remove" onclick="removeItem('region-${id}')">Remove</button>
+        </div>
+      `;
+    }
+
+    function removeItem(id) {
+      document.getElementById(id).remove();
+    }
+
+    async function editDisease(id) {
+      const disease = allDiseases.find(d => d._id === id);
+      if (!disease) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Disease';
+      document.getElementById('diseaseId').value = disease._id;
+      document.getElementById('diseaseName').value = disease.name || '';
+      document.getElementById('diseaseCategory').value = disease.category || '';
+
+      clearDynamicLists();
+
+      // Populate species
+      if (disease.species && disease.species.length > 0) {
+        disease.species.forEach(s => addSpecies(s));
+      }
+
+      // Populate findings
+      if (disease.clinical_diagnosis_and_findings) {
+        disease.clinical_diagnosis_and_findings.forEach(f => {
+          if (f.findings) {
+            f.findings.forEach(finding => addFinding(finding));
+          }
+        });
+      }
+
+      // Populate treatments
+      if (disease.treatment) {
+        disease.treatment.forEach(t => {
+          if (t.details) {
+            t.details.forEach(detail => addTreatment(detail));
+          }
+        });
+      }
+
+      // Populate regions
+      if (disease.prevalence_regions && disease.prevalence_regions.length > 0) {
+        disease.prevalence_regions.forEach(r => addRegion(r));
+      }
+
+      document.getElementById('diseaseModal').style.display = 'block';
+    }
+
+    async function saveDisease(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('diseaseId').value;
+      const name = document.getElementById('diseaseName').value;
+      const category = document.getElementById('diseaseCategory').value;
+
+      // Collect species
+      const species = Array.from(document.querySelectorAll('#speciesList input'))
+        .map(input => input.value.trim())
+        .filter(v => v);
+
+      // Collect findings
+      const findings = Array.from(document.querySelectorAll('#findingsList input'))
+        .map(input => input.value.trim())
+        .filter(v => v);
+
+      // Collect treatments
+      const treatments = Array.from(document.querySelectorAll('#treatmentList input'))
+        .map(input => input.value.trim())
+        .filter(v => v);
+
+      // Collect regions
+      const regions = Array.from(document.querySelectorAll('#regionsList input'))
+        .map(input => input.value.trim())
+        .filter(v => v);
+
+      const diseaseData = {
+        name,
+        category,
+        species,
+        clinical_diagnosis_and_findings: findings.length > 0 ? [{
+          category: 'General',
+          findings: findings
+        }] : [],
+        treatment: treatments.length > 0 ? [{
+          modality: 'General',
+          details: treatments
+        }] : [],
+        prevalence_regions: regions
+      };
+
+      try {
+        const method = id ? 'PUT' : 'POST';
+        const url = `${API_BASE}`;
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: id ? JSON.stringify({ _id: id, ...diseaseData }) : JSON.stringify(diseaseData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save disease');
+        }
+
+        await showCustomAlert(
+          'Success!', 
+          id ? 'Disease updated successfully!' : 'Disease added successfully!',
+          'success'
+        );
+        closeModal();
+        loadDiseases();
+      } catch (err) {
+        console.error('Error saving disease:', err);
+        await showCustomAlert('Error', 'Error saving disease: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteDisease(id, name) {
+      const confirmed = await showCustomConfirm(
+        'Confirm Deletion',
+        `Are you sure you want to delete "${name}"?`,
+        'warning'
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}&id=${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete disease');
+        }
+
+        await showCustomAlert('Deleted!', 'Disease deleted successfully!', 'success');
+        loadDiseases();
+      } catch (err) {
+        console.error('Error deleting disease:', err);
+        await showCustomAlert('Error', 'Error deleting disease: ' + err.message, 'error');
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('diseaseModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allDiseases.filter(d => 
+        d.name.toLowerCase().includes(query) ||
+        (d.species && d.species.some(s => s.toLowerCase().includes(query)))
+      );
+      displayDiseases(filtered);
+    });
+
+    // Load on page load
+    loadDiseases();
+  </script>
+</body>
+</html>

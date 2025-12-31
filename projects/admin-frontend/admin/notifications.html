@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notifications | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <div id="notificationList">
+      <!-- Notifications will be loaded here by notifications.js -->
+    </div>
+      border-left-color: #16A34A;
+      font-weight: 600;
+    }
+    .notification-item.warning {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+    }
+    .notification-item.error {
+      border-left-color: #ef4444;
+      background: #fef2f2;
+    }
+    .notification-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .notification-content {
+      flex: 1;
+    }
+    .notification-title {
+      color: #374151;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .notification-text {
+      color: #6b7280;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .notification-time {
+      color: #9ca3af;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      color: #6b7280;
+    }
+    .filter-btn.active {
+      background: #16A34A;
+      color: white;
+      border-color: #16A34A;
+    }
+    .filter-btn:hover { border-color: #16A34A; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>🔔</span>Notifications Center</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterNotifications('all')">All</button>
+      <button class="filter-btn" onclick="filterNotifications('unread')">Unread</button>
+      <button class="filter-btn" onclick="filterNotifications('appointments')">Appointments</button>
+      <button class="filter-btn" onclick="filterNotifications('system')">System</button>
+    </div>
+
+    <div id="notificationList">
+      <div class="notification-item unread">
+        <div class="notification-icon">📅</div>
+        <div class="notification-content">
+          <div class="notification-title">New Appointment Booking</div>
+          <div class="notification-text">John Doe has booked an appointment for tomorrow at 10:00 AM for general checkup.</div>
+          <div class="notification-time">5 minutes ago</div>
+        </div>
+      </div>
+
+      <div class="notification-item unread">
+        <div class="notification-icon">📞</div>
+        <div class="notification-content">
+          <div class="notification-title">Contact Form Submission</div>
+          <div class="notification-text">Sarah Smith inquired about vaccination services. Requires response.</div>
+          <div class="notification-time">1 hour ago</div>
+        </div>
+      </div>
+
+      <div class="notification-item warning">
+        <div class="notification-icon">⚠️</div>
+        <div class="notification-content">
+          <div class="notification-title">Server Performance Alert</div>
+          <div class="notification-text">Backend API response time has increased by 15%. Consider optimization.</div>
+          <div class="notification-time">3 hours ago</div>
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notification-icon">👥</div>
+        <div class="notification-content">
+          <div class="notification-title">Staff Profile Updated</div>
+          <div class="notification-text">Dr. Jay's profile information has been modified by admin.</div>
+          <div class="notification-time">Yesterday</div>
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notification-icon">✅</div>
+        <div class="notification-content">
+          <div class="notification-title">Appointment Completed</div>
+          <div class="notification-text">Mike Johnson's surgery consultation was marked as completed.</div>
+          <div class="notification-time">2 days ago</div>
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notification-icon">⭐</div>
+        <div class="notification-content">
+          <div class="notification-title">New Review Received</div>
+          <div class="notification-text">Emily Brown left a 5-star review for dental cleaning service.</div>
+          <div class="notification-time">3 days ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    <script src="../js/notifications.js"></script>
+</body>
+</html>

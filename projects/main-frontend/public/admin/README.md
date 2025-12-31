@@ -1,0 +1,1 @@
+<!-- Main entry for admin panel, already present in public/admin/index.html -->

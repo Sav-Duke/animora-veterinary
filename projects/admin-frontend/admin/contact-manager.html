@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Contact Info | Animora Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="admin-bg">
+  <div class="container admin">
+    <div class="header admin">
+      <h1>📞 Manage Contact Information</h1>
+      <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <form id="contactForm">
+      <div class="form-section">
+        <h2>Basic Contact Details</h2>
+        
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="text" id="phone" placeholder="+234 XXX XXX XXXX">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="info@animoravet.com">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Physical Address</label>
+          <textarea id="address" rows="2" placeholder="123 Veterinary Lane, City, Country"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Business Hours</h2>
+        
+        <div class="hours-grid">
+          <label for="weekdays">Weekdays:</label>
+          <input type="text" id="weekdays" placeholder="8:00 AM - 6:00 PM">
+          
+          <label for="saturday">Saturday:</label>
+          <input type="text" id="saturday" placeholder="9:00 AM - 4:00 PM">
+          
+          <label for="sunday">Sunday:</label>
+          <input type="text" id="sunday" placeholder="Closed (Emergency Only)">
+          
+          <label for="emergencyNote">Emergency Note:</label>
+          <input type="text" id="emergencyNote" placeholder="24/7 Emergency Services Available">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Social Media Links</h2>
+        
+        <div class="form-group">
+          <label for="facebook">Facebook</label>
+          <input type="url" id="facebook" placeholder="https://facebook.com/animoravet">
+        </div>
+
+        <div class="form-group">
+          <label for="twitter">Twitter</label>
+          <input type="url" id="twitter" placeholder="https://twitter.com/animoravet">
+        </div>
+
+        <div class="form-group">
+          <label for="instagram">Instagram</label>
+          <input type="url" id="instagram" placeholder="https://instagram.com/animoravet">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    let contactData = {};
+
+    // Load contact data
+    async function loadContact() {
+      try {
+        const response = await fetch('/api/main?type=contact-info');
+        contactData = await response.json();
+        populateForm();
+      } catch (error) {
+        showAlert('Error loading contact data', 'error');
+      }
+    }
+
+    // Populate form
+    function populateForm() {
+      document.getElementById('phone').value = contactData.phone || '';
+      document.getElementById('email').value = contactData.email || '';
+      document.getElementById('address').value = contactData.address || '';
+      
+      if (contactData.hours) {
+        document.getElementById('weekdays').value = contactData.hours.weekdays || '';
+        document.getElementById('saturday').value = contactData.hours.saturday || '';
+        document.getElementById('sunday').value = contactData.hours.sunday || '';
+        document.getElementById('emergencyNote').value = contactData.hours.emergencyNote || '';
+      }
+      
+      if (contactData.socialMedia) {
+        document.getElementById('facebook').value = contactData.socialMedia.facebook || '';
+        document.getElementById('twitter').value = contactData.socialMedia.twitter || '';
+        document.getElementById('instagram').value = contactData.socialMedia.instagram || '';
+      }
+    }
+
+    // Handle form submit
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const updatedData = {
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value,
+        hours: {
+          weekdays: document.getElementById('weekdays').value,
+          saturday: document.getElementById('saturday').value,
+          sunday: document.getElementById('sunday').value,
+          emergencyNote: document.getElementById('emergencyNote').value
+        },
+        socialMedia: {
+          facebook: document.getElementById('facebook').value,
+          twitter: document.getElementById('twitter').value,
+          instagram: document.getElementById('instagram').value
+        }
+      };
+
+      try {
+        const response = await fetch('/api/main?type=contact-info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+
+        if (!response.ok) throw new Error('Save failed');
+        contactData = updatedData;
+        showAlert('Contact information saved successfully!', 'success');
+      } catch (error) {
+        showAlert('Error saving contact information', 'error');
+      }
+    });
+
+    // Show alert
+    function showAlert(message, type) {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.appendChild(alert);
+
+      setTimeout(() => alert.remove(), 3000);
+    }
+
+    // Initialize
+    loadContact();
+  </script>
+</body>
+</html>

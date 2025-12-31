@@ -1,0 +1,16 @@
+{
+  "phone": "+234 XXX XXX XXXX",
+  "email": "info@animoravet.com",
+  "address": "123 Veterinary Lane, City, Country",
+  "hours": {
+    "weekdays": "8:00 AM - 6:00 PM",
+    "saturday": "9:00 AM - 4:00 PM",
+    "sunday": "Closed (Emergency Only)",
+    "emergencyNote": "24/7 Emergency Services Available"
+  },
+  "socialMedia": {
+    "facebook": "https://facebook.com/animoravet",
+    "twitter": "https://twitter.com/animoravet",
+    "instagram": "https://instagram.com/animoravet"
+  }
+}

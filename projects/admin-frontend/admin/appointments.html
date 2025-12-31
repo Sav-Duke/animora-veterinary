@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Appointments Manager | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #16A34A;
+    }
+
+    .header h1 {
+      color: #16A34A;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #4b5563;
+      transform: translateY(-2px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-card.today {
+      background: linear-gradient(135deg, #16A34A 0%, #15803d 100%);
+    }
+
+    .stat-card.pending {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .stat-card.completed {
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+
+    .stat-card h3 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .stat-card p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .filters select,
+    .filters input {
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .filters select:focus,
+    .filters input:focus {
+      outline: none;
+      border-color: #16A34A;
+    }
+
+    .appointments-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .appointments-table th {
+      background: #f9fafb;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .appointments-table td {
+      padding: 15px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .appointments-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-badge.confirmed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-badge.completed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-badge.cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .action-btn.view {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .action-btn.confirm {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .action-btn.cancel {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state .icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .detail-group {
+      margin-bottom: 20px;
+    }
+
+    .detail-group label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    .detail-group p {
+      color: #6b7280;
+      padding: 10px;
+      background: #f9fafb;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .appointments-table {
+        font-size: 0.85rem;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filters select,
+      .filters input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>📅</span>Appointments Manager</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card today">
+        <h3 id="todayCount">0</h3>
+        <p>Today's Appointments</p>
+      </div>
+      <div class="stat-card pending">
+        <h3 id="pendingCount">0</h3>
+        <p>Pending Confirmation</p>
+      </div>
+      <div class="stat-card completed">
+        <h3 id="completedCount">0</h3>
+        <p>Completed This Week</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalCount">0</h3>
+        <p>Total Appointments</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <select id="statusFilter" onchange="filterAppointments()">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+
+      <input type="date" id="dateFilter" onchange="filterAppointments()">
+
+      <input type="text" id="searchFilter" placeholder="Search by name, email, or phone..." onchange="filterAppointments()" style="flex: 1; min-width: 250px;">
+    </div>
+
+    <table class="appointments-table" id="appointmentsTable">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Client Name</th>
+          <th>Pet Name</th>
+          <th>Service</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentsList">
+        <!-- Appointments will be loaded here -->
+      </tbody>
+    </table>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="icon">📅</div>
+      <h3>No Appointments Found</h3>
+      <p>No appointments match your current filters.</p>
+    </div>
+  </div>
+
+  <!-- View Details Modal -->
+  <div class="modal" id="detailsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Appointment Details</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div id="appointmentDetails"></div>
+    </div>
+  </div>
+
+  <script>
+    let appointments = [];
+    let filteredAppointments = [];
+
+    // API-driven appointments
+    async function loadAppointments() {
+      try {
+        const response = await fetch('/api/appointments');
+        appointments = await response.json();
+        filteredAppointments = [...appointments];
+        updateStats();
+        renderAppointments();
+      } catch (error) {
+        showAlert('Error loading appointments', 'error');
+      }
+    }
+
+    function updateStats() {
+      const today = new Date().toISOString().split('T')[0];
+      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+
+      document.getElementById('todayCount').textContent = 
+        appointments.filter(a => a.date === today).length;
+      
+      document.getElementById('pendingCount').textContent = 
+        appointments.filter(a => a.status === 'pending').length;
+      
+      document.getElementById('completedCount').textContent = 
+        appointments.filter(a => a.status === 'completed' && a.date >= weekAgo).length;
+      
+      document.getElementById('totalCount').textContent = appointments.length;
+    }
+
+    function renderAppointments() {
+      const tbody = document.getElementById('appointmentsList');
+      const emptyState = document.getElementById('emptyState');
+
+      if (filteredAppointments.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      tbody.innerHTML = filteredAppointments.map(apt => `
+        <tr>
+          <td><strong>${formatDate(apt.date)}</strong><br><small>${apt.time}</small></td>
+          <td>${apt.clientName}</td>
+          <td>${apt.petName} <small>(${apt.petType})</small></td>
+          <td>${apt.service}</td>
+          <td>${apt.phone}<br><small>${apt.email}</small></td>
+          <td><span class="status-badge ${apt.status}">${apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}</span></td>
+          <td>
+            <div class="action-btns">
+              <button class="action-btn view" onclick="viewDetails(${apt.id})">👁️ View</button>
+              ${apt.status === 'pending' ? `<button class="action-btn confirm" onclick="confirmAppointment(${apt.id})">✓ Confirm</button>` : ''}
+              ${apt.status !== 'cancelled' && apt.status !== 'completed' ? `<button class="action-btn cancel" onclick="cancelAppointment(${apt.id})">✕ Cancel</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterAppointments() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const dateFilter = document.getElementById('dateFilter').value;
+      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+      filteredAppointments = appointments.filter(apt => {
+        const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
+        const matchesDate = !dateFilter || apt.date === dateFilter;
+        const matchesSearch = !searchFilter || 
+          apt.clientName.toLowerCase().includes(searchFilter) ||
+          apt.email.toLowerCase().includes(searchFilter) ||
+          apt.phone.includes(searchFilter) ||
+          apt.petName.toLowerCase().includes(searchFilter);
+
+        return matchesStatus && matchesDate && matchesSearch;
+      });
+
+      renderAppointments();
+    }
+
+    function viewDetails(id) {
+      const apt = appointments.find(a => a.id === id);
+      if (!apt) return;
+
+      const detailsHTML = `
+        <div class="detail-group">
+          <label>Client Name:</label>
+          <p>${apt.clientName}</p>
+        </div>
+        <div class="detail-group">
+          <label>Pet Information:</label>
+          <p>${apt.petName} (${apt.petType})</p>
+        </div>
+        <div class="detail-group">
+          <label>Service:</label>
+          <p>${apt.service}</p>
+        </div>
+        <div class="detail-group">
+          <label>Date & Time:</label>
+          <p>${formatDate(apt.date)} at ${apt.time}</p>
+        </div>
+        <div class="detail-group">
+          <label>Email:</label>
+          <p>${apt.email}</p>
+        </div>
+        <div class="detail-group">
+          <label>Phone:</label>
+          <p>${apt.phone}</p>
+        </div>
+        <div class="detail-group">
+          <label>Status:</label>
+          <p><span class="status-badge ${apt.status}">${apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}</span></p>
+        </div>
+        <div class="detail-group">
+          <label>Notes:</label>
+          <p>${apt.notes || 'No notes provided'}</p>
+        </div>
+        <div class="detail-group">
+          <label>Booked On:</label>
+          <p>${new Date(apt.createdAt).toLocaleString()}</p>
+        </div>
+      `;
+
+      document.getElementById('appointmentDetails').innerHTML = detailsHTML;
+      document.getElementById('detailsModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    async function confirmAppointment(id) {
+      if (!confirm('Confirm this appointment?')) return;
+      try {
+        const apt = appointments.find(a => a.id === id);
+        if (!apt) return;
+        apt.status = 'confirmed';
+        await saveAppointments();
+        showAlert('Appointment confirmed', 'success');
+        await loadAppointments();
+      } catch (error) {
+        showAlert('Error confirming appointment', 'error');
+      }
+    }
+
+    async function cancelAppointment(id) {
+      if (!confirm('Cancel this appointment?')) return;
+      try {
+        const apt = appointments.find(a => a.id === id);
+        if (!apt) return;
+        apt.status = 'cancelled';
+        await saveAppointments();
+        showAlert('Appointment cancelled', 'success');
+        await loadAppointments();
+      } catch (error) {
+        showAlert('Error cancelling appointment', 'error');
+      }
+    }
+    async function saveAppointments() {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointments)
+      });
+      if (!response.ok) throw new Error('Save failed');
+    }
+    function showAlert(message, type) {
+      let container = document.getElementById('alertContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'alertContainer';
+        document.querySelector('.container').prepend(container);
+      }
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    // Initialize on page load
+    loadAppointments();
+  </script>
+</body>
+</html>

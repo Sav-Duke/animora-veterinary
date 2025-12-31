@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Vets | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="admin-bg">
+  <div class="container admin">
+    <div class="header admin">
+      <h1>👨‍⚕️ Manage Veterinarians</h1>
+      <a href="index.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="search-bar" style="display:flex;justify-content:center;margin-bottom:20px;gap:10px;">
+      <input type="text" id="searchInput" placeholder="Search by name, location, or service..." style="width:320px;padding:10px 16px;border:2px solid #16A34A;border-radius:8px;font-size:1rem;">
+      <button onclick="searchVets()" style="background:#16A34A;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;cursor:pointer;">Search</button>
+      <button onclick="exportVets()" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;cursor:pointer;">Export</button>
+    </div>
+
+    <div id="successMessage" class="success" style="display: none;"></div>
+
+    <button class="add-vet-btn" onclick="openModal()">+ Add New Vet</button>
+
+    <div id="vetsContainer">
+      <div class="loading">Loading veterinarians...</div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Vet Modal -->
+  <div id="vetModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">Add New Veterinarian</h2>
+      <form id="vetForm" onsubmit="saveVet(event)">
+        <input type="hidden" id="vetId">
+        <div class="form-group">
+          <label for="vetName">Veterinarian Name *</label>
+          <input type="text" id="vetName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="vetLocation">Location/Address *</label>
+          <input type="text" id="vetLocation" placeholder="e.g., Ebunangwe, Vihiga County, Kenya" required>
+        </div>
+
+        <div class="form-group">
+          <label>Services Provided *</label>
+          <div class="services-checkboxes">
+            <div class="checkbox-item">
+              <input type="checkbox" id="service1" value="General Check-up">
+              <label for="service1">General Check-up</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service2" value="Vaccination">
+              <label for="service2">Vaccination</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service3" value="Treatment">
+              <label for="service3">Treatment</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service4" value="Artificial Insemination">
+              <label for="service4">Artificial Insemination</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service5" value="Lab Test">
+              <label for="service5">Lab Test</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service6" value="Consultation">
+              <label for="service6">Consultation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service7" value="Breed Selection">
+              <label for="service7">Breed Selection</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service8" value="Surgery Consultation">
+              <label for="service8">Surgery Consultation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service9" value="Dental Care">
+              <label for="service9">Dental Care</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service10" value="Emergency Services">
+              <label for="service10">Emergency Services</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service11" value="Parasite Control">
+              <label for="service11">Parasite Control</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service12" value="Deworming">
+              <label for="service12">Deworming</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service13" value="Nutritional Planning">
+              <label for="service13">Nutritional Planning</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service14" value="Reproductive Health Monitoring">
+              <label for="service14">Reproductive Health Monitoring</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service15" value="Pregnancy Diagnosis">
+              <label for="service15">Pregnancy Diagnosis</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service16" value="Ultrasound Imaging">
+              <label for="service16">Ultrasound Imaging</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service17" value="X-ray Diagnostics">
+              <label for="service17">X-ray Diagnostics</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service18" value="Herd Health Management">
+              <label for="service18">Herd Health Management</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service19" value="Farm Visits">
+              <label for="service19">Farm Visits</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service20" value="Biosecurity Assessment">
+              <label for="service20">Biosecurity Assessment</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service21" value="Housing and Hygiene Evaluation">
+              <label for="service21">Housing and Hygiene Evaluation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service22" value="Neonatal Care">
+              <label for="service22">Neonatal Care</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service23" value="Hoof Trimming">
+              <label for="service23">Hoof Trimming</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service24" value="Castration">
+              <label for="service24">Castration</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service25" value="Dehorning">
+              <label for="service25">Dehorning</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service26" value="Wound Care">
+              <label for="service26">Wound Care</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service27" value="Chronic Disease Management">
+              <label for="service27">Chronic Disease Management</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service28" value="Milk Testing">
+              <label for="service28">Milk Testing</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service29" value="Fecal Analysis">
+              <label for="service29">Fecal Analysis</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service30" value="Blood Tests">
+              <label for="service30">Blood Tests</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service31" value="Disease Screening">
+              <label for="service31">Disease Screening</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service32" value="Postmortem Examination">
+              <label for="service32">Postmortem Examination</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service33" value="Grooming">
+              <label for="service33">Grooming</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service34" value="Microchipping">
+              <label for="service34">Microchipping</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service35" value="Spay and Neuter">
+              <label for="service35">Spay and Neuter</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service36" value="Behavioral Consultation">
+              <label for="service36">Behavioral Consultation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service37" value="Tele-Vet Consultation">
+              <label for="service37">Tele-Vet Consultation</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="service38" value="Follow-up Care">
+              <label for="service38">Follow-up Care</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Veterinarian</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom Alert/Confirm Modal -->
+  <div id="customAlertOverlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+      <div class="alert-header">
+        <div class="alert-icon" id="alertIcon"></div>
+        <div class="alert-title" id="alertTitle"></div>
+      </div>
+      <div class="alert-body">
+        <div class="alert-message" id="alertMessage"></div>
+      </div>
+      <div class="alert-actions" id="alertActions"></div>
+    </div>
+  </div>
+
+  <script>
+    // Use current origin for API base (works for both local and production)
+    const API_BASE = window.location.origin;
+    let vets = [];
+
+    // Custom Alert/Confirm Functions
+    function showCustomAlert(title, message, type = 'info') {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('customAlertOverlay');
+        const icon = document.getElementById('alertIcon');
+        const titleEl = document.getElementById('alertTitle');
+        const messageEl = document.getElementById('alertMessage');
+        const actionsEl = document.getElementById('alertActions');
+
+        const icons = {
+          success: '✓',
+          error: '✕',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+        icon.textContent = icons[type] || icons.info;
+        icon.className = `alert-icon ${type}`;
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        actionsEl.innerHTML = `
+          <button class="alert-btn ${type === 'success' ? 'success' : 'primary'}" onclick="closeCustomAlert()">OK</button>
+        `;
+
+        overlay.style.display = 'block';
+
+        window.closeCustomAlert = () => {
+          overlay.style.display = 'none';
+          resolve(true);
+        };
+      });
+    }
+
+    function showCustomConfirm(title, message, type = 'warning') {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('customAlertOverlay');
+        const icon = document.getElementById('alertIcon');
+        const titleEl = document.getElementById('alertTitle');
+        const messageEl = document.getElementById('alertMessage');
+        const actionsEl = document.getElementById('alertActions');
+
+        const icons = {
+          success: '✓',
+          error: '✕',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+        icon.textContent = icons[type] || icons.warning;
+        icon.className = `alert-icon ${type}`;
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        const confirmBtnClass = type === 'error' || type === 'warning' ? 'danger' : 'primary';
+        actionsEl.innerHTML = `
+          <button class="alert-btn secondary" onclick="closeCustomConfirm(false)">Cancel</button>
+          <button class="alert-btn ${confirmBtnClass}" onclick="closeCustomConfirm(true)">OK</button>
+        `;
+
+        overlay.style.display = 'block';
+
+        window.closeCustomConfirm = (result) => {
+          overlay.style.display = 'none';
+          resolve(result);
+        };
+      });
+    }
+
+    // Close on overlay click
+    document.addEventListener('click', (e) => {
+      const overlay = document.getElementById('customAlertOverlay');
+      if (e.target === overlay) {
+        overlay.style.display = 'none';
+      }
+    });
+
+    async function loadVets() {
+      const container = document.getElementById('vetsContainer');
+      try {
+        const response = await fetch(`/api/resources?type=vets`);
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        vets = data.map(v => ({
+          ...v,
+          id: v._id || v.id // Support both MongoDB and legacy IDs
+        }));
+        displayVets(vets);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="error">
+            <h3>❌ Error loading veterinarians</h3>
+            <p>${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+
+    function displayVets(vetsData) {
+      const container = document.getElementById('vetsContainer');
+      if (vetsData.length === 0) {
+        container.innerHTML = '<div class="loading">No veterinarians added yet. Click "Add New Vet" to get started.' +
+          '<br><br><em>Tip: Use the Export button to backup your data.</em></div>';
+        return;
+      }
+      container.innerHTML = `
+        <div class="vets-grid">
+          ${vetsData.map(vet => `
+            <div class="vet-card">
+              <h3>${vet.name}</h3>
+              <div class="location">
+                <span>📍</span>
+                <span>${vet.location}</span>
+              </div>
+              <div class="services-list">
+                ${vet.services.map(service => `<span class="service-tag">${service}</span>`).join('')}
+              </div>
+              <div class="vet-actions">
+                <button class="btn-edit" onclick="editVet('${vet.id}')">Edit</button>
+                <button class="btn-delete" onclick="deleteVet('${vet.id}')">Delete</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function searchVets() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      if (!q) {
+        displayVets(vets);
+        return;
+      }
+      const filtered = vets.filter(vet =>
+        vet.name.toLowerCase().includes(q) ||
+        vet.location.toLowerCase().includes(q) ||
+        vet.services.some(s => s.toLowerCase().includes(q))
+      );
+      displayVets(filtered);
+    }
+
+    function exportVets() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(vets, null, 2));
+      const dl = document.createElement('a');
+      dl.setAttribute('href', dataStr);
+      dl.setAttribute('download', 'vets-backup.json');
+      document.body.appendChild(dl);
+      dl.click();
+      document.body.removeChild(dl);
+    }
+
+    // Add sample cards for demonstration (if less than 3)
+    function addSampleVets() {
+      if (vets.length < 3) {
+        const samples = [
+          {
+            id: 'vet_sample1',
+            name: 'Dr. Jane Mwangi',
+            location: 'Kisumu, Kenya',
+            services: ['Vaccination', 'Consultation', 'Lab Test']
+          },
+          {
+            id: 'vet_sample2',
+            name: 'Dr. Samuel Otieno',
+            location: 'Nairobi, Kenya',
+            services: ['Surgery', 'Emergency Services', 'Breed Selection']
+          }
+        ];
+        samples.forEach(s => {
+          if (!vets.find(v => v.id === s.id)) vets.push(s);
+        });
+      }
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Veterinarian';
+      document.getElementById('vetModal').style.display = 'block';
+      document.getElementById('vetForm').reset();
+      document.getElementById('vetId').value = '';
+    }
+
+    function editVet(id) {
+      const vet = vets.find(v => v.id === id);
+      if (!vet) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Veterinarian';
+      document.getElementById('vetId').value = vet.id;
+      document.getElementById('vetName').value = vet.name;
+      document.getElementById('vetLocation').value = vet.location;
+
+      // Uncheck all services first
+      for (let i = 1; i <= 38; i++) {
+        const checkbox = document.getElementById(`service${i}`);
+        if (checkbox) checkbox.checked = false;
+      }
+
+      // Check the services that the vet provides
+      vet.services.forEach(service => {
+        for (let i = 1; i <= 38; i++) {
+          const checkbox = document.getElementById(`service${i}`);
+          if (checkbox && checkbox.value === service) {
+            checkbox.checked = true;
+          }
+        }
+      });
+
+      document.getElementById('vetModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('vetModal').style.display = 'none';
+    }
+
+    async function saveVet(event) {
+      event.preventDefault();
+      
+      const vetId = document.getElementById('vetId').value;
+      const name = document.getElementById('vetName').value;
+      const location = document.getElementById('vetLocation').value;
+      
+      // Get selected services
+      const services = [];
+      for (let i = 1; i <= 38; i++) {
+        const checkbox = document.getElementById(`service${i}`);
+        if (checkbox && checkbox.checked) {
+          services.push(checkbox.value);
+        }
+      }
+
+      if (services.length === 0) {
+        await showCustomAlert('Validation Error', 'Please select at least one service', 'warning');
+        return;
+      }
+
+      try {
+        if (vetId) {
+          // Edit existing vet
+          await fetch(`/api/resources?type=vets`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: vetId, name, location, services })
+          });
+          showSuccess('Veterinarian updated successfully!');
+        } else {
+          // Add new vet
+          await fetch(`/api/resources?type=vets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, location, services })
+          });
+          showSuccess('Veterinarian added successfully!');
+        }
+        closeModal();
+        loadVets();
+      } catch (err) {
+        await showCustomAlert('Error', 'Error saving veterinarian: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteVet(id) {
+      const confirmed = await showCustomConfirm(
+        'Confirm Deletion',
+        'Are you sure you want to delete this veterinarian?',
+        'warning'
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        await fetch(`/api/resources?type=vets&id=${encodeURIComponent(id)}`, {
+          method: 'DELETE'
+        });
+        showSuccess('Veterinarian deleted successfully!');
+        loadVets();
+      } catch (err) {
+        await showCustomAlert('Error', 'Error deleting veterinarian: ' + err.message, 'error');
+      }
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      setTimeout(() => {
+        successDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('vetModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Load vets on page load
+    loadVets();
+  </script>
+</body>
+</html>

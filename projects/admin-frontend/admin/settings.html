@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f59e0b;
+    }
+
+    .header h1 {
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #4b5563;
+      transform: translateY(-2px);
+    }
+
+    .settings-section {
+      margin-bottom: 35px;
+      padding: 25px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+    }
+
+    .settings-section h2 {
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-section p {
+      color: #6b7280;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #374151;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    }
+
+    .form-group small {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .form-group input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .password-strength.weak { color: #dc2626; }
+    .password-strength.medium { color: #f59e0b; }
+    .password-strength.strong { color: #10b981; }
+
+    .password-requirements {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .password-requirements h4 {
+      color: #374151;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .requirement.met {
+      color: #10b981;
+    }
+
+    .requirement .icon {
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 600;
+      border: 2px solid #10b981;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 600;
+      border: 2px solid #dc2626;
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #3b82f6;
+      margin-top: 25px;
+    }
+
+    .info-box h3 {
+      color: #1e40af;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-box ul {
+      color: #1e40af;
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>⚙️</span>Settings</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div id="successMessage" class="success-message"></div>
+    <div id="errorMessage" class="error-message"></div>
+
+    <!-- Business Information Section -->
+    <div class="settings-section">
+      <h2><span>🏢</span>Business Information</h2>
+      <p>Update your clinic's basic information displayed across the website.</p>
+
+      <form id="businessInfoForm" onsubmit="saveBusinessInfo(event)">
+        <div class="form-group">
+          <label for="clinicName">Clinic Name *</label>
+          <input type="text" id="clinicName" required placeholder="e.g., Animora Farm Health">
+        </div>
+
+        <div class="form-group">
+          <label for="tagline">Tagline / Slogan</label>
+          <input type="text" id="tagline" placeholder="e.g., Caring for Your Animals, One Paw at a Time">
+        </div>
+
+        <div class="form-group">
+          <label for="copyrightName">Copyright Name</label>
+          <input type="text" id="copyrightName" placeholder="e.g., Animora Veterinary Services">
+        </div>
+
+        <button type="submit" class="btn-primary">Save Business Information</button>
+      </form>
+    </div>
+
+    <!-- SEO Settings Section -->
+    <div class="settings-section">
+      <h2><span>🔍</span>SEO Settings</h2>
+      <p>Optimize your website for search engines to improve visibility.</p>
+
+      <form id="seoForm" onsubmit="saveSEOSettings(event)">
+        <div class="form-group">
+          <label for="metaDescription">Meta Description</label>
+          <input type="text" id="metaDescription" maxlength="160" placeholder="Brief description of your clinic (max 160 characters)">
+          <small style="display: block; margin-top: 5px; color: #6b7280;">
+            <span id="metaDescLength">0</span>/160 characters
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="metaKeywords">Meta Keywords</label>
+          <input type="text" id="metaKeywords" placeholder="e.g., Farm Health, animal hospital, pet care">
+        </div>
+
+        <div class="form-group">
+          <label for="googleAnalytics">Google Analytics ID</label>
+          <input type="text" id="googleAnalytics" placeholder="e.g., G-XXXXXXXXXX or UA-XXXXXXXXX-X">
+        </div>
+
+        <button type="submit" class="btn-primary">Save SEO Settings</button>
+      </form>
+    </div>
+
+    <!-- Appointment Settings Section -->
+    <div class="settings-section">
+      <h2><span>📅</span>Appointment Settings</h2>
+      <p>Configure appointment booking preferences and notifications.</p>
+
+      <form id="appointmentForm" onsubmit="saveAppointmentSettings(event)">
+        <div class="form-group">
+          <label for="appointmentEmail">Appointment Notification Email *</label>
+          <input type="email" id="appointmentEmail" required placeholder="e.g., appointments@animora.com">
+        </div>
+
+        <div class="form-group">
+          <label for="maxDailyAppointments">Max Daily Appointments</label>
+          <input type="number" id="maxDailyAppointments" min="1" max="100" placeholder="e.g., 20">
+        </div>
+
+        <div class="form-group">
+          <label for="appointmentDuration">Default Appointment Duration (minutes)</label>
+          <input type="number" id="appointmentDuration" min="15" step="15" placeholder="e.g., 30">
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="requireDeposit" style="width: auto; margin-right: 8px;">
+            Require deposit for appointments
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Appointment Settings</button>
+      </form>
+    </div>
+
+    <!-- Notification Settings Section -->
+    <div class="settings-section">
+      <h2><span>🔔</span>Notification Settings</h2>
+      <p>Configure how you receive notifications about website activities.</p>
+
+      <form id="notificationForm" onsubmit="saveNotificationSettings(event)">
+        <div class="form-group">
+          <label>Email Notifications</label>
+          <div style="margin-top: 10px;">
+            <label style="display: block; margin-bottom: 8px;">
+              <input type="checkbox" id="notifyNewAppointment" style="width: auto; margin-right: 8px;" checked>
+              New appointment bookings
+            </label>
+            <label style="display: block; margin-bottom: 8px;">
+              <input type="checkbox" id="notifyNewContact" style="width: auto; margin-right: 8px;" checked>
+              New contact form submissions
+            </label>
+            <label style="display: block; margin-bottom: 8px;">
+              <input type="checkbox" id="notifyNewReview" style="width: auto; margin-right: 8px;" checked>
+              New patient reviews
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Notification Settings</button>
+      </form>
+    </div>
+
+    <!-- Social Media Section -->
+    <div class="settings-section">
+      <h2><span>📱</span>Social Media Links</h2>
+      <p>Update your social media profile URLs displayed in the footer.</p>
+
+      <form id="socialMediaForm" onsubmit="saveSocialMedia(event)">
+        <div class="form-group">
+          <label for="facebookUrl">Facebook URL</label>
+          <input type="url" id="facebookUrl" placeholder="https://facebook.com/yourpage">
+        </div>
+
+        <div class="form-group">
+          <label for="twitterUrl">Twitter/X URL</label>
+          <input type="url" id="twitterUrl" placeholder="https://twitter.com/yourhandle">
+        </div>
+
+        <div class="form-group">
+          <label for="instagramUrl">Instagram URL</label>
+          <input type="url" id="instagramUrl" placeholder="https://instagram.com/yourhandle">
+        </div>
+
+        <div class="form-group">
+          <label for="linkedinUrl">LinkedIn URL</label>
+          <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/company/yourcompany">
+        </div>
+
+        <button type="submit" class="btn-primary">Save Social Media Links</button>
+      </form>
+    </div>
+
+    <!-- Maintenance Mode Section -->
+    <div class="settings-section">
+      <h2><span>🔧</span>Maintenance Mode</h2>
+      <p>Enable maintenance mode to temporarily disable public access to the website.</p>
+
+      <form id="maintenanceForm" onsubmit="saveMaintenanceMode(event)">
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="maintenanceMode" style="width: auto; margin-right: 8px;">
+            Enable maintenance mode
+          </label>
+          <small style="display: block; margin-top: 8px; color: #6b7280;">
+            ⚠️ Visitors will see a maintenance page. Admin panel will remain accessible.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="maintenanceMessage">Maintenance Message</label>
+          <input type="text" id="maintenanceMessage" placeholder="We'll be back soon! Under maintenance for improvements.">
+        </div>
+
+        <button type="submit" class="btn-primary">Save Maintenance Settings</button>
+      </form>
+    </div>
+
+    <!-- Backup & Data Section -->
+    <div class="settings-section">
+      <h2><span>💾</span>Backup & Data Management</h2>
+      <p>Export and backup your website data.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <button onclick="exportData('staff')" class="btn-primary" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+          📊 Export Staff Data
+        </button>
+        <button onclick="exportData('services')" class="btn-primary" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+          📊 Export Services Data
+        </button>
+        <button onclick="exportData('contact')" class="btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          📊 Export Contact Data
+        </button>
+        <button onclick="exportData('all')" class="btn-primary" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+          📦 Export All Data
+        </button>
+      </div>
+
+      <div class="info-box" style="margin-top: 20px;">
+        <h3><span>ℹ️</span>About Backups</h3>
+        <ul>
+          <li>Regular backups help protect against data loss</li>
+          <li>Export data before making major changes</li>
+          <li>Store backups in a secure location</li>
+          <li>Consider automating backups weekly or monthly</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Security Settings Section -->
+    <div class="settings-section">
+      <h2><span>🔒</span>Change Admin Password</h2>
+      <p>Update your admin panel access password. Make sure to use a strong, unique password.</p>
+
+      <form id="passwordChangeForm" onsubmit="changePassword(event)">
+        <div class="form-group">
+          <label for="currentPassword">Current Password *</label>
+          <input type="password" id="currentPassword" required placeholder="Enter current password">
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password *</label>
+          <input type="password" id="newPassword" required placeholder="Enter new password" oninput="checkPasswordStrength()">
+          <div id="passwordStrength" class="password-strength"></div>
+          
+          <div class="password-requirements">
+            <h4>Password Requirements:</h4>
+            <div class="requirement" id="req-length">
+              <span class="icon">○</span>
+              <span>At least 12 characters</span>
+            </div>
+            <div class="requirement" id="req-uppercase">
+              <span class="icon">○</span>
+              <span>At least one uppercase letter</span>
+            </div>
+            <div class="requirement" id="req-lowercase">
+              <span class="icon">○</span>
+              <span>At least one lowercase letter</span>
+            </div>
+            <div class="requirement" id="req-number">
+              <span class="icon">○</span>
+              <span>At least one number</span>
+            </div>
+            <div class="requirement" id="req-special">
+              <span class="icon">○</span>
+              <span>At least one special character (!@#$%^&*)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password *</label>
+          <input type="password" id="confirmPassword" required placeholder="Re-enter new password">
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">Update Password</button>
+      </form>
+    </div>
+
+    <div class="info-box">
+      <h3><span>💡</span>Security Tips</h3>
+      <ul>
+        <li>Use a unique password that you don't use anywhere else</li>
+        <li>Avoid using personal information in your password</li>
+        <li>Change your password regularly (every 3-6 months)</li>
+        <li>Never share your admin password with anyone</li>
+        <li>Keep your password stored securely</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Initialize settings on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAllSettings();
+      
+      // Add character counter for meta description
+      document.getElementById('metaDescription').addEventListener('input', (e) => {
+        document.getElementById('metaDescLength').textContent = e.target.value.length;
+      });
+    });
+
+    // Load all settings from localStorage
+    function loadAllSettings() {
+      // Business Information
+      const businessInfo = JSON.parse(localStorage.getItem('animoraBusinessInfo') || '{}');
+      document.getElementById('clinicName').value = businessInfo.clinicName || 'Animora Farm Health';
+      document.getElementById('tagline').value = businessInfo.tagline || '';
+      document.getElementById('copyrightName').value = businessInfo.copyrightName || 'Animora Veterinary Services';
+
+      // SEO Settings
+      const seoSettings = JSON.parse(localStorage.getItem('animoraSEOSettings') || '{}');
+      document.getElementById('metaDescription').value = seoSettings.metaDescription || '';
+      document.getElementById('metaKeywords').value = seoSettings.metaKeywords || '';
+      document.getElementById('googleAnalytics').value = seoSettings.googleAnalytics || '';
+      document.getElementById('metaDescLength').textContent = (seoSettings.metaDescription || '').length;
+
+      // Appointment Settings
+      const appointmentSettings = JSON.parse(localStorage.getItem('animoraAppointmentSettings') || '{}');
+      document.getElementById('appointmentEmail').value = appointmentSettings.email || '';
+      document.getElementById('maxDailyAppointments').value = appointmentSettings.maxDaily || '';
+      document.getElementById('appointmentDuration').value = appointmentSettings.duration || 30;
+      document.getElementById('requireDeposit').checked = appointmentSettings.requireDeposit || false;
+
+      // Notification Settings
+      const notificationSettings = JSON.parse(localStorage.getItem('animoraNotificationSettings') || '{}');
+      document.getElementById('notifyNewAppointment').checked = notificationSettings.newAppointment !== false;
+      document.getElementById('notifyNewContact').checked = notificationSettings.newContact !== false;
+      document.getElementById('notifyNewReview').checked = notificationSettings.newReview !== false;
+
+      // Social Media
+      const socialMedia = JSON.parse(localStorage.getItem('animoraSocialMedia') || '{}');
+      document.getElementById('facebookUrl').value = socialMedia.facebook || '';
+      document.getElementById('twitterUrl').value = socialMedia.twitter || '';
+      document.getElementById('instagramUrl').value = socialMedia.instagram || '';
+      document.getElementById('linkedinUrl').value = socialMedia.linkedin || '';
+
+      // Maintenance Mode
+      const maintenanceSettings = JSON.parse(localStorage.getItem('animoraMaintenanceSettings') || '{}');
+      document.getElementById('maintenanceMode').checked = maintenanceSettings.enabled || false;
+      document.getElementById('maintenanceMessage').value = maintenanceSettings.message || "We'll be back soon! Under maintenance for improvements.";
+    }
+
+    // Save Business Information
+    function saveBusinessInfo(event) {
+      event.preventDefault();
+      
+      const businessInfo = {
+        clinicName: document.getElementById('clinicName').value,
+        tagline: document.getElementById('tagline').value,
+        copyrightName: document.getElementById('copyrightName').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraBusinessInfo', JSON.stringify(businessInfo));
+      showSuccess('Business information saved successfully!');
+    }
+
+    // Save SEO Settings
+    function saveSEOSettings(event) {
+      event.preventDefault();
+      
+      const seoSettings = {
+        metaDescription: document.getElementById('metaDescription').value,
+        metaKeywords: document.getElementById('metaKeywords').value,
+        googleAnalytics: document.getElementById('googleAnalytics').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraSEOSettings', JSON.stringify(seoSettings));
+      showSuccess('SEO settings saved successfully!');
+    }
+
+    // Save Appointment Settings
+    function saveAppointmentSettings(event) {
+      event.preventDefault();
+      
+      const appointmentSettings = {
+        email: document.getElementById('appointmentEmail').value,
+        maxDaily: document.getElementById('maxDailyAppointments').value,
+        duration: document.getElementById('appointmentDuration').value,
+        requireDeposit: document.getElementById('requireDeposit').checked,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraAppointmentSettings', JSON.stringify(appointmentSettings));
+      showSuccess('Appointment settings saved successfully!');
+    }
+
+    // Save Notification Settings
+    function saveNotificationSettings(event) {
+      event.preventDefault();
+      
+      const notificationSettings = {
+        newAppointment: document.getElementById('notifyNewAppointment').checked,
+        newContact: document.getElementById('notifyNewContact').checked,
+        newReview: document.getElementById('notifyNewReview').checked,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraNotificationSettings', JSON.stringify(notificationSettings));
+      showSuccess('Notification settings saved successfully!');
+    }
+
+    // Save Social Media Links
+    function saveSocialMedia(event) {
+      event.preventDefault();
+      
+      const socialMedia = {
+        facebook: document.getElementById('facebookUrl').value,
+        twitter: document.getElementById('twitterUrl').value,
+        instagram: document.getElementById('instagramUrl').value,
+        linkedin: document.getElementById('linkedinUrl').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraSocialMedia', JSON.stringify(socialMedia));
+      showSuccess('Social media links saved successfully!');
+    }
+
+    // Save Maintenance Mode
+    function saveMaintenanceMode(event) {
+      event.preventDefault();
+      
+      const maintenanceSettings = {
+        enabled: document.getElementById('maintenanceMode').checked,
+        message: document.getElementById('maintenanceMessage').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('animoraMaintenanceSettings', JSON.stringify(maintenanceSettings));
+      
+      if (maintenanceSettings.enabled) {
+        showSuccess('⚠️ Maintenance mode ENABLED. Public website is now inaccessible.');
+      } else {
+        showSuccess('✅ Maintenance mode DISABLED. Public website is now accessible.');
+      }
+    }
+
+    // Export data functions
+    async function exportData(type) {
+      let data = {};
+      let filename = '';
+
+      try {
+        if (type === 'all') {
+          // Export all data
+          const staffRes = await fetch('/api/resources?type=staff');
+          const servicesRes = await fetch('/api/resources?type=services');
+          const contactRes = await fetch('/api/resources?type=contact-info');
+          const aboutRes = await fetch('/api/resources?type=about-content');
+
+          data = {
+            staff: await staffRes.json(),
+            services: await servicesRes.json(),
+            contact: await contactRes.json(),
+            about: await aboutRes.json(),
+            settings: {
+              business: JSON.parse(localStorage.getItem('animoraBusinessInfo') || '{}'),
+              seo: JSON.parse(localStorage.getItem('animoraSEOSettings') || '{}'),
+              appointments: JSON.parse(localStorage.getItem('animoraAppointmentSettings') || '{}'),
+              notifications: JSON.parse(localStorage.getItem('animoraNotificationSettings') || '{}'),
+              socialMedia: JSON.parse(localStorage.getItem('animoraSocialMedia') || '{}'),
+              maintenance: JSON.parse(localStorage.getItem('animoraMaintenanceSettings') || '{}')
+            },
+            exportedAt: new Date().toISOString(),
+            version: '1.0'
+          };
+          filename = `animora-full-backup-${new Date().toISOString().split('T')[0]}.json`;
+        } else {
+          // Export specific data
+          const response = await fetch(`/api/${type}`);
+          data = await response.json();
+          filename = `animora-${type}-${new Date().toISOString().split('T')[0]}.json`;
+        }
+
+        // Create download
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showSuccess(`✅ ${type === 'all' ? 'Full backup' : type.charAt(0).toUpperCase() + type.slice(1) + ' data'} exported successfully!`);
+      } catch (error) {
+        showError(`Failed to export ${type} data: ${error.message}`);
+      }
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      const errorDiv = document.getElementById('errorMessage');
+      
+      errorDiv.style.display = 'none';
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      setTimeout(() => {
+        successDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // Show error message
+    function showError(message) {
+      const successDiv = document.getElementById('successMessage');
+      const errorDiv = document.getElementById('errorMessage');
+      
+      successDiv.style.display = 'none';
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Hash function (same as in index.html)
+    function hashPasswordSync(password) {
+      let hash = 0;
+      const str = password + 'AnimoraSalt2025';
+      // API-driven settings
+      async function saveBusinessInfo(event) {
+        event.preventDefault();
+        const name = document.getElementById('clinicName').value;
+        const tagline = document.getElementById('tagline').value;
+        const copyright = document.getElementById('copyrightName').value;
+        await saveSettingsSection({ business: { name, tagline, copyright } });
+        showSuccess('Business information saved!');
+      }
+
+      async function saveSEOSettings(event) {
+        event.preventDefault();
+        const metaDescription = document.getElementById('metaDescription').value;
+        const metaKeywords = document.getElementById('metaKeywords').value;
+        const googleAnalytics = document.getElementById('googleAnalytics').value;
+        await saveSettingsSection({ seo: { metaDescription, metaKeywords, googleAnalytics } });
+        showSuccess('SEO settings saved!');
+      }
+
+      async function saveAppointmentSettings(event) {
+        event.preventDefault();
+        const appointmentEmail = document.getElementById('appointmentEmail').value;
+        const maxDailyAppointments = document.getElementById('maxDailyAppointments').value;
+        const appointmentDuration = document.getElementById('appointmentDuration').value;
+        const requireDeposit = document.getElementById('requireDeposit').checked;
+        await saveSettingsSection({ appointment: { appointmentEmail, maxDailyAppointments, appointmentDuration, requireDeposit } });
+        showSuccess('Appointment settings saved!');
+      }
+
+      async function saveNotificationSettings(event) {
+        event.preventDefault();
+        const notifyNewAppointment = document.getElementById('notifyNewAppointment').checked;
+        const notifyNewContact = document.getElementById('notifyNewContact').checked;
+        const notifyNewReview = document.getElementById('notifyNewReview').checked;
+        await saveSettingsSection({ notification: { notifyNewAppointment, notifyNewContact, notifyNewReview } });
+        showSuccess('Notification settings saved!');
+      }
+
+      async function saveSocialMedia(event) {
+        event.preventDefault();
+        const facebookUrl = document.getElementById('facebookUrl').value;
+        const twitterUrl = document.getElementById('twitterUrl').value;
+        const instagramUrl = document.getElementById('instagramUrl').value;
+        const linkedinUrl = document.getElementById('linkedinUrl').value;
+        await saveSettingsSection({ social: { facebookUrl, twitterUrl, instagramUrl, linkedinUrl } });
+        showSuccess('Social media links saved!');
+      }
+
+      async function saveSettingsSection(section) {
+        // Get current settings
+        let settings = {};
+        try {
+          const res = await fetch('/api/util?action=settings');
+          settings = await res.json();
+        } catch {}
+        // Merge section
+        settings = { ...settings, ...section };
+        await fetch('/api/util?action=settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+      }
+
+      function showSuccess(msg) {
+        const div = document.getElementById('successMessage');
+        div.textContent = '✅ ' + msg;
+        div.style.display = 'block';
+        document.getElementById('errorMessage').style.display = 'none';
+        setTimeout(() => { div.style.display = 'none'; }, 3000);
+      }
+      function showError(msg) {
+        const div = document.getElementById('errorMessage');
+        div.textContent = '❌ ' + msg;
+        div.style.display = 'block';
+        document.getElementById('successMessage').style.display = 'none';
+        setTimeout(() => { div.style.display = 'none'; }, 4000);
+      }
+
+      // Load settings on page load
+      window.addEventListener('DOMContentLoaded', async () => {
+        let settings = {};
+        try {
+          const res = await fetch('/api/util?action=settings');
+          settings = await res.json();
+        } catch {}
+        // Business Info
+        const business = settings.business || {};
+        document.getElementById('clinicName').value = business.name || '';
+        document.getElementById('tagline').value = business.tagline || '';
+        document.getElementById('copyrightName').value = business.copyright || '';
+        // SEO
+        const seo = settings.seo || {};
+        document.getElementById('metaDescription').value = seo.metaDescription || '';
+        document.getElementById('metaKeywords').value = seo.metaKeywords || '';
+        document.getElementById('googleAnalytics').value = seo.googleAnalytics || '';
+        // Appointments
+        const appt = settings.appointment || {};
+        document.getElementById('appointmentEmail').value = appt.appointmentEmail || '';
+        document.getElementById('maxDailyAppointments').value = appt.maxDailyAppointments || '';
+        document.getElementById('appointmentDuration').value = appt.appointmentDuration || '';
+        document.getElementById('requireDeposit').checked = appt.requireDeposit || false;
+        // Notifications
+        const notif = settings.notification || {};
+        document.getElementById('notifyNewAppointment').checked = notif.notifyNewAppointment !== false;
+        document.getElementById('notifyNewContact').checked = notif.notifyNewContact !== false;
+        document.getElementById('notifyNewReview').checked = notif.notifyNewReview !== false;
+        // Social Media
+        const social = settings.social || {};
+        document.getElementById('facebookUrl').value = social.facebookUrl || '';
+        document.getElementById('twitterUrl').value = social.twitterUrl || '';
+        document.getElementById('instagramUrl').value = social.instagramUrl || '';
+        document.getElementById('linkedinUrl').value = social.linkedinUrl || '';
+      });
+
+    // Initialize requirement indicators
+    checkPasswordStrength();
+  </script>
+</body>
+</html>

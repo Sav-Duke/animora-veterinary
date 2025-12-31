@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+        const response = await fetch('/api/resources?type=about-content');
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/about.css">
+  <link rel="stylesheet" href="/styles/mediaqueries.css">
+  <link rel="stylesheet" href="/styles/ai.css"> <!-- ✅ AI widget styles -->
+</head>
+<body>
+  <header>
+    <h1 class="logo">Animora <span class="sub">Farm Health</span></h1>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About Us</a></li>
+        <li><a href="services.html">Care & Services</a></li>
+        <li><a href="staff.html">Our Team</a></li>
+        <li><a href="contact.html">Appointments</a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-section" id="aboutContent">
+    <h2 id="mainHeading">About Animora</h2>
+    <p id="introduction">At Animora Farm Health we treat every patient as part of our extended family. Our mission is to provide compassionate, evidence-based veterinary care tailored to the needs of pets and support for their owners.</p>
+
+    <h3 id="promiseHeading">Our Promise</h3>
+    <p id="promiseText">From preventative medicine and wellness to advanced surgery and emergency care, Animora delivers professional veterinary services with gentle handling and clear communication.</p>
+
+    <div id="missionVision" style="margin: 30px 0;">
+      <!-- Mission and vision will be loaded here if available -->
+    </div>
+    <!-- Global Loading Spinner -->
+    <div id="globalLoading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;align-items:center;justify-content:center;">
+      <div style="border:6px solid #f3f3f3;border-top:6px solid #16A34A;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;"></div>
+      <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
+    </div>
+  
+    <!-- Global Error Handler & Loading Spinner Logic -->
+    <script>
+      function showLoading() { document.getElementById('globalLoading').style.display = 'flex'; }
+      function hideLoading() { document.getElementById('globalLoading').style.display = 'none'; }
+      const origFetch = window.fetch;
+      window.fetch = function(...args) { showLoading(); return origFetch.apply(this, args).finally(hideLoading); };
+      window.addEventListener('error', function(e) { alert('An unexpected error occurred. Please try again or contact support.'); });
+      window.addEventListener('unhandledrejection', function(e) { alert('A network or script error occurred. Please check your connection or try again.'); });
+    </script>
+  </main>
+
+  <footer>
+    <p>© 2025 Animora Farm Health</p>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/about.js"></script>
+  <script>
+    // Load and display about content dynamically
+    async function loadAboutContent() {
+      try {
+        const response = await fetch('/api/resources?type=about-content');
+        const aboutData = await response.json();
+        
+        // Update main content
+        if (aboutData.mainHeading) {
+          document.getElementById('mainHeading').textContent = aboutData.mainHeading;
+        }
+        if (aboutData.introduction) {
+          document.getElementById('introduction').textContent = aboutData.introduction;
+        }
+        if (aboutData.promiseHeading) {
+          document.getElementById('promiseHeading').textContent = aboutData.promiseHeading;
+        }
+        if (aboutData.promiseText) {
+          document.getElementById('promiseText').textContent = aboutData.promiseText;
+        }
+        
+        // Add mission, vision, and values if available
+        const missionVisionDiv = document.getElementById('missionVision');
+        let additionalContent = '';
+        
+        if (aboutData.mission) {
+          additionalContent += `
+            <h3>Our Mission</h3>
+            <p>${aboutData.mission}</p>
+          `;
+        }
+        
+        if (aboutData.vision) {
+          additionalContent += `
+            <h3>Our Vision</h3>
+            <p>${aboutData.vision}</p>
+          `;
+        }
+        
+        if (aboutData.values && aboutData.values.length > 0) {
+          additionalContent += `
+            <h3>Our Core Values</h3>
+            <ul style="list-style: none; padding-left: 0;">
+              ${aboutData.values.map(value => `<li style="margin: 8px 0;">
+                ${value}
+              </li>`).join('')}
+            </ul>
+          `;
+        }
+        
+        missionVisionDiv.innerHTML = additionalContent;
+      } catch (error) {
+        console.error('Error loading about content:', error);
+        
+        // Display animal welfare fallback content
+        const aboutContent = document.querySelector('.about-content');
+        if (aboutContent) {
+          aboutContent.innerHTML = `
+            <div style="max-width: 800px; margin: 0 auto; padding: 40px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+              <h3 style="color: #16A34A; font-size: 1.8rem; margin-bottom: 20px;">33f Our Commitment to Animal Welfare</h3>
+              
+              <p style="color: #374151; line-height: 1.8; text-align: justify; margin-bottom: 20px;">
+                At the heart of veterinary medicine lies a profound commitment to the welfare of all animals. We believe that every creature, great or small, deserves compassionate, expert care guided by both scientific excellence and ethical responsibility.
+              </p>
+              
+              <p style="color: #374151; line-height: 1.8; text-align: justify; margin-bottom: 30px;">
+                Our practice is built on the foundation that animals are sentient beings worthy of respect, dignity, and protection from suffering. We combine evidence-based medicine with genuine compassion to provide the highest standard of care.
+              </p>
+              
+              <div style="background: white; padding: 25px; border-radius: 8px; border-left: 4px solid #16A34A; margin-bottom: 25px; text-align: left;">
+                <h4 style="color: #16A34A; font-size: 1.3rem; margin-bottom: 15px;">4dc Legal Framework for Animal Protection</h4>
+                
+                <p style="color: #374151; line-height: 1.7; margin-bottom: 15px;">
+                  <strong style="color: #16A34A;">The Animal Welfare Act (AWA):</strong> Establishes minimum standards for the humane handling, housing, care, treatment, and transportation of animals. It mandates proper housing, handling, sanitation, nutrition, water, veterinary care, and protection from extreme weather and temperatures.
+                </p>
+                
+                <p style="color: #374151; line-height: 1.7;">
+                  <strong style="color: #16A34A;">Prevention of Cruelty to Animals Laws:</strong> State and federal statutes that prohibit intentional infliction of unnecessary pain or suffering, abandonment, neglect, and failure to provide adequate food, water, shelter, and medical care.
+                </p>
+              </div>
+              
+              <div style="background: #fef3c7; padding: 25px; border-radius: 8px; border-left: 4px solid #f59e0b; text-align: left;">
+                <h4 style="color: #d97706; font-size: 1.3rem; margin-bottom: 15px;">1d Biblical Perspective on Animal Care</h4>
+                
+                <p style="color: #374151; line-height: 1.7; margin-bottom: 12px; font-style: italic;">
+                  "A righteous man cares for the needs of his animal, but the kindest acts of the wicked are cruel." - Proverbs 12:10
+                </p>
+                
+                <p style="color: #374151; line-height: 1.7;">
+                  As stewards of God's creation, we are called to care for all living creatures with kindness and responsibility. Our faith teaches us that how we treat animals reflects our character and our reverence for the Creator.
+                </p>
+              </div>
+              
+              <p style="color: #6b7280; font-size: 0.9rem; margin-top: 25px;">
+                We're experiencing a temporary connection issue. Please refresh the page or contact us directly.
+              </p>
+            </div>
+          `;
+        }
+      }
+    }
+    
+    // Load content when page loads
+    loadAboutContent();
+  </script>
+  <!-- AI now integrated via iframe - no separate js/ai.js needed -->
+  <script src="/js/floating-blog.js"></script>
+  
+  <!-- Secret Admin Access: Press Ctrl+Shift+A -->
+  <script>
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    });
+  </script>
+</body>
+</html>

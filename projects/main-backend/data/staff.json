@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Dr. Jay",
+    "title": "Chief Veterinarian",
+    "image": "images/jaybe.jpg",
+    "bio": "Experienced veterinarian with over 10 years of practice in both pet and livestock care."
+  },
+  {
+    "id": 2,
+    "name": "Dr. Duker MO",
+    "title": "Animal Scientist",
+    "image": "images/duker.jpg",
+    "bio": "Specialized in animal science and livestock management with a focus on breed improvement."
+  },
+  {
+    "id": 3,
+    "name": "Nurse Maya",
+    "title": "Veterinary Nurse",
+    "image": "images/maya.jpg",
+    "bio": "Compassionate veterinary nurse dedicated to providing the best care for all animals."
+  }
+]

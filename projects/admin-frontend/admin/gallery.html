@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Photo Gallery | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #16A34A;
+    }
+    .header h1 { color: #16A34A; display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      background: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: #4b5563; }
+    .upload-section {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 3px dashed #16A34A;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 30px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-section:hover {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      transform: translateY(-2px);
+    }
+    .upload-icon { font-size: 3rem; margin-bottom: 15px; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    }
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gallery-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .overlay-btn {
+      background: white;
+      color: #374151;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .overlay-btn:hover { transform: scale(1.1); }
+    .placeholder-img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: #9ca3af;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>📸</span>Photo Gallery Manager</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div id="alertContainer"></div>
+    <div class="upload-section" id="uploadSection">
+      <div class="upload-icon">📤</div>
+      <h3 style="color: #374151; margin-bottom: 8px;">Upload New Photos</h3>
+      <p style="color: #6b7280;">Drag & drop images or click to browse</p>
+      <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+      <button class="btn btn-primary" onclick="document.getElementById('fileInput').click(); event.stopPropagation();">Select Images</button>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <!-- Modal for viewing image -->
+    <div class="modal" id="viewModal" style="display:none;">
+      <div class="modal-content" style="max-width:700px;">
+        <div class="modal-header">
+          <h2>View Image</h2>
+          <button class="close-btn" onclick="closeViewModal()">×</button>
+        </div>
+        <img id="modalImage" src="" style="width:100%;border-radius:10px;">
+      </div>
+    </div>
+
+    <script>
+      let gallery = [];
+
+      // Load gallery images
+
+      async function loadGallery() {
+        try {
+          const response = await fetch('/api/main?action=gallery');
+          gallery = await response.json();
+          renderGallery();
+        } catch (error) {
+          showAlert('Error loading gallery', 'error');
+        }
+      }
+
+      // Render gallery
+      function renderGallery() {
+        const grid = document.getElementById('galleryGrid');
+        if (!gallery.length) {
+          grid.innerHTML = '<p style="color:#6b7280;text-align:center;">No images in gallery yet.</p>';
+          return;
+        }
+        grid.innerHTML = gallery.map(img => `
+          <div class="gallery-item">
+            <img src="../${img.path}" alt="Gallery Image" onclick="viewImage('../${img.path}')">
+            <div class="gallery-overlay">
+              <button class="overlay-btn" onclick="viewImage('../${img.path}')">👁️ View</button>
+              <button class="overlay-btn" onclick="deleteImage('${img.id}')">🗑️ Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Upload images
+      document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          if (file.size > 10 * 1024 * 1024) {
+            showAlert('Image too large (max 10MB)', 'error');
+            continue;
+          }
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            try {
+              const response = await fetch('/api/main?action=gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: event.target.result })
+              });
+              if (!response.ok) throw new Error('Upload failed');
+              showAlert('Image uploaded', 'success');
+              await loadGallery();
+            } catch (error) {
+              showAlert('Error uploading image', 'error');
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+      });
+
+      // Delete image
+      async function deleteImage(id) {
+        if (!confirm('Delete this image?')) return;
+        try {
+          const response = await fetch('/api/main?action=gallery', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          if (!response.ok) throw new Error('Delete failed');
+          showAlert('Image deleted', 'success');
+          await loadGallery();
+        } catch (error) {
+          showAlert('Error deleting image', 'error');
+        }
+      }
+
+      // View image modal
+      function viewImage(src) {
+        document.getElementById('modalImage').src = src;
+        document.getElementById('viewModal').style.display = 'flex';
+      }
+      function closeViewModal() {
+        document.getElementById('viewModal').style.display = 'none';
+      }
+
+      // Show alert
+      function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+      }
+
+      // Drag & drop upload
+      const uploadSection = document.getElementById('uploadSection');
+      uploadSection.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadSection.style.background = 'linear-gradient(135deg, #bbf7d0 0%, #dcfce7 100%)';
+      });
+      uploadSection.addEventListener('dragleave', () => {
+        uploadSection.style.background = '';
+      });
+      uploadSection.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadSection.style.background = '';
+        const files = Array.from(e.dataTransfer.files);
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        document.getElementById('fileInput').dispatchEvent(new Event('change'));
+      });
+
+      // Modal close on outside click
+      document.getElementById('viewModal').addEventListener('click', (e) => {
+        if (e.target.id === 'viewModal') closeViewModal();
+      });
+
+      // Initialize
+      loadGallery();
+    </script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Manage Vets | Admin Panel</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: #f3f4f6;
+			padding: 20px;
+		}
+		.container {
+			max-width: 1400px;
+			margin: 0 auto;
+			background: white;
+			border-radius: 12px;
+			padding: 30px;
+			box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+		}
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			padding-bottom: 20px;
+			border-bottom: 2px solid #16A34A;
+		}
+		.header h1 {
+			color: #16A34A;
+		}
+		.back-btn {
+			background: #6b7280;
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			text-decoration: none;
+			display: inline-block;
+		}
+		.back-btn:hover {
+			background: #4b5563;
+		}
+		.add-vet-btn {
+			background: #16A34A;
+			color: white;
+			padding: 12px 24px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1rem;
+			margin-bottom: 20px;
+		}
+		.add-vet-btn:hover {
+			background: #15803d;
+		}
+		.search-bar {
+			display:flex;justify-content:center;margin-bottom:20px;gap:10px;
+		}
+		.search-bar input {
+			width:320px;padding:10px 16px;border:2px solid #16A34A;border-radius:8px;font-size:1rem;
+		}
+		.search-bar button {
+			background:#16A34A;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;cursor:pointer;
+		}
+		.search-bar button:hover {
+			background:#15803d;
+		}
+		.search-bar button:last-child {
+			background:#2563eb;
+		}
+		.search-bar button:last-child:hover {
+			background:#1d4ed8;
+		}
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.5);
+			overflow: auto;
+		}
+		.modal-content {
+			background: white;
+			margin: 5% auto;
+			padding: 30px;
+			border-radius: 12px;
+			max-width: 600px;
+			max-height: 85vh;
+			overflow-y: auto;
+		}
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		.close:hover {
+			color: #000;
+		}
+		.form-group {
+			margin-bottom: 20px;
+		}
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+			color: #374151;
+			font-weight: 500;
+		}
+		.form-group input,
+		.form-group select {
+			width: 100%;
+			padding: 10px;
+			border: 2px solid #e5e7eb;
+			border-radius: 8px;
+			font-size: 1rem;
+		}
+		.services-checkboxes {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 10px;
+			margin-top: 10px;
+		}
+		.checkbox-item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+		.checkbox-item input {
+			width: auto;
+		}
+		.btn-primary {
+			background: #16A34A;
+			color: white;
+			padding: 12px 30px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1rem;
+			width: 100%;
+		}
+		.btn-primary:hover {
+			background: #15803d;
+		}
+		.vets-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 20px;
+		}
+		.vet-card {
+			background: #f9fafb;
+			padding: 20px;
+			border-radius: 8px;
+			border: 1px solid #e5e7eb;
+			position: relative;
+		}
+		.vet-card h3 {
+			color: #16A34A;
+			margin-bottom: 10px;
+		}
+		.vet-card .location {
+			color: #6b7280;
+			font-size: 0.9rem;
+			margin-bottom: 15px;
+			display: flex;
+			gap: 5px;
+			align-items: start;
+		}
+		.vet-card .services-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-top: 10px;
+		}
+		.service-tag {
+			background: #dbeafe;
+			color: #1e40af;
+			padding: 4px 10px;
+			border-radius: 12px;
+			font-size: 0.85rem;
+		}
+		.vet-actions {
+			margin-top: 15px;
+			display: flex;
+			gap: 10px;
+		}
+		.btn-delete {
+			background: #dc2626;
+			color: white;
+			padding: 8px 16px;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 0.9rem;
+		}
+		.btn-delete:hover {
+			background: #b91c1c;
+		}
+		.btn-edit {
+			background: #2563eb;
+			color: white;
+			padding: 8px 16px;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 0.9rem;
+		}
+		.btn-edit:hover {
+			background: #1d4ed8;
+		}
+		.loading {
+			text-align: center;
+			padding: 40px;
+			color: #6b7280;
+		}
+		.error {
+			background: #fee2e2;
+			color: #dc2626;
+			padding: 20px;
+			border-radius: 8px;
+			text-align: center;
+		}
+		.success {
+			background: #d1fae5;
+			color: #065f46;
+			padding: 15px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+		}
+		/* Custom Alert/Confirm Modals */
+		.custom-alert-overlay {
+			display: none;
+			position: fixed;
+			z-index: 2000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			backdrop-filter: blur(4px);
+			animation: fadeIn 0.2s ease;
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+		@keyframes slideUp {
+			from { 
+				opacity: 0;
+				transform: translate(-50%, -40%);
+			}
+			to { 
+				opacity: 1;
+				transform: translate(-50%, -50%);
+			}
+		}
+		.custom-alert-box {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: white;
+			border-radius: 16px;
+			padding: 0;
+			max-width: 420px;
+			width: 90%;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+			animation: slideUp 0.3s ease;
+			overflow: hidden;
+		}
+		.alert-header {
+			padding: 24px 24px 16px;
+			border-bottom: 1px solid #e5e7eb;
+		}
+		.alert-icon {
+			width: 56px;
+			height: 56px;
+			margin: 0 auto 16px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 28px;
+		}
+		.alert-icon.success {
+			background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+			box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+		}
+		.alert-icon.error {
+			background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+			box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+		}
+		.alert-icon.warning {
+			background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+			box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+		}
+		.alert-icon.info {
+			background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+			box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+		}
+		.alert-title {
+			font-size: 1.25rem;
+			font-weight: 600;
+			color: #111827;
+			text-align: center;
+			margin-bottom: 8px;
+		}
+		.alert-body {
+			padding: 16px 24px 24px;
+		}
+		.alert-message {
+			color: #6b7280;
+			font-size: 0.95rem;
+			line-height: 1.6;
+			text-align: center;
+		}
+		.alert-actions {
+			padding: 16px 24px 24px;
+			display: flex;
+			gap: 12px;
+			justify-content: center;
+		}
+		.alert-btn {
+			padding: 12px 32px;
+			border: none;
+			border-radius: 8px;
+			font-size: 1rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.2s;
+			min-width: 100px;
+		}
+		.alert-btn.primary {
+			background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+			color: white;
+			box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+		}
+		.alert-btn.primary:hover {
+			box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+			transform: translateY(-1px);
+		}
+		.alert-btn.success {
+			background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+			color: white;
+			box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+		}
+		.alert-btn.success:hover {
+			box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+			transform: translateY(-1px);
+		}
+		.alert-btn.danger {
+			background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+			color: white;
+			box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+		}
+		.alert-btn.danger:hover {
+			box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+			transform: translateY(-1px);
+		}
+		.alert-btn.secondary {
+			background: #f3f4f6;
+			color: #374151;
+			border: 2px solid #e5e7eb;
+		}
+		.alert-btn.secondary:hover {
+			background: #e5e7eb;
+			transform: translateY(-1px);
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>👨‍⚕️ Manage Veterinarians</h1>
+			<a href="index.html" class="back-btn">← Back to Admin</a>
+		</div>
+		<div class="search-bar">
+			<input type="text" id="searchInput" placeholder="Search by name, location, or service...">
+			<button onclick="searchVets()">Search</button>
+			<button onclick="exportVets()">Export</button>
+		</div>
+		<div id="successMessage" class="success" style="display: none;"></div>
+		<button class="add-vet-btn" onclick="openModal()">+ Add New Vet</button>
+		<div id="vetsContainer">
+			<div class="loading">Loading veterinarians...</div>
+		</div>
+	</div>
+	<!-- Add/Edit Vet Modal and Custom Alert/Confirm Modal (same as admin/vets.html) -->
+	<!-- ...existing code from admin/vets.html for modals and scripts... -->
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>File Manager | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #16A34A;
+    }
+
+    .header h1 {
+      color: #16A34A;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #4b5563;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .breadcrumb {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #f9fafb;
+      border-radius: 8px;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    .breadcrumb span {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb span:hover {
+      color: #16A34A;
+    }
+
+    .upload-btn {
+      background: #16A34A;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .upload-btn:hover {
+      background: #15803d;
+      transform: translateY(-2px);
+    }
+
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .file-item {
+      padding: 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .file-item:hover {
+      border-color: #16A34A;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.15);
+    }
+
+    .file-item.folder {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-color: #f59e0b;
+    }
+
+    .file-item.image {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-color: #3b82f6;
+    }
+
+    .file-item.document {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border-color: #10b981;
+    }
+
+    .file-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .file-name {
+      font-size: 0.9rem;
+      color: #374151;
+      word-break: break-word;
+      font-weight: 600;
+    }
+
+    .file-size {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 5px;
+    }
+
+    .file-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      gap: 5px;
+    }
+
+    .file-item:hover .file-actions {
+      display: flex;
+    }
+
+    .action-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .action-icon:hover {
+      background: #f3f4f6;
+      transform: scale(1.1);
+    }
+
+    .storage-info {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .storage-bar {
+      flex: 1;
+      margin: 0 20px;
+    }
+
+    .storage-bar-fill {
+      height: 12px;
+      background: linear-gradient(135deg, #16A34A 0%, #15803d 100%);
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+
+    .storage-bar-container {
+      background: #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .upload-area {
+      border: 3px dashed #e5e7eb;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover {
+      border-color: #16A34A;
+      background: #f0fdf4;
+    }
+
+    .upload-area.dragover {
+      border-color: #16A34A;
+      background: #f0fdf4;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state .icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .file-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+      }
+
+      .storage-info {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .storage-bar {
+        width: 100%;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span>📁</span>File Manager</h1>
+      <a href="index.html" class="back-btn">← Back to Admin</a>
+    </div>
+
+    <div class="toolbar">
+      <div class="breadcrumb" id="breadcrumb">
+        <span onclick="navigateTo('')">🏠 Root</span>
+      </div>
+      <button class="upload-btn" onclick="openUploadModal()">⬆️ Upload Files</button>
+    </div>
+
+    <div class="file-grid" id="fileGrid">
+      <!-- Files will be loaded here -->
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="icon">📂</div>
+      <h3>No Files Found</h3>
+      <p>This folder is empty. Upload some files to get started.</p>
+    </div>
+
+    <div class="storage-info">
+      <div>
+        <strong style="color: #374151;">Storage Used</strong>
+        <div style="color: #6b7280; font-size: 0.9rem; margin-top: 5px;">
+          <span id="storageUsed">0</span> MB of 1000 MB
+        </div>
+      </div>
+      <div class="storage-bar">
+        <div class="storage-bar-container">
+          <div class="storage-bar-fill" id="storageBar" style="width: 0%"></div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <span id="storagePercent" style="font-size: 1.5rem; font-weight: 700; color: #16A34A;">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal" id="uploadModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Upload Files</h2>
+        <button class="modal-close" onclick="closeUploadModal()">×</button>
+      </div>
+      
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📤</div>
+        <h3 style="color: #374151; margin-bottom: 8px;">Drop files here or click to browse</h3>
+        <p style="color: #9ca3af; font-size: 0.9rem;">Supports images, documents, and videos</p>
+      </div>
+
+      <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)">
+
+      <div id="uploadProgress" style="display: none;">
+        <div style="color: #6b7280; margin-bottom: 10px;">Uploading files...</div>
+        <div class="storage-bar-container">
+          <div class="storage-bar-fill" id="uploadProgressBar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let files = [];
+    let currentPath = '';
+
+    async function loadFiles() {
+      const fileGrid = document.getElementById('fileGrid');
+      const emptyState = document.getElementById('emptyState');
+      const res = await fetch('/api/main?action=file-manager');
+      files = await res.json();
+      if (!files || files.length === 0) {
+        fileGrid.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+      fileGrid.style.display = 'grid';
+      emptyState.style.display = 'none';
+      fileGrid.innerHTML = files.map(file => `
+        <div class="file-item ${file.type || (file.isDirectory ? 'folder' : 'document')}" onclick="handleFileClick('${file.name}', '${file.type || (file.isDirectory ? 'folder' : 'document')}')">
+          <div class="file-actions">
+            <div class="action-icon" onclick="event.stopPropagation(); downloadFile('${file.name}')" title="Download">
+              ⬇️
+            </div>
+            <div class="action-icon" onclick="event.stopPropagation(); deleteFile('${file.name}')" title="Delete">
+              🗑️
+            </div>
+          </div>
+          <div class="file-icon">${file.icon || (file.isDirectory ? '📁' : '📄')}</div>
+          <div class="file-name">${file.name}</div>
+          ${file.size ? `<div class="file-size">${(file.size/1024).toFixed(1)} KB</div>` : ''}
+        </div>
+      `).join('');
+      updateBreadcrumb();
+      updateStorageInfo();
+    }
+
+    function handleFileClick(fileName, type) {
+      // For demo, folders are not navigable in this API version
+      alert(`Opening: ${fileName}\n\nIn a real implementation, this would open/preview the file or folder.`);
+    }
+
+    function navigateTo(path) {
+      currentPath = path;
+      loadFiles();
+    }
+
+    function updateBreadcrumb() {
+      const breadcrumb = document.getElementById('breadcrumb');
+      breadcrumb.innerHTML = '<span onclick="navigateTo(\'\')">🏠 Root</span>';
+    }
+
+    function updateStorageInfo() {
+      // Simulated storage calculation
+      const usedMB = files.reduce((sum, f) => sum + (f.size || 0), 0) / 1024 / 1024;
+      const totalMB = 1000;
+      const percentage = (usedMB / totalMB * 100).toFixed(1);
+      document.getElementById('storageUsed').textContent = usedMB.toFixed(1);
+      document.getElementById('storagePercent').textContent = percentage + '%';
+      document.getElementById('storageBar').style.width = percentage + '%';
+    }
+
+    function openUploadModal() {
+      document.getElementById('uploadModal').style.display = 'flex';
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').style.display = 'none';
+      document.getElementById('uploadProgress').style.display = 'none';
+      document.getElementById('uploadProgressBar').style.width = '0%';
+    }
+
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        uploadFiles(files);
+      }
+    }
+
+    async function uploadFiles(fileList) {
+      const uploadProgress = document.getElementById('uploadProgress');
+      const progressBar = document.getElementById('uploadProgressBar');
+      uploadProgress.style.display = 'block';
+      // Simulate upload progress and API call
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(async () => {
+            // For each file, add to API (simulate, no binary upload)
+            for (let i = 0; i < fileList.length; i++) {
+              await fetch('/api/main?action=file-manager', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: fileList[i].name,
+                  size: fileList[i].size,
+                  type: fileList[i].type || 'document',
+                  icon: fileList[i].type && fileList[i].type.startsWith('image') ? '🖼️' : '📄',
+                  isDirectory: false
+                })
+              });
+            }
+            closeUploadModal();
+            alert(`✅ Successfully uploaded ${fileList.length} file(s)!`);
+            loadFiles();
+          }, 500);
+        }
+      }, 200);
+    }
+
+    function downloadFile(fileName) {
+      alert(`⬇️ Downloading: ${fileName}\n\nIn a real implementation, this would trigger a file download.`);
+    }
+
+    async function deleteFile(fileName) {
+      if (confirm(`Are you sure you want to delete "${fileName}"?`)) {
+        await fetch('/api/main?action=file-manager', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: fileName })
+        });
+        loadFiles();
+      }
+    }
+
+    // Drag and drop support
+    const uploadArea = document.getElementById('uploadArea');
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        uploadFiles(files);
+      }
+    });
+
+    // Initialize
+    loadFiles();
+  </script>
+</body>
+</html>
